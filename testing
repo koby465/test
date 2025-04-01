@@ -1,0 +1,222 @@
+--// Load \--
+
+if not game:IsLoaded() then game.Loaded:Wait() end -- Ensure the game is fully loaded
+
+local Clock = tick() -- Start script load timing
+
+-- 🔒 Anti-Tamper Detection
+local function detectTampering()
+    while true do
+        -- Detect if `debug` library is removed
+        if not debug then game:Shutdown() end
+
+        -- Detect if `getgc()` is accessible (Exploiters use this to modify scripts)
+        local success = pcall(getgc)
+        if success then game:Shutdown() end
+
+        -- Detect if `getconnections()` is accessible (Used for remote event hooking)
+        success = pcall(getconnections, game:GetService("RunService").RenderStepped)
+        if success then game:Shutdown() end
+
+        -- Detect if `hookfunction()` is accessible (Used to override functions)
+        success = pcall(hookfunction, print, function(...) return ... end)
+        if success then game:Shutdown() end
+
+        task.wait(5) -- Runs every 5 seconds
+    end
+end
+task.spawn(detectTampering) -- Start the anti-tamper function in the background
+
+--// Ui \--
+
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/VaxKs/gfe/main/CustomLinoria'))()
+local SaveManager = loadstring(game:HttpGet('https://raw.githubusercontent.com/VaxKs/gfe/main/OKay%20bro.lua'))()
+local ThemeManager = loadstring(game:HttpGet('https://raw.githubusercontent.com/VaxKs/gfe/main/ZenithThemes'))()
+
+--// Build \--
+
+local Build = "developer"
+local Color = "#FF0000"
+local Ver = "v1.0"
+
+if Build == "developer" then
+    Color = '#00FF00'
+    Ver = "v1.0"
+elseif Build == "paid" then 
+    Color = '##FF0000'
+    Ver = "v1.0"
+elseif Build == "free" then 
+    Color = '#fffe00'
+    Ver = "v1.0"
+end
+
+--// Window \--
+
+local Window = Library:CreateWindow({
+    Size = UDim2.fromOffset(550, 610),
+    Title = "test<font color=\"#FFFF00\">.cc</font> | " ..
+            "<font color=\"" .. Color .. "\">" .. Build .. "</font>" ..
+            "                        [" .. Ver .. "]",
+    Center = true,
+    AutoShow = true
+})
+
+--// Notify \--
+
+local Players = game:GetService("Players")
+Library:Notify(("Status: Secure 🟢 - No Detection"), 12)
+
+--// Joins \--
+
+game.Players.PlayerAdded:Connect(function(player)
+    Library:Notify(("notification - " .. (player:IsFriendsWith(game.Players.LocalPlayer.UserId) and "friend" or "player") ..  
+        " | user: " .. player.DisplayName .. " | joined ✅"), 7, Color3.fromRGB(0, 255, 0))
+end)
+
+game.Players.PlayerRemoving:Connect(function(player)
+    Library:Notify(("notification - " .. (player:IsFriendsWith(game.Players.LocalPlayer.UserId) and "friend" or "player") ..  
+        " | user: " .. player.DisplayName .. " | left ❌"), 5, Color3.fromRGB(255, 0, 0))
+end)
+
+--// Tabs \--
+
+local Tabs = {
+    Main = Window:AddTab('Combat'),
+    Visuals = Window:AddTab('Visuals'),
+    Miscellaneous = Window:AddTab('Miscellaneous'),
+    Local = Window:AddTab('Local'),
+    World = Window:AddTab('World'),
+    UISettings = Window:AddTab('Settings')
+}
+
+--// Tabs \--
+
+local AimbotTabBox = Tabs.Main:AddLeftTabbox('Aimbot')
+local AimbotTab = AimbotTabBox:AddTab('Aimbot')
+
+--// GunMods Tab \--
+
+local GunModsTabBox = Tabs.Main:AddRightTabbox('Gun / Mods')
+local GunModsTab = GunModsTabBox:AddTab('Gun / Mods')
+
+--// Rage Tab \--
+
+local RageTabBox = Tabs.Main:AddRightTabbox('Rage / Features')
+local RageTab = RageTabBox:AddTab('Rage / Features')
+
+--// Skin Changer Tab \--
+local SkinTabBox = Tabs.Main:AddRightTabbox('Skin / Changer')
+local SkinChangerTab = SkinTabBox:AddTab('Skin / Changer')
+
+--// Misc Tab \--
+local MiscTabBox = Tabs.Main:AddLeftTabbox('Misc / Features')
+local MiscTab = MiscTabBox:AddTab('Misc / Features')
+
+--// Hit sounds \--
+local HitSoundTabbox = Tabs.Main:AddLeftTabbox('Hit / Sound')
+local HitSoundTab = HitSoundTabbox:AddTab('Hit / Sound')
+
+--// Gun Visuals \--
+local GunVisualsTabbox = Tabs.Main:AddRightTabbox('Gun / Visuals')
+local GunVisualsTab = GunVisualsTabbox:AddTab('Gun / Visuals')
+
+
+
+--// UI Settings \\--
+
+--// Game
+
+local GameID = Tabs.UISettings:AddLeftGroupbox('Game')
+GameID:AddInput('GameID_Check', {Default = 'Game ID', Numeric = true, Finished = false, Text = 'Game ID:', Placeholder = 'Game ID Here'})
+GameID:AddButton('Join Game', function()
+game:GetService("TeleportService"):Teleport(Options.GameID_Check.Value, plr)
+end)
+
+
+GameID:AddButton('Copy Join Code', function()
+setclipboard(("game:GetService('TeleportService'):TeleportToPlaceInstance(%s, '%s')"):format(game.PlaceId, game.JobId))
+Library:Notify("Copied Join Code!", 5)
+end)
+
+GameID:AddButton('Rejoin Server', function()
+game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId)
+Library:Notify('Rejoining Server!', 30)
+end)
+
+--// Menu
+local MenuGroup = Tabs.UISettings:AddRightGroupbox('Menu')
+
+MenuGroup:AddLabel(' Made by:<font color="#FFFF00"> vax_ks</font> 👑', true)
+
+MenuGroup:AddButton('Unload Script', function()
+    Library:Unload()
+    for i, v in pairs(Toggles) do
+        v:SetValue(false)
+    end
+    SetTimeOfDayText = false 
+
+    if ZenithText then 
+        ZenithText:Destroy()
+    end
+    if FOV then
+        FOV:Remove()
+        FOV = nil
+    end
+
+    Library:Notify('Unloaded!', 1)
+end)
+
+MenuGroup:AddButton('Panic Button', function()
+for i,v in pairs(Toggles) do
+    v:SetValue(false)
+        Library:Notify('Panic Button!', 1)
+    end
+end)
+
+MenuGroup:AddButton('Copy Discord', function()
+    if pcall(setclipboard,"https://discord.gg/Skgd2FAuKv") then
+        Library:Notify('Successfully copied discord link to your clipboard!', 5)
+    end
+end)
+
+MenuGroup:AddToggle('WatermarkToggle', { Text = 'Watermark', Default = false, Tooltip = nil })
+Toggles.WatermarkToggle:OnChanged(function()
+    while Toggles.WatermarkToggle.Value do task.wait(1)
+    local fps = string.format('%.0f', game.Stats.Workspace.Heartbeat:GetValue())
+    local ping = string.format('%.0f', game.Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+    Library:SetWatermark('Zenith - FPS: ' .. fps .. ' | Ping: ' .. ping .. ' | [Rivals]')
+    Library:SetWatermarkVisibility(true)
+end
+Library:SetWatermarkVisibility(false)
+end)
+
+MenuGroup:AddToggle('UISettings_KeybindFrameVisibility', {Text = 'Keybind', Default = true}):OnChanged(function()
+    Library.KeybindFrame.Visible = Toggles.UISettings_KeybindFrameVisibility.Value
+end)
+
+MenuGroup:AddLabel('Menu Keybind'):AddKeyPicker('MenuKeybind', { Default = 'Insert', NoUI = true, Text = 'Menu keybind' })
+Library.ToggleKeybind = Options.MenuKeybind
+
+--// Save manager
+
+SaveManager:SetLibrary(Library)
+SaveManager:SetFolder('Zenith/Configs')
+SaveManager:BuildConfigSection(Tabs.UISettings)
+SaveManager:IgnoreThemeSettings()
+SaveManager:LoadAutoloadConfig()
+
+--// Theme manager
+
+ThemeManager:SetLibrary(Library)
+ThemeManager:SetFolder('Zenith/themes')
+ThemeManager:ApplyToTab(Tabs.UISettings)
+
+--// Script Loaded
+
+local Decimals = 2 
+local Time = string.format("%." .. tostring(Decimals) .. "f", tick() - Clock)
+Library:Notify(("Script [Loaded] In - " .. Time .. "s"), 5)
+
+--Wrapping function - needed to unload(Keep at end of script)
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/VaxKs/gfe/main/LoadManger'))
