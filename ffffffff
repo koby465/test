@@ -412,21 +412,24 @@ end)
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging then
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            local deltaX = input.Position.X - startMousePos.X
-            local deltaY = input.Position.Y - startMousePos.Y
+            -- Ensure startMousePos is not nil
+            if startMousePos then
+                local deltaX = input.Position.X - startMousePos.X
+                local deltaY = input.Position.Y - startMousePos.Y
 
-            -- Resize FrameMain based on the mouse movement
-            local newWidth = math.max(200, startSize.X.Offset + deltaX)
-            local newHeight = math.max(200, startSize.Y.Offset + deltaY)
-            FrameMain.Size = UDim2.new(0, newWidth, 0, newHeight)
+                -- Resize FrameMain based on the mouse movement
+                local newWidth = math.max(200, startSize.X.Offset + deltaX)
+                local newHeight = math.max(200, startSize.Y.Offset + deltaY)
+                FrameMain.Size = UDim2.new(0, newWidth, 0, newHeight)
 
-            -- Resize Sidebar and other elements accordingly
-            if Sidebar then
-                Sidebar.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight)
-            end
+                -- Resize Sidebar and other elements accordingly
+                if Sidebar then
+                    Sidebar.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight)
+                end
 
-            if AControlModule then
-                AControlModule.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight * 0.1)
+                if AControlModule then
+                    AControlModule.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight * 0.1)
+                end
             end
         end
     end
