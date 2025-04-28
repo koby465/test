@@ -771,8 +771,6 @@ end)
     
     local TextButton = CreateObject("TextButton", {
         Parent = Slider,
-        Text = name,
-        TextTransparency = 1,
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
@@ -796,15 +794,13 @@ end)
         Position = UDim2.new(0.007, 0, 0.067, 0),
         Size = UDim2.new(0, 38, 0, 24),
         Font = Enum.Font.SourceSans,
-        Text = "FOV",
+        Text = name,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 12,
         TextTransparency = 0.5,
         TextWrapped = true,
         TextXAlignment = Enum.TextXAlignment.Left,
     })
-    
-    TextLabel.Text = name
 
     local BG = CreateObject("Frame", {
         Name = "BG",
@@ -837,12 +833,13 @@ end)
         Size = UDim2.new(0, 10, 0, 10),
     })
 
-    local UICorner = CreateObject("UICorner", {
+    local UICornerBall = CreateObject("UICorner", {
         Parent = Ball,
         CornerRadius = UDim.new(1, 0),
     })
 
-    local Amount = CreateObject("TextLabel", {
+    -- CHANGED: TextBox instead of TextLabel
+    local Amount = CreateObject("TextBox", {
         Name = "Amount",
         Parent = TextButton,
         AnchorPoint = Vector2.new(0, 0.5),
@@ -855,14 +852,16 @@ end)
         TextColor3 = Color3.fromRGB(202, 202, 202),
         TextSize = 14,
         TextWrapped = true,
+        ClearTextOnFocus = false,
+        TextTransparency = 0.5,
     })
 
-    local UICorner2 = CreateObject("UICorner", {
+    local UICornerAmount = CreateObject("UICorner", {
         Parent = Amount,
         CornerRadius = UDim.new(0, 4),
     })
 
-    local UIStroke = CreateObject("UIStroke", {
+    local UIStrokeAmount = CreateObject("UIStroke", {
         Parent = Amount,
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
         Color = Color3.fromRGB(255, 255, 255),
@@ -870,12 +869,13 @@ end)
         Transparency = 0.925,
     })
 
+    -- Create the actual slider object
     local slider = Framework.PositionSlider(Frame, Ball, min, max, 0.1)
-    slider:set(default)  -- Ensure the slider is set to the correct initial value
+    slider:set(default)  -- Set initial value
 
-    -- Update the displayed value when the slider changes
+    -- Update displayed text when the slider moves
     slider.Updated:connect(function(value)
-        Amount.Text = value .. symbol  -- Update displayed amount based on slider
+        Amount.Text = value .. symbol
         task.spawn(function()
             pcall(function()
                 callback(value)
@@ -883,15 +883,38 @@ end)
         end)
     end)
 
-    -- Handle updating the slider visually
+    -- Handle typing into the Amount box
+    Amount.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            local input = tonumber(Amount.Text:match("%d+")) -- only allow numbers
+            if input then
+                -- Clamp between min and max
+                input = math.clamp(input, min, max)
+                -- Update the slider and text
+                slider:set(input)
+                Amount.Text = input .. symbol
+                task.spawn(function()
+                    pcall(function()
+                        callback(input)
+                    end)
+                end)
+            else
+                -- Reset if invalid
+                Amount.Text = tostring(slider:get()) .. symbol
+            end
+        end
+    end)
+
+    -- Handle object for external updates
     local Handle = {
         Update = function(num)
-            slider:set(num)  -- Set the slider's current value
-            Amount.Text = num .. symbol  -- Update the displayed amount
+            slider:set(num)
+            Amount.Text = num .. symbol
         end
     }
     return Handle
 end
+
 
 			function AssetHandler.Keybind(name, Dkey, callback, onchanged)
 				local Keybind = CreateObject("Frame", {
