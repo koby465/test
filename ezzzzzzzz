@@ -408,10 +408,13 @@ local userId = player.UserId
 -- Retrieve the player's profile image URL using GetUserThumbnailAsync
 local playerImage = game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 
+-- Retrieve the player's name
+local playerName = player.Name
+
 -- Initialize Profile Data
 if not JSON.DataExist('ProfileData') then
     JSON.WriteData('ProfileData', {
-        Name = "Paid Client",
+        Name = playerName,  -- Store the player's name
         Image = playerImage  -- Store the actual URL for the profile image
     })
 end
@@ -444,8 +447,8 @@ local UIData = JSON.ReadData('UIData')
 local Dragging = JSON.ReadData('DragData')
 
 -- Set the profile name and image
-UserProfileNam.Text = ProfileData.Name:sub(1, 15)
-UserProfileImage.Image = ProfileData.Image  -- Set the actual image URL here
+UserProfileNam.Text = ProfileData.Name:sub(1, 15)  -- Display the player's name
+UserProfileImage.Image = ProfileData.Image  -- Display the profile picture using the stored image URL
 
 -- Set background transparency based on UI settings
 FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
@@ -473,8 +476,8 @@ local WinHandle = {
 -- Function to update profile data
 function WinHandle.UpdateProfile(data)
     JSON.WriteData('ProfileData', data)
-    UserProfileNam.Text = data.Name:sub(1, 15)
-    UserProfileImage.Image = data.Image  -- Update with the correct image URL
+    UserProfileNam.Text = data.Name:sub(1, 15)  -- Update the name
+    UserProfileImage.Image = data.Image  -- Update the profile image
 end
 
 -- Function to update window data
@@ -509,6 +512,7 @@ end
 
 -- Get UserInputService to detect input if needed
 local UserInputService = game:GetService("UserInputService")
+
 
 
 
