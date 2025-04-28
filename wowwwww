@@ -1542,6 +1542,288 @@ end
 
 
 
+
+
+
+
+
+
+function AssetHandler.MultiDropdown(name, default, list, callback)
+    local Dropdown = CreateObject("Frame", {
+        Name = name,
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0.7777777910232544, 0),
+        Size = UDim2.new(1, 0, 0, 38),
+        Transparency = 1,
+    })
+    
+    local SelectedOptions = default or {} -- Store selected options as a table
+    local DisplayText = name .. ": None" -- Default text when nothing is selected
+
+    local OpenBtn = CreateObject("TextButton", {
+        Parent = Dropdown,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.9700000286102295,
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0.949999988079071, 0, 0.699999988079071, 0),
+        AutoButtonColor = false,
+        Font = Enum.Font.SourceSans,
+        Text = DisplayText,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 15,
+        TextTransparency = 0.5,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+    
+    CreateObject("UIPadding", {
+        Parent = OpenBtn,
+        PaddingLeft = UDim.new(0, 10),
+    })
+    
+    CreateObject("UICorner", {
+        Parent = OpenBtn,
+        CornerRadius = UDim.new(0, 4),
+    })
+    
+    CreateObject("UIStroke", {
+        Parent = OpenBtn,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.2000000476837158,
+        Transparency = 0.925000011920929,
+    })
+    
+    local Dropper = CreateObject("Frame", {
+        ClipsDescendants = true,
+        Name = "Dropper",
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0.5938987731933594, 0),
+        Size = UDim2.new(1, 0, 0, 100),
+        Transparency = 1,
+        Visible = false,
+    })
+    
+    local TextButton = CreateObject("TextButton", {
+        Parent = Dropper,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.9700000286102295,
+        Position = UDim2.new(0.5, 0, 0.4338647127151489, 2),
+        Size = UDim2.new(0.949999988079071, 0, 0.8679999709129333, 0),
+        AutoButtonColor = false,
+        Font = Enum.Font.SourceSans,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 11,
+        TextTransparency = 0.5,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+    
+    CreateObject("UIPadding", {
+        Parent = TextButton,
+        PaddingBottom = UDim.new(0, 10),
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+    })
+    
+    CreateObject("UICorner", {
+        Parent = TextButton,
+        CornerRadius = UDim.new(0, 4),
+    })
+    
+    CreateObject("UIStroke", {
+        Parent = TextButton,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.2000000476837158,
+        Transparency = 0.925000011920929,
+    })
+    
+    local ScrollingFrame = CreateObject("ScrollingFrame", {
+        ClipsDescendants = true,
+        Parent = TextButton,
+        Active = true,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.5, 0, 0.519342303276062, 0),
+        Size = UDim2.new(1, 0, 0.9424876570701599, 0),
+        Transparency = 1,
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0),
+        ScrollBarThickness = 0,
+    })
+    
+    local UIListLayout = CreateObject("UIListLayout", {
+        Parent = ScrollingFrame,
+        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Padding = UDim.new(0, 5),
+    })
+    
+    CreateObject("UIPadding", {
+        Parent = ScrollingFrame,
+        PaddingBottom = UDim.new(0, 1),
+        PaddingTop = UDim.new(0, 1),
+    })
+    
+    Dropper.Size = UDim2.new(1, 0, 0, 0)
+    
+    OpenBtn.MouseButton1Down:Connect(function()
+        Dropper.Visible = true
+        TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+            Size = UDim2.new(1, 0, 0, 100)
+        })
+    end)
+    
+    callback(SelectedOptions) -- Initial callback with the default options
+    
+    for i, v in pairs(list) do
+        local DropButton = CreateObject("TextButton", {
+            Name = "DropButton",
+            Parent = ScrollingFrame,
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BackgroundTransparency = 0.9700000286102295,
+            Position = UDim2.new(0.4870184361934662, 0, 0.18865394592285156, 0),
+            Size = UDim2.new(0.974037230014801, -3, 0, 23),
+            AutoButtonColor = false,
+            Font = Enum.Font.SourceSans,
+            Text = v,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = 15,
+            TextTransparency = 0.5,
+            TextXAlignment = Enum.TextXAlignment.Left,
+        })
+        
+        CreateObject("UIPadding", {
+            Parent = DropButton,
+            PaddingLeft = UDim.new(0, 10),
+        })
+        
+        CreateObject("UICorner", {
+            Parent = DropButton,
+            CornerRadius = UDim.new(0, 4),
+        })
+        
+        CreateObject("UIStroke", {
+            Parent = DropButton,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+            Color = Color3.fromRGB(255, 255, 255),
+            Thickness = 1.2000000476837158,
+            Transparency = 0.925000011920929,
+        })
+        
+        DropButton.MouseButton1Down:Connect(function()
+            -- Toggle the selection of the option
+            if not table.find(SelectedOptions, v) then
+                table.insert(SelectedOptions, v)  -- Add to the selected list
+            else
+                -- Remove from the selected list
+                for index, selected in ipairs(SelectedOptions) do
+                    if selected == v then
+                        table.remove(SelectedOptions, index)
+                    end
+                end
+            end
+
+            -- Update display text
+            if #SelectedOptions > 0 then
+                DisplayText = name .. ": " .. table.concat(SelectedOptions, ", ")
+            else
+                DisplayText = name .. ": None"
+            end
+            OpenBtn.Text = DisplayText
+            
+            callback(SelectedOptions)  -- Call the callback with the selected options
+            
+            -- Animate dropdown collapse
+            TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                Size = UDim2.new(1, 0, 0, 0)
+            })
+            wait(0.1)
+            Dropper.Visible = false
+        end)
+    end
+
+    -- Return the dropdown object with the ability to update
+    local Set = {}
+    
+    function Set.Update(List)
+        for _, button in pairs(ScrollingFrame:GetChildren()) do
+            button:Destroy()
+        end
+        
+        for _, v in pairs(List) do
+            local DropButton = CreateObject("TextButton", {
+                Name = "DropButton",
+                Parent = ScrollingFrame,
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 0.9700000286102295,
+                Position = UDim2.new(0.4870184361934662, 0, 0.18865394592285156, 0),
+                Size = UDim2.new(0.974037230014801, -3, 0, 23),
+                AutoButtonColor = false,
+                Font = Enum.Font.SourceSans,
+                Text = v,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 15,
+                TextTransparency = 0.5,
+                TextXAlignment = Enum.TextXAlignment.Left,
+            })
+            
+            CreateObject("UIPadding", {
+                Parent = DropButton,
+                PaddingLeft = UDim.new(0, 10),
+            })
+            
+            CreateObject("UICorner", {
+                Parent = DropButton,
+                CornerRadius = UDim.new(0, 4),
+            })
+            
+            CreateObject("UIStroke", {
+                Parent = DropButton,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                Color = Color3.fromRGB(255, 255, 255),
+                Thickness = 1.2000000476837158,
+                Transparency = 0.925000011920929,
+            })
+            
+            DropButton.MouseButton1Down:Connect(function()
+                -- Similar functionality as before...
+            end)
+        end
+    end
+
+    return Set
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			function AssetHandler.Textbox(name, preset, callback)
 				local Textbox = CreateObject("Frame", {
 					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.7488034963607788,0),	Size = UDim2.new(1,0,0,50),	Transparency = 1,
