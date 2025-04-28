@@ -387,7 +387,7 @@ local startMousePos = nil
 local startSize = nil
 
 Resize.MouseButton1Down:Connect(function(input)
-    -- Begin dragging, store initial mouse position and frame size
+    -- Start dragging, store initial mouse position and frame size
     dragging = true
     startMousePos = input.Position
     startSize = FrameMain.Size
@@ -396,17 +396,18 @@ end)
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging then
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            -- Track the difference in mouse movement on the Y-axis
+            -- Calculate how much the mouse moved vertically
             local deltaY = input.Position.Y - startMousePos.Y
-            -- Adjust the size based on mouse movement
-            local newHeight = math.max(200, startSize.Y.Offset + deltaY)  -- Prevent shrinking too much
+            -- Update the height of the frame based on mouse movement
+            local newHeight = math.max(200, startSize.Y.Offset + deltaY)  -- Prevent shrinking too small
+            -- Apply the new height while keeping the width fixed
             FrameMain.Size = UDim2.new(0, startSize.X.Offset, 0, newHeight)
         end
     end
 end)
 
 Resize.MouseButton1Up:Connect(function()
-    -- End the dragging when the mouse button is released
+    -- Stop dragging when the mouse button is released
     dragging = false
 end)
 
