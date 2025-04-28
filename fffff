@@ -373,29 +373,46 @@ end)
 local Resize = CreateObject("ImageButton", {
     Name = "Resize", 
     Parent = FrameMain, 
-    AnchorPoint = Vector2.new(0, 1), 
+    AnchorPoint = Vector2.new(1, 1), 
     BackgroundColor3 = Color3.fromRGB(255,255,255), 
     BackgroundTransparency = 1, 
-    Position = UDim2.new(0.5, 0, 1, 0),  -- Position at the bottom center
+    Position = UDim2.new(1, -10, 1, -10),  -- Position at bottom right corner
     Size = UDim2.new(0, 10, 0, 10), 
     AutoButtonColor = false, 
-    Image = "http://www.roblox.com/asset/?id=5172066892",  -- Resize image
+    Image = "http://www.roblox.com/asset/?id=5172066892",  -- Resize icon
     ImageTransparency = 0.5,
 })
-local dragging = false
-local startPosition = nil
 
-Resize.MouseButton1Down:Connect(function()
+local dragging = false
+local startPos = nil
+local startSize = nil
+local startMousePos = nil
+
+Resize.MouseButton1Down:Connect(function(input)
     dragging = true
-    startPosition = Resize.Position.Y.Offset
+    startMousePos = input.Position
+    startSize = FrameMain.Size
+    startPos = FrameMain.Position
 end)
 
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging then
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            local deltaY = input.Position.Y - startPosition
-            FrameMain.Size = UDim2.new(0, FrameMain.Size.X.Offset, 0, math.max(200, FrameMain.Size.Y.Offset + deltaY)) -- Restrict the height to a minimum value
-            startPosition = input.Position.Y
+            -- Calculate the difference in position
+            local deltaX = input.Position.X - startMousePos.X
+            local deltaY = input.Position.Y - startMousePos.Y
+            
+            -- Adjust the size of FrameMain and other frames accordingly
+            local newWidth = math.max(200, startSize.X.Offset + deltaX)  -- Minimum width of 200
+            local newHeight = math.max(200, startSize.Y.Offset + deltaY) -- Minimum height of 200
+            
+            -- Resize FrameMain
+            FrameMain.Size = UDim2.new(0, newWidth, 0, newHeight)
+            
+            -- Optionally, resize other frames proportionally (e.g., Sidebar)
+            Sidebar.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight) -- Example of resizing Sidebar
+            AControlModule.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight * 0.1) -- Example of resizing control module
+            -- You can apply similar logic for other frames inside FrameMain
         end
     end
 end)
