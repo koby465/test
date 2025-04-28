@@ -943,14 +943,11 @@ end
 
 
 
-
-
-
 function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey)
     local State = defaultState
     local CurrentKey = defaultKey
 
-    -- Create the Toggle
+    -- Create the main toggle container
     local ToggleFrame = CreateObject("Frame", {
         Name = name,
         Parent = Section,
@@ -959,6 +956,7 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
         Size = UDim2.new(1,0,0,30),
     })
 
+    -- Create the label + clickable toggle
     local ToggleButton = CreateObject("TextButton", {
         Parent = ToggleFrame,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
@@ -972,6 +970,36 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
+    local Splash = CreateObject("Frame", {
+        Name = "Splash",
+        Parent = ToggleButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.9,
+        Position = UDim2.new(0.8, 0, 0.5, 0),
+        Size = UDim2.new(0, 30, 0, 15),
+    })
+
+    CreateObject("UICorner", {
+        Parent = Splash,
+        CornerRadius = UDim.new(1,0),
+    })
+
+    local Dot = CreateObject("Frame", {
+        Parent = Splash,
+        AnchorPoint = Vector2.new(0,0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.65,
+        Position = UDim2.new(0,3,0.5,0),
+        Size = UDim2.new(0,10,0,10),
+    })
+
+    CreateObject("UICorner", {
+        Parent = Dot,
+        CornerRadius = UDim.new(1,0),
+    })
+
+    -- Create the keybind button
     local KeybindButton = CreateObject("TextButton", {
         Parent = ToggleFrame,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
@@ -986,10 +1014,34 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
         TextXAlignment = Enum.TextXAlignment.Center,
     })
 
+    local function UpdateVisual()
+        if State then
+            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.new(1, -3, 0.5, 0),
+                BackgroundTransparency = 0
+            })
+            TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                BackgroundTransparency = 0.8
+            })
+            ToggleButton.TextTransparency = 0
+        else
+            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.new(0, 3, 0.5, 0),
+                BackgroundTransparency = 0.65
+            })
+            TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                BackgroundTransparency = 0.9
+            })
+            ToggleButton.TextTransparency = 0.5
+        end
+    end
+
     local function SetToggle(newState)
         State = newState
+        UpdateVisual()
         callback(State)
-        ToggleButton.TextTransparency = State and 0 or 0.5
     end
 
     ToggleButton.MouseButton1Down:Connect(function()
@@ -998,14 +1050,14 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
 
     local UserInputService = game:GetService("UserInputService")
 
-    -- Listen for key presses
+    -- Keybind pressing
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if not gameProcessed and input.KeyCode == CurrentKey then
             SetToggle(not State)
         end
     end)
 
-    -- Key Changing
+    -- Changing keybind
     KeybindButton.MouseButton1Down:Connect(function()
         KeybindButton.Text = "..."
         local connection
@@ -1020,12 +1072,13 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
         end)
     end)
 
-    -- If defaultState is true, trigger callback immediately
-    if defaultState then
-        callback(State)
-    end
+    -- Initial Visual
+    task.defer(function()
+        if State then
+            UpdateVisual()
+        end
+    end)
 end
-
 
 
 
