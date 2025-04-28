@@ -1,100 +1,104 @@
----/// UI
-local Framework = loadstring(game:HttpGet("https://pastebin.com/raw/mRvnKmR2"))()
 local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 local function TweenObject(object, style, speed, direction, info)
-	game.TweenService:Create(object, TweenInfo.new(speed, style, direction), info):Play()
+    TweenService:Create(object, TweenInfo.new(speed, style, direction), info):Play()
 end
+
 local function IndexExists(table, index)
-	return table[index]~=nil
+    return table[index] ~= nil
 end
+
 function CreateObject(className, properties)
-	local instance = Instance.new(className)
-	local parent
-	for propertyName, propertyValue in pairs(properties) do
-		if propertyName ~= "Parent" then
-			instance[propertyName] = propertyValue
-		else
-			parent = propertyValue
-		end
-	end
-	instance.Parent = parent
-	return instance
+    local instance = Instance.new(className)
+    local parent
+    for propertyName, propertyValue in pairs(properties) do
+        if propertyName ~= "Parent" then
+            instance[propertyName] = propertyValue
+        else
+            parent = propertyValue
+        end
+    end
+    instance.Parent = parent
+    return instance
 end
-for i,v in pairs(game.CoreGui:GetChildren()) do
-	if v.Name == 'Core' or v.Name == 'WM' then
-		v:Destroy()
-	end
+
+-- Clean up CoreGui
+for i, v in pairs(game.CoreGui:GetChildren()) do
+    if v.Name == 'Core' or v.Name == 'WM' then
+        v:Destroy()
+    end
 end
+
+-- Create necessary folders
 if not isfolder('Future Client') then
     makefolder('Future Client')
-	makefolder('Future Client\\Data')
-	makefolder('Future Client\\Cache')
-	makefolder('Future Client\\Audio')
-	makefolder('Future Client\\Configuration')
-	-- Begin
-	writefile('Future Client\\Data\\readme.txt', [[
-		Welcome!
-		Do not touch anything as it can break your Future Client Experience.
-	]])
-	writefile('Future Client\\Data\\stitch.txt', [[
-		(<3)
-		;stitch; x3
-	]])
+    makefolder('Future Client\\Data')
+    makefolder('Future Client\\Cache')
+    makefolder('Future Client\\Audio')
+    makefolder('Future Client\\Configuration')
+    -- Begin
+    writefile('Future Client\\Data\\readme.txt', [[
+        Welcome!
+        Do not touch anything as it can break your Future Client Experience.
+    ]])
+    writefile('Future Client\\Data\\stitch.txt', [[
+        (<3)
+        ;stitch; x3
+    ]])
     writefile('Future Client\\Data\\config.cfg', [[
-		(<3)
-		;stitch; x3
-	]])
-	writefile('Future Client\\Cache\\readme.txt', [[
-		Welcome!
-		Do not touch anything as it can break your Future Client Experience.
-	]])
-	writefile('Future Client\\Audio\\readme.txt', [[
-		Welcome!
-		To create a playlist, make a new folder in this directory then drag in any .mp3 files.
-		Keep names short!
-	]])
-	writefile('Future Client\\Configuration\\confighelp.txt', [[
-		Welcome!
-		Drag in any JSON (.json) files in here if you would like custom Future Client configs.
-	]])
-	writefile('Future Client\\welcome.txt', [[
-		== Thank you for using Future Client! ==
-		For any support you may need, feel free to join our Discord community: discord.gg/9nY7VEHw3s.
-	]])
+        (<3)
+        ;stitch; x3
+    ]])
+    writefile('Future Client\\Cache\\readme.txt', [[
+        Welcome!
+        Do not touch anything as it can break your Future Client Experience.
+    ]])
+    writefile('Future Client\\Audio\\readme.txt', [[
+        Welcome!
+        To create a playlist, make a new folder in this directory then drag in any .mp3 files.
+        Keep names short!
+    ]])
+    writefile('Future Client\\Configuration\\confighelp.txt', [[
+        Welcome!
+        Drag in any JSON (.json) files in here if you would like custom Future Client configs.
+    ]])
+    writefile('Future Client\\welcome.txt', [[
+        == Thank you for using Future Client! ==
+        For any support you may need, feel free to join our Discord community: discord.gg/9nY7VEHw3s.
+    ]])
 end
-local Library = {
-	LibraryMetadata = {
-		Name = "Headshot"
-	},
-	Core = CreateObject("ScreenGui", {
-		Name = "Core",	Parent = game.CoreGui,
-	}),
-	JSON = {
-		WriteData = function(name, data)
-			local file = 'Future Client\\Data\\'..name..".json"
-			writefile(file, game:GetService("HttpService"):JSONEncode(data))
-		end,
-		ReadData = function(name)
-			local file = 'Future Client\\Data\\'..name..".json"
-			local raw_data = readfile(file)
-    		local data = game:GetService("HttpService"):JSONDecode(raw_data)
-    		return data
-		end,
-		DataExist = function(name)
-			return isfile('Future Client\\Data\\'..name..'.json')
-		end
-	},
-	local TweenService = game:GetService("TweenService")
 
--- Framework setup (dragging functionality remains the same)
-Framework = {
+local Library = {
+    LibraryMetadata = {
+        Name = "Headshot"
+    },
+    Core = CreateObject("ScreenGui", {
+        Name = "Core", Parent = game.CoreGui,
+    }),
+    JSON = {
+        WriteData = function(name, data)
+            local file = 'Future Client\\Data\\' .. name .. ".json"
+            writefile(file, game:GetService("HttpService"):JSONEncode(data))
+        end,
+        ReadData = function(name)
+            local file = 'Future Client\\Data\\' .. name .. ".json"
+            local raw_data = readfile(file)
+            local data = game:GetService("HttpService"):JSONDecode(raw_data)
+            return data
+        end,
+        DataExist = function(name)
+            return isfile('Future Client\\Data\\' .. name .. '.json')
+        end
+    }
+}
+
+-- Dragging functionality
+local Framework = {
     AllowDragging = function(Object, Frame, Speed)
         local dragToggle = nil
-        local dragSpeed = 0
-        local dragInput = nil
         local dragStart = nil
-        local dragPos = nil
+        local startPos = nil
         local Util = { Enabled = true }
 
         local function updateInput(input)
@@ -133,7 +137,7 @@ Framework = {
     end
 }
 
--- Library initialization function
+-- Initialize Library
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
     for i, v in pairs(AllChildren) do
@@ -149,7 +153,6 @@ function Library.Init()
                             PaddingY = PaddingY + UIPadding.PaddingTop.Offset + UIPadding.PaddingBottom.Offset
                         end
 
-                        -- Smooth resizing with Tween
                         local targetCanvasSize
                         if FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.Y then
                             targetCanvasSize = UDim2.new(0, 0, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
@@ -159,7 +162,6 @@ function Library.Init()
                             targetCanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         end
 
-                        -- Tween to smooth resize the canvas
                         game:GetService("TweenService"):Create(FrameInstance, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                             CanvasSize = targetCanvasSize
                         }):Play()
@@ -173,7 +175,7 @@ function Library.Init()
     end
 end
 
--- New FrameMain Creation with Smooth Resizing
+-- Example of creating a new frame
 function Library.New()
     local FrameMain = CreateObject("Frame", {
         Name = "FrameMain",
@@ -186,19 +188,20 @@ function Library.New()
         Transparency = 0.10000000149011612,
     })
 
-    -- Smoothly resize FrameMain if needed (can be triggered dynamically later)
+    -- Smoothly resize the frame
     local function ResizeMainFrame(newSize)
         game:GetService("TweenService"):Create(FrameMain, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Size = newSize
         }):Play()
     end
 
-    -- Example of resizing the frame dynamically
-    wait(2) -- Simulate a delay
-    ResizeMainFrame(UDim2.new(0, 800, 0, 500)) -- Resize to new dimensions
+    -- Example of resizing dynamically
+    wait(2)
+    ResizeMainFrame(UDim2.new(0, 800, 0, 500)) -- Resize frame after 2 seconds
 
     return FrameMain
 end
+
 
 	local UICorner = CreateObject("UICorner", {
 		Parent = FrameMain,	CornerRadius = UDim.new(0,6),
