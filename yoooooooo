@@ -131,9 +131,10 @@ local Library = {
 
             return Util
         end
-    },
+    }
 }
 
+-- Function to initialize the Library
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
     for i, v in pairs(AllChildren) do
@@ -161,8 +162,8 @@ function Library.Init()
                     end
                 end
                 UpdateSize(v, Layout)
-                Layout.Changed:connect(function() UpdateSize(v, Layout) end)
-                v:GetPropertyChangedSignal("AutomaticCanvasSize"):connect(function() UpdateSize(v, Layout) end)
+                Layout.Changed:Connect(function() UpdateSize(v, Layout) end)
+                v:GetPropertyChangedSignal("AutomaticCanvasSize"):Connect(function() UpdateSize(v, Layout) end)
             end
         end
     end
