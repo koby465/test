@@ -1550,8 +1550,6 @@ end
 
 
 
-
-
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1709,7 +1707,6 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
 
     return {}
 end
-
 
 
 
