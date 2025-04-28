@@ -883,27 +883,29 @@ end)
         end)
     end)
 
-    -- Handle typing into the Amount box
-    Amount.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            local input = tonumber(Amount.Text:match("%d+")) -- only allow numbers
-            if input then
-                -- Clamp between min and max
-                input = math.clamp(input, min, max)
-                -- Update the slider and text
-                slider:set(input)
-                Amount.Text = input .. symbol
-                task.spawn(function()
-                    pcall(function()
-                        callback(input)
-                    end)
+Amount.FocusGained:Connect(function()
+    Amount.CursorPosition = #Amount.Text + 1
+    Amount.SelectionStart = 1
+end)
+
+Amount.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local input = tonumber(Amount.Text:match("%d+"))
+        if input then
+            input = math.clamp(input, min, max)
+            slider:set(input)
+            Amount.Text = input .. symbol
+            task.spawn(function()
+                pcall(function()
+                    callback(input)
                 end)
-            else
-                -- Reset if invalid
-                Amount.Text = tostring(slider:get()) .. symbol
-            end
+            end)
+        else
+            Amount.Text = tostring(slider:get()) .. symbol
         end
-    end)
+    end
+end)
+
 
     -- Handle object for external updates
     local Handle = {
