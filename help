@@ -944,8 +944,6 @@ end
 
 
 
-
-
 function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     local State = state or false
 
@@ -961,19 +959,23 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
         Size = UDim2.new(0.4, 0, 1, 0), Font = Enum.Font.SourceSans, Text = name, TextColor3 = Color3.fromRGB(255, 255, 255), 
         TextSize = 17, TextTransparency = 0.5, TextXAlignment = Enum.TextXAlignment.Left,
     })
-    
+
     -- Keybind label (to be placed next to the title)
     local KeybindLabel = CreateObject("TextLabel", {
         Name = "Keybind", Parent = ToggleWithKeybindFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), 
         BackgroundTransparency = 1, Size = UDim2.new(0.2, 0, 1, 0), Font = Enum.Font.SourceSans, 
         Text = tostring(Dkey.Name), TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 16, TextTransparency = 0.5,
         TextXAlignment = Enum.TextXAlignment.Center,
+        Position = UDim2.new(0.4, 0, 0, 0), -- Position to the right of the title
     })
 
     -- Create the toggle button to the right of the keybind
     local ToggleFrame = CreateObject("Frame", {
         Name = "ToggleFrame", Parent = ToggleWithKeybindFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), 
         BackgroundTransparency = 1, Size = UDim2.new(0.3, 0, 1, 0), Transparency = 1,
+        Position = UDim2.new(0.6, 0, 0, 0), -- Position to the right of the keybind
+        AnchorPoint = Vector2.new(1, 0.5), -- Anchor to the right edge and center vertically
+        Position = UDim2.new(1, -10, 0.5, 0), -- Adjust position to be slightly to the left of the right edge
     })
 
     local Splash = CreateObject("Frame", {
@@ -1032,7 +1034,6 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     -- Ensure everything stays in a single row by adjusting the size of the elements
     ToggleWithKeybindFrame.Size = UDim2.new(1, 0, 0, 30)
 end
-
 
 
 
