@@ -946,8 +946,6 @@ end
 
 
 
-
-
 function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     local State = state or false
 
@@ -972,15 +970,6 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
         TextXAlignment = Enum.TextXAlignment.Center,
     })
 
-    -- Function to handle keybind update and callback trigger
-    AssetHandler.Keybind(name, Dkey, function()
-        -- Toggle the state when the keybind is pressed
-        Toggle()
-    end, function(key)
-        -- Update keybind display
-        KeybindLabel.Text = tostring(key.Name)
-    end)
-
     -- Create the toggle button to the right of the keybind
     local ToggleFrame = CreateObject("Frame", {
         Name = "ToggleFrame", Parent = ToggleWithKeybindFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), 
@@ -1002,7 +991,7 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     local UICorner = CreateObject("UICorner", { Parent = Frame, CornerRadius = UDim.new(1, 0) })
     local UICorner2 = CreateObject("UICorner", { Parent = Splash, CornerRadius = UDim.new(1, 0) })
 
-    -- Function to toggle the state
+    -- Function to handle the toggle logic
     local function Toggle()
         State = not State
         if State then
@@ -1023,6 +1012,15 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
         callback(State)  -- Call the callback with the new state
     end
 
+    -- Function to handle keybind update and callback trigger
+    AssetHandler.Keybind(name, Dkey, function()
+        -- Toggle the state when the keybind is pressed
+        Toggle()
+    end, function(key)
+        -- Update keybind display
+        KeybindLabel.Text = tostring(key.Name)
+    end)
+
     -- Initial toggle state
     if State then
         Toggle()
@@ -1034,6 +1032,8 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     -- Ensure everything stays in a single row by adjusting the size of the elements
     ToggleWithKeybindFrame.Size = UDim2.new(1, 0, 0, 30)
 end
+
+
 
 
 
