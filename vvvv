@@ -1957,6 +1957,8 @@ if not _G.Notification then
                     ["UICorner_2"] = Instance.new("UICorner"),
                     ["TextLabel_1"] = Instance.new("TextLabel"),
                     ["TextLabel_2"] = Instance.new("TextLabel"),
+                    ["ProgressBar"] = Instance.new("Frame"),
+                    ["ProgressFill"] = Instance.new("Frame"),
                 }
 
                 -- Frame and styling
@@ -1991,11 +1993,23 @@ if not _G.Notification then
                 instances.TextLabel_2.Position = UDim2.new(0, 10, 0, 25)
                 instances.TextLabel_2.Size = UDim2.new(1, -20, 0, 20)
 
-                -- Progress Bar Removed
+                -- Progress Bar
+                instances.ProgressBar.Parent = instances.Frame_1
+                instances.ProgressBar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                instances.ProgressBar.Size = UDim2.new(1, -20, 0, 5)
+                instances.ProgressBar.Position = UDim2.new(0, 10, 0, 50)
+
+                instances.ProgressFill.Parent = instances.ProgressBar
+                instances.ProgressFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+                instances.ProgressFill.Size = UDim2.new(0, 0, 1, 0)
 
                 local targetY = _G.startY + (#_G.activeNotifications * (_G.notificationHeight + _G.notificationSpacing))
                 screenGui.Parent = game:GetService("CoreGui")
                 instances.Frame_1:TweenPosition(UDim2.new(0, 10, 0, targetY), "InOut", "Sine", 0.5, true)
+
+                -- Create progress bar animation
+                local progressTween = game:GetService("TweenService"):Create(instances.ProgressFill, TweenInfo.new(visibletime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.new(1, 0, 1, 0)})
+                progressTween:Play()
 
                 -- Add notification to active notifications list
                 table.insert(_G.activeNotifications, {gui = screenGui, frame = instances.Frame_1})
@@ -2005,6 +2019,7 @@ if not _G.Notification then
                     wait(visibletime)
                     -- Cleanup after notification time
                     instances.Frame_1:TweenPosition(UDim2.new(-1, 0, 0, targetY), "InOut", "Sine", 0.6, true)
+                    instances.ProgressFill:TweenSize(UDim2.new(0, 0, 1, 0), "InOut", "Sine", 0.3, true)
                     wait(0.3)
 
                     -- Remove from active notifications and destroy the notification
