@@ -940,132 +940,167 @@ end
 
 
 
-function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey)
-    local State = false
+
+function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
+    local State = defaultState
+
     local Toggle = CreateObject("Frame", {
-        Name = name, Parent = Section, BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30), Transparency = 1,
+        Name = name,
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1,0,0,30),
     })
 
     local TextButton = CreateObject("TextButton", {
-        Parent = Toggle, BackgroundColor3 = Color3.fromRGB(255,255,255), BackgroundTransparency = 1,
-        Size = UDim2.new(1,0,1,0), Font = Enum.Font.SourceSans, Text = name,
-        TextColor3 = Color3.fromRGB(255,255,255), TextSize = 17, TextTransparency = 0.5,
+        Parent = Toggle,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1,0,1,0),
+        Font = Enum.Font.SourceSans,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255,255,255),
+        TextSize = 17,
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
     CreateObject("UIPadding", {
-        Parent = TextButton, PaddingLeft = UDim.new(0,5),
-    })
-
-    -- 🔵 Splash (Toggle Button)
-    local Splash = CreateObject("Frame", {
-        Name = "Splash", Parent = TextButton, AnchorPoint = Vector2.new(0,0.5),
-        BackgroundColor3 = Color3.fromRGB(255,255,255), BackgroundTransparency = 0.9,
-        Position = UDim2.new(0.7751553058624268,0,0.5,0), Size = UDim2.new(0,30,0,15), Transparency = 0.9,
-    })
-
-    CreateObject("UICorner", {
-        Parent = Splash, CornerRadius = UDim.new(1,0),
-    })
-
-    local Frame = CreateObject("Frame", {
-        Parent = Splash, AnchorPoint = Vector2.new(0,0.5),
-        BackgroundColor3 = Color3.fromRGB(255,255,255), BackgroundTransparency = 0.65,
-        Position = UDim2.new(0,3,0.5,0), Size = UDim2.new(0,10,0,10), Transparency = 0.65,
-    })
-
-    CreateObject("UICorner", {
-        Parent = Frame, CornerRadius = UDim.new(1,0),
-    })
-
-    -- 🟰 KEYBIND BUTTON
-    local Keybind = CreateObject("TextButton", {
         Parent = TextButton,
-        AnchorPoint = Vector2.new(1, 0.5),
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        PaddingLeft = UDim.new(0,5),
+    })
+
+    local Label = CreateObject("TextLabel", {
+        Parent = TextButton,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.92,0,0.5,0), -- keybind position
-        Size = UDim2.new(0,40,0,18),
+        Size = UDim2.new(0.6, 0, 1, 0),
         Font = Enum.Font.SourceSans,
-        Text = defaultKey and defaultKey.Name or "None",
+        Text = name,
+        TextColor3 = Color3.fromRGB(255,255,255),
+        TextSize = 16,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    -- Splash (the toggle switch)
+    local Splash = CreateObject("Frame", {
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.9,
+        Position = UDim2.new(0.7, 0, 0.5, 0),
+        Size = UDim2.new(0, 30, 0, 15),
+    })
+    CreateObject("UICorner", {Parent = Splash, CornerRadius = UDim.new(1,0)})
+
+    local Dot = CreateObject("Frame", {
+        Parent = Splash,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.65,
+        Position = UDim2.new(0,3,0.5,0),
+        Size = UDim2.new(0,10,0,10),
+    })
+    CreateObject("UICorner", {Parent = Dot, CornerRadius = UDim.new(1,0)})
+
+    -- Amount (the keybind display box)
+    local Amount = CreateObject("TextLabel", {
+        Name = "Amount",
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0.8899999856948853, 0.5),
+        AutomaticSize = Enum.AutomaticSize.X,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.949999988079071,
+        Position = UDim2.new(0.9427019953727722,0,0.5,0),
+        Size = UDim2.new(0,3,0,15),
+        Font = Enum.Font.SourceSans,
+        Text = Dkey.Name,
         TextColor3 = Color3.fromRGB(202,202,202),
-        TextSize = 12,
+        TextSize = 11,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Right,
     })
 
-    CreateObject("UICorner", { Parent = Keybind, CornerRadius = UDim.new(0,4) })
+    CreateObject("UICorner", {Parent = Amount, CornerRadius = UDim.new(0,4)})
     CreateObject("UIStroke", {
-        Parent = Keybind, ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = Color3.fromRGB(255,255,255), Thickness = 1.2, Transparency = 0.925,
+        Parent = Amount,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255,255,255),
+        Thickness = 1.2,
+        Transparency = 0.925,
+    })
+    CreateObject("UIPadding", {
+        Parent = Amount,
+        PaddingLeft = UDim.new(0,5),
+        PaddingRight = UDim.new(0,5),
     })
 
-    -- 🛠 move Splash over!
-    Splash.Position = UDim2.new(0.775, 0, 0.5, 0)
-
-    -- 🛠 Attach Keybind logic
-    local key = Framework.Keybind(Keybind, {
-        Enum.KeyCode.Space, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S,
-        Enum.KeyCode.D, Enum.KeyCode.LeftShift, Enum.KeyCode.LeftControl,
-        Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2
-    })
-
-    key:set(defaultKey or Enum.KeyCode.Q)
-
-    key.Updated:Connect(function(newKey)
-        Keybind.Text = tostring(newKey.Name)
-    end)
-
-    key.Pressed:Connect(function()
-        ToggleLogic()
-    end)
-
-    -- 🛠 Normal Toggle Logic
-    function ToggleLogic()
-        State = not State
+    -- Functions
+    local function UpdateToggleVisual()
         if State then
-            TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                AnchorPoint = Vector2.new(1,0.5)
-            })
-            TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                Position = UDim2.new(1,-3, 0.5, 0)
-            })
-            TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0
+            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.new(1, -3, 0.5, 0),
+                BackgroundTransparency = 0,
             })
             TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0.8
+                BackgroundTransparency = 0.8,
             })
+            Label.TextTransparency = 0
         else
-            TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                AnchorPoint = Vector2.new(0,0.5)
-            })
-            TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                Position = UDim2.new(0, 3,0.5,0)
-            })
-            TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0.65
+            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.new(0, 3, 0.5, 0),
+                BackgroundTransparency = 0.65,
             })
             TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0.9
+                BackgroundTransparency = 0.9,
             })
+            Label.TextTransparency = 0.5
         end
+    end
+
+    local function SetOwnToggle(newState)
+        State = newState
+        UpdateToggleVisual()
         callback(State)
     end
 
-    TextButton.MouseButton1Down:Connect(ToggleLogic)
-
-    if defaultState then
-        ToggleLogic()
-    end
-
-    return {
-        Toggle = ToggleLogic,
-        SetState = function(state)
-            if State ~= state then
-                ToggleLogic()
-            end
+    -- Click Handling
+    TextButton.MouseButton1Down:Connect(function(x, y)
+        if x < TextButton.AbsoluteSize.X * 0.75 then
+            SetOwnToggle(not State)
+        else
+            Amount.Text = "..."
         end
-    }
+    end)
+
+    -- Setup Keybind
+    local myKeybind = Framework.Keybind(TextButton, {
+        Enum.KeyCode.Space,
+        Enum.KeyCode.W,
+        Enum.KeyCode.A,
+        Enum.KeyCode.S,
+        Enum.KeyCode.D,
+        Enum.KeyCode.LeftShift,
+        Enum.KeyCode.LeftControl,
+        Enum.UserInputType.MouseMovement,
+        Enum.UserInputType.MouseButton1,
+        Enum.UserInputType.MouseButton2,
+    })
+
+    myKeybind.Updated:Connect(function(newKey)
+        Amount.Text = tostring(newKey.Name)
+    end)
+
+    myKeybind.Pressed:Connect(function()
+        SetOwnToggle(not State)
+        Amount.BackgroundTransparency = 0.9
+        task.wait()
+        Amount.BackgroundTransparency = 0.949999988079071
+    end)
+
+    myKeybind:set(Dkey or Enum.KeyCode.Q)
+
+    task.defer(UpdateToggleVisual)
 end
 
 
