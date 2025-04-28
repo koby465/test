@@ -85,46 +85,50 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-	 Framework = {
-        AllowResizing = function(Object, Frame, Speed)
-            local resizeToggle = nil
-            local resizeSpeed = 0
-            local resizeInput = nil
-            local resizeStart = nil
-            local resizePos = nil
+
+    Framework = {
+        AllowDragging = function(Object, Frame, Speed)
+            local dragToggle = nil
+            local dragSpeed = 0
+            local dragInput = nil
+            local dragStart = nil
+            local dragPos = nil
             local Util = {
                 Enabled = true
             }
             local function updateInput(input)
                 if not Util.Enabled then return end
-                local Delta = input.Position - resizeStart
-                local Size = UDim2.new(startSize.X.Scale, startSize.X.Offset + Delta.X, startSize.Y.Scale, startSize.Y.Offset + Delta.Y)
+                local Delta = input.Position - dragStart
+                local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
                 game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-                    Size = Size
+                    Position = Position
                 }):Play()
             end
 
+            -- Input Begin event
             Object.InputBegan:Connect(function(input)
                 if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-                    resizeToggle = true
-                    resizeStart = input.Position
-                    startSize = Frame.Size
+                    dragToggle = true
+                    dragStart = input.Position
+                    startPos = Frame.Position
                     input.Changed:Connect(function()
                         if input.UserInputState == Enum.UserInputState.End then
-                            resizeToggle = false
+                            dragToggle = false
                         end
                     end)
                 end
             end)
 
+            -- Input Changed event for dragging
             Object.InputChanged:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                    resizeInput = input
+                    dragInput = input
                 end
             end)
 
+            -- Updating the position of the frame during dragging
             game:GetService("UserInputService").InputChanged:Connect(function(input)
-                if input == resizeInput and resizeToggle then
+                if input == dragInput and dragToggle then
                     updateInput(input)
                 end
             end)
@@ -169,7 +173,7 @@ function Library.Init()
     
 end
 function Library.New()
-	
+
 local FrameMain = CreateObject("Frame", {
     Name = "FrameMain", 
     Parent = Library.Core, 
@@ -180,6 +184,7 @@ local FrameMain = CreateObject("Frame", {
     Size = UDim2.new(0, 715, 0, 430), 
     Transparency = 0.10000000149011612,
 })
+local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
 
 	local UICorner = CreateObject("UICorner", {
 		Parent = FrameMain,	CornerRadius = UDim.new(0,6),
