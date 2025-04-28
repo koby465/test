@@ -759,7 +759,7 @@ end)
 				}
 				return Handler
 			end
-			function AssetHandler.Slider(name, min, max, default, symbol, callback)
+function AssetHandler.Slider(name, min, max, default, symbol, callback)
     local Slider = CreateObject("Frame", {
         Name = name,
         Parent = Section,
@@ -768,14 +768,14 @@ end)
         Size = UDim2.new(1, 0, 0, 30),
         Transparency = 1,
     })
-    
+
     local TextButton = CreateObject("TextButton", {
         Parent = Slider,
+        Text = "",
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
         Font = Enum.Font.SourceSans,
-        Text = "",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 16,
         TextTransparency = 0.5,
@@ -833,18 +833,17 @@ end)
         Size = UDim2.new(0, 10, 0, 10),
     })
 
-    local UICornerBall = CreateObject("UICorner", {
+    local UICorner = CreateObject("UICorner", {
         Parent = Ball,
         CornerRadius = UDim.new(1, 0),
     })
 
-    -- CHANGED: TextBox instead of TextLabel
-    local Amount = CreateObject("TextBox", {
+    local Amount = CreateObject("TextBox", { -- TextLabel changed to TextBox
         Name = "Amount",
         Parent = TextButton,
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 0.949999988079071,
+        BackgroundTransparency = 0.95,
         Position = UDim2.new(0.801, 0, 0.5, 0),
         Size = UDim2.new(0, 26, 0, 15),
         Font = Enum.Font.SourceSans,
@@ -852,16 +851,16 @@ end)
         TextColor3 = Color3.fromRGB(202, 202, 202),
         TextSize = 14,
         TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Center,
         ClearTextOnFocus = false,
-        TextTransparency = 0.5,
     })
 
-    local UICornerAmount = CreateObject("UICorner", {
+    local UICorner2 = CreateObject("UICorner", {
         Parent = Amount,
         CornerRadius = UDim.new(0, 4),
     })
 
-    local UIStrokeAmount = CreateObject("UIStroke", {
+    local UIStroke = CreateObject("UIStroke", {
         Parent = Amount,
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
         Color = Color3.fromRGB(255, 255, 255),
@@ -869,12 +868,11 @@ end)
         Transparency = 0.925,
     })
 
-    -- Create the actual slider object
     local slider = Framework.PositionSlider(Frame, Ball, min, max, 0.1)
-    slider:set(default)  -- Set initial value
+    slider:set(default)
 
-    -- Update displayed text when the slider moves
-    slider.Updated:connect(function(value)
+    -- Update displayed value when slider moves
+    slider.Updated:Connect(function(value)
         Amount.Text = value .. symbol
         task.spawn(function()
             pcall(function()
@@ -883,37 +881,39 @@ end)
         end)
     end)
 
-Amount.FocusGained:Connect(function()
-    Amount.CursorPosition = #Amount.Text + 1
-    Amount.SelectionStart = 1
-end)
+    -- Auto-select all text on click
+    Amount.FocusGained:Connect(function()
+        Amount.CursorPosition = #Amount.Text + 1
+        Amount.SelectionStart = 1
+    end)
 
-Amount.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        local input = tonumber(Amount.Text:match("%d+"))
-        if input then
-            input = math.clamp(input, min, max)
-            slider:set(input)
-            Amount.Text = input .. symbol
-            task.spawn(function()
-                pcall(function()
-                    callback(input)
+    -- Handle input after typing a new number
+    Amount.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            local input = tonumber(Amount.Text:match("%d+"))
+            if input then
+                input = math.clamp(input, min, max)
+                slider:set(input)
+                Amount.Text = input .. symbol
+                task.spawn(function()
+                    pcall(function()
+                        callback(input)
+                    end)
                 end)
-            end)
-        else
-            Amount.Text = tostring(slider:get()) .. symbol
+            else
+                Amount.Text = tostring(slider:get()) .. symbol
+            end
         end
-    end
-end)
+    end)
 
-
-    -- Handle object for external updates
+    -- External handle
     local Handle = {
         Update = function(num)
             slider:set(num)
             Amount.Text = num .. symbol
         end
     }
+
     return Handle
 end
 
