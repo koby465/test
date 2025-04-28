@@ -945,78 +945,94 @@ end
 
 
 
-function CombatSection.ToggleWithKeybind(name, defaultState, callback, defaultKeybind)
-    local ToggleState = defaultState
-    local Keybind = defaultKeybind or Enum.KeyCode.Q
-    local listeningForKey = false
 
-    local Toggle = CreateObject("Frame", {
-        Name = name,
+
+function AssetHandler.NewKeybindToggle(name, defaultKey, toggleDefaultState, onToggleChanged)
+    local Section = Section -- assuming Section is your UI parent
+
+    -- Create the Toggle first
+    local ToggleControl = AssetHandler.Toggle(name, toggleDefaultState, onToggleChanged)
+
+    -- Now create the Keybind UI
+    local KeybindFrame = CreateObject("Frame", {
+        Name = name .. "_Keybind",
         Parent = Section,
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 0, 30),
     })
 
-    local TextButton = CreateObject("TextButton", {
-        Parent = Toggle,
+    local KeybindButton = CreateObject("TextButton", {
+        Parent = KeybindFrame,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
         Font = Enum.Font.SourceSans,
-        TextColor3 = Color3.fromRGB(255,255,255),
-        TextSize = 17,
+        Text = "Keybind",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 16,
         TextTransparency = 0.5,
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
-    local function updateButtonText()
-        TextButton.Text = name .. " [" .. (Keybind and Keybind.Name or "None") .. "]"
-    end
+    local Amount = CreateObject("TextLabel", {
+        Name = "Amount",
+        Parent = KeybindButton,
+        AnchorPoint = Vector2.new(1, 0.5),
+        AutomaticSize = Enum.AutomaticSize.X,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.9,
+        Position = UDim2.new(0.95, 0, 0.5, 0),
+        Size = UDim2.new(0, 3, 0, 15),
+        Font = Enum.Font.SourceSans,
+        Text = tostring(defaultKey.Name),
+        TextColor3 = Color3.fromRGB(202, 202, 202),
+        TextSize = 11,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Right,
+    })
 
-    updateButtonText()
+    local currentKey = defaultKey
 
-    local function SetToggle(state)
-        ToggleState = state
-        callback(ToggleState)
-    end
+    -- Setup Key Listening
+    local UserInputService = game:GetService("UserInputService")
 
-    TextButton.MouseButton1Click:Connect(function()
-        listeningForKey = true
-        TextButton.Text = name .. " [Press a key]"
-    end)
-
-    game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
-        if gpe then return end
-        if listeningForKey then
-            if input.UserInputType == Enum.UserInputType.Keyboard then
-                Keybind = input.KeyCode
-                updateButtonText()
-                listeningForKey = false
-            end
-        else
-            if input.KeyCode == Keybind then
-                SetToggle(not ToggleState)
+    local function OnInput(input, gameProcessed)
+        if not gameProcessed then
+            if input.KeyCode == currentKey then
+                ToggleControl.Toggle()
             end
         end
+    end
+
+    UserInputService.InputBegan:Connect(OnInput)
+
+    -- Allow changing keybind
+    KeybindButton.MouseButton1Down:Connect(function()
+        Amount.Text = "..."
+        local connection
+        connection = UserInputService.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Keyboard then
+                currentKey = input.KeyCode
+                Amount.Text = input.KeyCode.Name
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
     end)
 
+    -- Optional: return stuff if you want to allow custom code
     return {
-        Set = SetToggle,
-        Get = function()
-            return ToggleState
+        SetKey = function(newKey)
+            currentKey = newKey
+            Amount.Text = newKey.Name
         end,
-        SetKeybind = function(newKey)
-            Keybind = newKey
-            updateButtonText()
-        end,
-        GetKeybind = function()
-            return Keybind
+        GetKey = function()
+            return currentKey
         end,
     }
 end
-
-
-
 
 
 
