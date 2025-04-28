@@ -64,83 +64,83 @@ if not isfolder('Future Client') then
 	]])
 end
 local Library = {
-	LibraryMetadata = {
-		Name = "Headshot"
-	},
-	Core = CreateObject("ScreenGui", {
-		Name = "Core",	Parent = game.CoreGui,
-	}),
-	JSON = {
-		WriteData = function(name, data)
-			local file = 'Future Client\\Data\\'..name..".json"
-			writefile(file, game:GetService("HttpService"):JSONEncode(data))
-		end,
-		ReadData = function(name)
-			local file = 'Future Client\\Data\\'..name..".json"
-			local raw_data = readfile(file)
-    		local data = game:GetService("HttpService"):JSONDecode(raw_data)
-    		return data
-		end,
-		DataExist = function(name)
-			return isfile('Future Client\\Data\\'..name..'.json')
-		end
-	},
-Framework = {
-    AllowResizing = function(Object, Frame, Speed)
-        local resizeToggle = nil
-        local resizeSpeed = 0
-        local resizeInput = nil
-        local resizeStart = nil
-        local resizePos = nil
-        local Util = {
-            Enabled = true
-        }
-        local function updateInput(input)
-            if not Util.Enabled then return end
-            local Delta = input.Position - resizeStart
-            local Size = UDim2.new(startSize.X.Scale, startSize.X.Offset + Delta.X, startSize.Y.Scale, startSize.Y.Offset + Delta.Y)
-            game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-                Size = Size
-            }):Play()
+    LibraryMetadata = {
+        Name = "Headshot"
+    },
+    Core = CreateObject("ScreenGui", {
+        Name = "Core", Parent = game.CoreGui,
+    }),
+    JSON = {
+        WriteData = function(name, data)
+            local file = 'Future Client\\Data\\'..name..".json"
+            writefile(file, game:GetService("HttpService"):JSONEncode(data))
+        end,
+        ReadData = function(name)
+            local file = 'Future Client\\Data\\'..name..".json"
+            local raw_data = readfile(file)
+            local data = game:GetService("HttpService"):JSONDecode(raw_data)
+            return data
+        end,
+        DataExist = function(name)
+            return isfile('Future Client\\Data\\'..name..'.json')
         end
-
-        Object.InputBegan:Connect(function(input)
-            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-                resizeToggle = true
-                resizeStart = input.Position
-                startSize = Frame.Size
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        resizeToggle = false
-                    end
-                end)
+    },
+    Framework = {
+        AllowResizing = function(Object, Frame, Speed)
+            local resizeToggle = nil
+            local resizeSpeed = 0
+            local resizeInput = nil
+            local resizeStart = nil
+            local resizePos = nil
+            local Util = {
+                Enabled = true
+            }
+            local function updateInput(input)
+                if not Util.Enabled then return end
+                local Delta = input.Position - resizeStart
+                local Size = UDim2.new(startSize.X.Scale, startSize.X.Offset + Delta.X, startSize.Y.Scale, startSize.Y.Offset + Delta.Y)
+                game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
+                    Size = Size
+                }):Play()
             end
-        end)
 
-        Object.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                resizeInput = input
-            end
-        end)
+            Object.InputBegan:Connect(function(input)
+                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+                    resizeToggle = true
+                    resizeStart = input.Position
+                    startSize = Frame.Size
+                    input.Changed:Connect(function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            resizeToggle = false
+                        end
+                    end)
+                end
+            end)
 
-        game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if input == resizeInput and resizeToggle then
-                updateInput(input)
-            end
-        end)
+            Object.InputChanged:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                    resizeInput = input
+                end
+            end)
 
-        return Util
-    end
+            game:GetService("UserInputService").InputChanged:Connect(function(input)
+                if input == resizeInput and resizeToggle then
+                    updateInput(input)
+                end
+            end)
+
+            return Util
+        end
+    },
 }
-
 
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
-    for i,v in pairs (AllChildren) do 
-        if v:IsA("ScrollingFrame") then 
-            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")then
+    for i, v in pairs(AllChildren) do
+        if v:IsA("ScrollingFrame") then
+            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout") then
                 local Layout = v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")
-                local function UpdateSize(FrameInstance,LayoutInstance)
+                local function UpdateSize(FrameInstance, LayoutInstance)
                     if FrameInstance and LayoutInstance then
                         local PaddingX = 0
                         local PaddingY = 0
@@ -152,22 +152,22 @@ function Library.Init()
                             PaddingY += UIPadding.PaddingTop.Offset
                         end
                         if FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.Y then
-                            FrameInstance.CanvasSize = UDim2.new(0,0,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            FrameInstance.CanvasSize = UDim2.new(0, 0, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.X then
-                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,0)
+                            FrameInstance.CanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, 0)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.XY then
-                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            FrameInstance.CanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         end
                     end
                 end
-                UpdateSize(v,Layout)
-                Layout.Changed:connect(function() UpdateSize(v,Layout) end)
-                v:GetPropertyChangedSignal("AutomaticCanvasSize"):connect(function() UpdateSize(v,Layout) end)
+                UpdateSize(v, Layout)
+                Layout.Changed:connect(function() UpdateSize(v, Layout) end)
+                v:GetPropertyChangedSignal("AutomaticCanvasSize"):connect(function() UpdateSize(v, Layout) end)
             end
         end
     end
-    
 end
+
 function Library.New()
 	
 	local FrameMain = CreateObject("Frame", {
