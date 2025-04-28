@@ -1547,9 +1547,6 @@ end
 
 
 
-
-
-
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1560,9 +1557,9 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         Size = UDim2.new(1, 0, 0, 38),
         Transparency = 1,
     })
-    
+
     local SelectedOptions = default or {} -- Default to an empty table for multi-select
-    local DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None") -- Display selected options
+    local DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None")
 
     local OpenBtn = CreateObject("TextButton", {
         Parent = Dropdown,
@@ -1579,17 +1576,17 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         TextTransparency = 0.5,
         TextXAlignment = Enum.TextXAlignment.Left,
     })
-    
+
     local UIPadding = CreateObject("UIPadding", {
         Parent = OpenBtn,
         PaddingLeft = UDim.new(0, 10),
     })
-    
+
     local UICorner = CreateObject("UICorner", {
         Parent = OpenBtn,
         CornerRadius = UDim.new(0, 4),
     })
-    
+
     local UIStroke = CreateObject("UIStroke", {
         Parent = OpenBtn,
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -1597,7 +1594,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         Thickness = 1.2000000476837158,
         Transparency = 0.925000011920929,
     })
-    
+
     local Dropper = CreateObject("Frame", {
         ClipsDescendants = true,
         Name = "Dropper",
@@ -1605,11 +1602,11 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 0, 0.5938987731933594, 0),
-        Size = UDim2.new(1, 0, 0, 0),
+        Size = UDim2.new(1, 0, 0, 100),
         Transparency = 1,
         Visible = false,
     })
-    
+
     local ScrollingFrame = CreateObject("ScrollingFrame", {
         ClipsDescendants = true,
         Parent = Dropper,
@@ -1625,32 +1622,32 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0),
         ScrollBarThickness = 0,
     })
-    
+
     local UIListLayout = CreateObject("UIListLayout", {
         Parent = ScrollingFrame,
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 5),
     })
-    
+
     Dropper.Size = UDim2.new(1, 0, 0, 0)
-    
+
     OpenBtn.MouseButton1Down:Connect(function()
         Dropper.Visible = true
         TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
             Size = UDim2.new(1, 0, 0, 100)
         })
     end)
-    
-    callback(SelectedOptions) -- Initial callback with the default options
-    
+
+    callback(SelectedOptions) -- Initial callback with the selected options
+
     for i, v in pairs(list) do
         local DropButton = CreateObject("TextButton", {
             Name = "DropButton",
             Parent = ScrollingFrame,
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            BackgroundTransparency = (table.find(SelectedOptions, v) and 0.9 or 0.9700000286102295), -- Highlight selected options
+            BackgroundTransparency = (table.find(SelectedOptions, v) and 0.9 or 0.9700000286102295),
             Position = UDim2.new(0.4870184361934662, 0, 0.18865394592285156, 0),
             Size = UDim2.new(0.974037230014801, -3, 0, 23),
             AutoButtonColor = false,
@@ -1661,17 +1658,17 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             TextTransparency = 0.5,
             TextXAlignment = Enum.TextXAlignment.Left,
         })
-        
+
         local UIPadding2 = CreateObject("UIPadding", {
             Parent = DropButton,
             PaddingLeft = UDim.new(0, 10),
         })
-        
+
         local UICorner2 = CreateObject("UICorner", {
             Parent = DropButton,
             CornerRadius = UDim.new(0, 4),
         })
-        
+
         local UIStroke2 = CreateObject("UIStroke", {
             Parent = DropButton,
             ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -1679,34 +1676,34 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             Thickness = 1.2000000476837158,
             Transparency = 0.925000011920929,
         })
-        
+
         DropButton.MouseButton1Down:Connect(function()
-            -- Toggle the option in SelectedOptions
             if table.find(SelectedOptions, v) then
-                -- Deselect option
+                -- Deselect the option
                 table.remove(SelectedOptions, table.find(SelectedOptions, v))
                 TweenObject(DropButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                     BackgroundTransparency = 0.9700000286102295
                 })
             else
-                -- Select option
+                -- Select the option
                 table.insert(SelectedOptions, v)
                 TweenObject(DropButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                     BackgroundTransparency = 0.9
                 })
             end
 
-            -- Update button text to show selected options
+            -- Update the button's display text with selected options
             DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None")
             OpenBtn.Text = DisplayText
 
-            -- Callback with selected options
+            -- Call the callback with the updated selected options
             callback(SelectedOptions)
         end)
     end
 
     return {}
 end
+
 
 
 
