@@ -941,7 +941,18 @@ end
 
 
 
-function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
+
+
+
+
+
+
+
+
+
+
+function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
+    -- Local scope variables to avoid interference
     local State = defaultState
 
     local Toggle = CreateObject("Frame", {
@@ -980,7 +991,7 @@ function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
-    -- Splash (the toggle switch)
+    -- Splash (toggle switch)
     local Splash = CreateObject("Frame", {
         Parent = TextButton,
         AnchorPoint = Vector2.new(0, 0.5),
@@ -1001,7 +1012,7 @@ function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
     })
     CreateObject("UICorner", {Parent = Dot, CornerRadius = UDim.new(1,0)})
 
-    -- Amount (the keybind display box)
+    -- Amount (keybind display)
     local Amount = CreateObject("TextLabel", {
         Name = "Amount",
         Parent = TextButton,
@@ -1033,7 +1044,7 @@ function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
         PaddingRight = UDim.new(0,5),
     })
 
-    -- Functions
+    -- Local function to update toggle state
     local function UpdateToggleVisual()
         if State then
             TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
@@ -1058,23 +1069,24 @@ function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
         end
     end
 
-    local function SetOwnToggle(newState)
+    -- Local function to toggle the state
+    local function SetToggleState(newState)
         State = newState
         UpdateToggleVisual()
         callback(State)
     end
 
-    -- Click Handling
+    -- Mouse button click handling
     TextButton.MouseButton1Down:Connect(function(x, y)
         if x < TextButton.AbsoluteSize.X * 0.75 then
-            SetOwnToggle(not State)
+            SetToggleState(not State)
         else
             Amount.Text = "..."
         end
     end)
 
-    -- Setup Keybind
-    local myKeybind = Framework.Keybind(TextButton, {
+    -- Keybind setup
+    local key = Framework.Keybind(TextButton, {
         Enum.KeyCode.Space,
         Enum.KeyCode.W,
         Enum.KeyCode.A,
@@ -1087,21 +1099,25 @@ function AssetHandler.ToggleWithOwnKeybind(name, defaultState, callback, Dkey)
         Enum.UserInputType.MouseButton2,
     })
 
-    myKeybind.Updated:Connect(function(newKey)
+    key.Updated:Connect(function(newKey)
         Amount.Text = tostring(newKey.Name)
     end)
 
-    myKeybind.Pressed:Connect(function()
-        SetOwnToggle(not State)
+    key.Pressed:Connect(function()
+        SetToggleState(not State)
         Amount.BackgroundTransparency = 0.9
         task.wait()
         Amount.BackgroundTransparency = 0.949999988079071
     end)
 
-    myKeybind:set(Dkey or Enum.KeyCode.Q)
+    key:set(Dkey or Enum.KeyCode.Q)
 
+    -- Initial visual update
     task.defer(UpdateToggleVisual)
 end
+
+
+
 
 
 
@@ -1586,7 +1602,7 @@ end
 					Parent = TextButton,	PaddingLeft = UDim.new(0,5),
 				})
 				local Splash = CreateObject("Frame", {
-					Name = "Splash",	Parent = TextButton,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.8999999761581421,	Position = UDim2.new(0.9, 0, 0.5, 0),	Size = UDim2.new(0,30,0,15),	Transparency = 0.8999999761581421,
+					Name = "Splash",	Parent = TextButton,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.8999999761581421,	Position = UDim2.new(0.7751553058624268,0,0.5,0),	Size = UDim2.new(0,30,0,15),	Transparency = 0.8999999761581421,
 				})
 				local UICorner = CreateObject("UICorner", {
 					Parent = Splash,	CornerRadius = UDim.new(1,0),
