@@ -400,46 +400,35 @@ end)
 	local TextQ = CreateObject("TextLabel", {
 		Name = "Title", Parent = Question,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.5,0,0.46050596237182617,0),	Size = UDim2.new(0,200,0,36),	Font = Enum.Font.SourceSans,Text = "Would to exit Future Client?",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,
 	})
--- TextBox search filter functionality
-TextBox:GetPropertyChangedSignal('Text'):Connect(function()
-    for i, v in pairs(TabFrame:GetDescendants()) do
-        if v:IsA('Frame') and v.Parent.Name == 'Section' then
-            -- Check if the name matches the search text
-            if v.Name:lower():find(TextBox.Text:lower()) and v.Name ~= 'PickColor' then
-                v.Visible = true
-            else
-                v.Visible = false
-            end
-        end
-    end
-end)
-
 -- Initialize JSON data for Profile, UI, Drag, and Config if they don't exist
 local JSON = Library.JSON
+local player = game.Players.LocalPlayer
+local userId = player.UserId
+
+-- Retrieve the player's profile image URL using GetUserThumbnailAsync
+local playerImage = game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 
 -- Initialize Profile Data
 if not JSON.DataExist('ProfileData') then
     JSON.WriteData('ProfileData', {
         Name = "Paid Client",
-        Image = "17640958405"  -- Default image ID
+        Image = playerImage  -- Store the actual URL for the profile image
     })
 end
 
--- Initialize UI Data
+-- Initialize other data if necessary
 if not JSON.DataExist('UIData') then
     JSON.WriteData('UIData', {
         Opacity = true
     })
 end
 
--- Initialize Drag Data
 if not JSON.DataExist('DragData') then
     JSON.WriteData('DragData', {
         Enabled = true
     })
 end
 
--- Initialize Config Data
 if not JSON.DataExist('Config') then
     JSON.WriteData('Config', {
         "possible configs"
@@ -456,7 +445,7 @@ local Dragging = JSON.ReadData('DragData')
 
 -- Set the profile name and image
 UserProfileNam.Text = ProfileData.Name:sub(1, 15)
-UserProfileImage.Image = 'rbxassetid://'..ProfileData.Image  -- Ensure the asset ID is correct
+UserProfileImage.Image = ProfileData.Image  -- Set the actual image URL here
 
 -- Set background transparency based on UI settings
 FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
@@ -485,7 +474,7 @@ local WinHandle = {
 function WinHandle.UpdateProfile(data)
     JSON.WriteData('ProfileData', data)
     UserProfileNam.Text = data.Name:sub(1, 15)
-    UserProfileImage.Image = 'rbxassetid://'..data.Image  -- Update with the new image ID
+    UserProfileImage.Image = data.Image  -- Update with the correct image URL
 end
 
 -- Function to update window data
@@ -520,6 +509,7 @@ end
 
 -- Get UserInputService to detect input if needed
 local UserInputService = game:GetService("UserInputService")
+
 
 
 local Minimizing = false
