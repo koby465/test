@@ -1548,7 +1548,6 @@ end
 
 
 
-
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1561,7 +1560,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
     })
     
     local SelectedOptions = default or {}  -- Default to empty table for multi-selection
-    local DisplayText = name .. ": " .. table.concat(SelectedOptions, ", ") -- Display the selected options as a string
+    local DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None") -- Display the selected options
 
     local OpenBtn = CreateObject("TextButton", {
         Parent = Dropdown,
@@ -1695,7 +1694,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             end
 
             -- Update the display text with selected options
-            DisplayText = name .. ": " .. table.concat(SelectedOptions, ", ")
+            DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None")
             OpenBtn.Text = DisplayText
 
             callback(SelectedOptions) -- Call the callback with the new selected options
