@@ -411,13 +411,18 @@ end)
 			end
 		end
 	end)
-	local JSON = Library.JSON
-	if not JSON.DataExist('ProfileData') then
-		JSON.WriteData('ProfileData', {
-			Name = "Paid Client",
-			Image = "17640958405"
-		})
-	end
+local JSON = Library.JSON
+local player = game.Players.LocalPlayer
+local userId = player.UserId
+local playerImage = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
+
+if not JSON.DataExist('ProfileData') then
+    JSON.WriteData('ProfileData', {
+        Name = player.Name,
+        Image = playerImage  -- Using player's PFP image URL
+    })
+end
+
 	if not JSON.DataExist('UIData') then
 		JSON.WriteData('UIData', {
 			Opacity = true
