@@ -941,8 +941,6 @@ end
 
 
 
-
-
 function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     local State = defaultState
 
@@ -982,13 +980,13 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
-    -- Move the splash further right
+    -- Adjust splash position to be slightly right
     local Splash = CreateObject("Frame", {
         Parent = TextButton,
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 0.9,
-        Position = UDim2.new(0.85, 0, 0.5, 0), -- Moved right
+        Position = UDim2.new(0.78, 0, 0.5, 0), -- Adjusted right
         Size = UDim2.new(0, 30, 0, 15),
     })
     CreateObject("UICorner", {Parent = Splash, CornerRadius = UDim.new(1,0)})
@@ -1003,15 +1001,15 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     })
     CreateObject("UICorner", {Parent = Dot, CornerRadius = UDim.new(1,0)})
 
-    -- Move the keybind much more to the left
+    -- Move keybind closer to the middle
     local Amount = CreateObject("TextLabel", {
         Name = "Amount",
         Parent = TextButton,
-        AnchorPoint = Vector2.new(0, 0.5), -- Adjusted anchor point
+        AnchorPoint = Vector2.new(0, 0.5),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 0.949999988079071,
-        Position = UDim2.new(0.2, 0, 0.5, 0), -- Moved left a lot
+        Position = UDim2.new(0.35, 0, 0.5, 0), -- Moved left a little
         Size = UDim2.new(0,3,0,15),
         Font = Enum.Font.SourceSans,
         Text = Dkey.Name,
@@ -1106,7 +1104,6 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     -- Initial visual update
     task.defer(UpdateToggleVisual)
 end
-
 
 
 
