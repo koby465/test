@@ -1550,7 +1550,6 @@ end
 
 
 
-
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1757,7 +1756,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             
             callback(SelectedOptions)  -- Call the callback with the selected options
 
-            -- Animate the button to show a selection effect
+            -- Highlight the selected option with a color change
             local originalColor = DropButton.BackgroundColor3
             DropButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Set color to white
 
@@ -1816,6 +1815,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
 
     return Set
 end
+
 
 
 
