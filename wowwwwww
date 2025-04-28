@@ -1548,6 +1548,10 @@ end
 
 
 
+
+
+
+
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1677,10 +1681,20 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
     Dropper.Size = UDim2.new(1, 0, 0, 0)
     
     OpenBtn.MouseButton1Down:Connect(function()
-        Dropper.Visible = true
-        TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-            Size = UDim2.new(1, 0, 0, 100)
-        })
+        if Dropper.Visible then
+            -- If the dropdown is open, close it
+            TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                Size = UDim2.new(1, 0, 0, 0)
+            })
+            wait(0.1)
+            Dropper.Visible = false
+        else
+            -- If the dropdown is closed, open it
+            Dropper.Visible = true
+            TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                Size = UDim2.new(1, 0, 0, 100)
+            })
+        end
     end)
     
     callback(SelectedOptions) -- Initial callback with the default options
@@ -1743,13 +1757,6 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             OpenBtn.Text = DisplayText
             
             callback(SelectedOptions)  -- Call the callback with the selected options
-            
-            -- Animate dropdown collapse
-            TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                Size = UDim2.new(1, 0, 0, 0)
-            })
-            wait(0.1)
-            Dropper.Visible = false
         end)
     end
 
@@ -1796,19 +1803,11 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
                 Thickness = 1.2000000476837158,
                 Transparency = 0.925000011920929,
             })
-            
-            DropButton.MouseButton1Down:Connect(function()
-                -- Similar functionality as before...
-            end)
         end
     end
 
     return Set
 end
-
-
-
-
 
 
 
