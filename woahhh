@@ -605,318 +605,275 @@ end)
 
 
 
-
-
-	function WinHandle.Separator()
-		local FSeparation = CreateObject("Frame", {
-			Name = "FSeparation",	Parent = ETabs,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9300000071525574,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Position = UDim2.new(0.11104323714971542,0,0.8424820899963379,0),	Size = UDim2.new(0.8389567136764526,0,0,1),	Transparency = 0.9300000071525574,
-		})
-	end
-	function WinHandle.Tab(name, img)
-		WinHandle.TabCount = WinHandle.TabCount +  1
-		local TabButton = CreateObject("TextButton", {
-			Name = "TabButton",	Parent = ETabs,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.09612662345170975,0,0,0),	Size = UDim2.new(0.8077465891838074,0,0.014869890175759792,25),	AutoButtonColor = false,	Font = Enum.Font.SourceSans, Text = (name or "Tab"),	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,	TextTransparency = 0.7,	TextXAlignment = Enum.TextXAlignment.Left,
-		})
-		local UICorner = CreateObject("UICorner", {
-			Parent = TabButton,	CornerRadius = UDim.new(0,4),
-		})
-		local UIPadding = CreateObject("UIPadding", {
-			Parent = TabButton,	PaddingLeft = UDim.new(0,30),
-		})
-		local ImageLabel = CreateObject("ImageLabel", {
-			Parent = TabButton,	BackgroundColor3 = Color3.fromRGB(255,255,255),	AnchorPoint = Vector2.new(0, 0.45), BackgroundTransparency = 1,	Position = UDim2.new(-0.16325347125530243,0,0.5,0),	Size = UDim2.new(0,12,0,12),	Image = (img or "http://www.roblox.com/asset/?id=11854792250"),	ImageTransparency = 0.7,
-		})
-		local Tab = CreateObject("Frame", {
-			Name = "Tab",	Parent = TabFrame,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.018,0,0.122,0),	Size = UDim2.new(0,372,0,359),	Transparency = 1,
-		})
-		local Left = CreateObject("ScrollingFrame", {
-			AutomaticCanvasSize = Enum.AutomaticSize.Y, Name = "Left",	Parent = Tab,	Active = true,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderSizePixel = 0,	Size = UDim2.new(0.5,0,1,0),	Transparency = 1,	CanvasSize = UDim2.new(0,0,0,0),	ScrollBarImageColor3 = Color3.fromRGB(0,0,0),	ScrollBarThickness = 0,
-		})
-		local UIListLayout = CreateObject("UIListLayout", {
-			Parent = Left,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,8),
-		})
-		local UIPadding = CreateObject("UIPadding", {
-			Parent = Left,	PaddingLeft = UDim.new(0,5),	PaddingRight = UDim.new(0,5),	PaddingTop = UDim.new(0,5), PaddingBottom = UDim.new(0,5)
-		})
-		local Right = CreateObject("ScrollingFrame", {
-		    AutomaticCanvasSize = Enum.AutomaticSize.Y, 	Name = "Right",	Parent = Tab,	Active = true,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderSizePixel = 0,	Position = UDim2.new(0.5,0,0,0),	Size = UDim2.new(0.5,0,1,0),	Transparency = 1,	CanvasSize = UDim2.new(0,0,0,0),	ScrollBarImageColor3 = Color3.fromRGB(0,0,0),	ScrollBarThickness = 0,
-		})
-		local UIListLayout2 = CreateObject("UIListLayout", {
-			Parent = Right,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,8),
-		})
-		local UIPadding2 = CreateObject("UIPadding", {
-			Parent = Right,	PaddingLeft = UDim.new(0,5),	PaddingRight = UDim.new(0,5),	PaddingTop = UDim.new(0,5), PaddingBottom = UDim.new(0,5)
-		})
-		TabButton.MouseButton1Down:Connect(function()
-			TabName.Text = name
-			
-			for i,v in pairs(TabFrame:GetChildren()) do
-				if v:IsA'Frame' and v.Name == 'Tab' then
-					v.Visible = false
-				end
-			end
-			Tab.Visible = true
-			for i,v in pairs(ETabs:GetChildren()) do
-				if v:IsA'TextButton' and v.Name == 'TabButton' then
-					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-						BackgroundTransparency = 1
-					})
-					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-						TextTransparency = 0.7
-					})
-					TweenObject(v.ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-						ImageTransparency = 0.7
-					})
-				end
-			end
-			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-				BackgroundTransparency = 0.95
-			})
-			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-				TextTransparency = 0.4
-			})
-			TweenObject(ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-				ImageTransparency = 0.4
-			})
-		end)
-		local SectionHandle = {}
-		function SectionHandle.Open()
-			TabName.Text = name
-			
-			for i,v in pairs(TabFrame:GetChildren()) do
-				if v:IsA'Frame' and v.Name == 'Tab' then
-					v.Visible = false
-				end
-			end
-			Tab.Visible = true
-			for i,v in pairs(ETabs:GetChildren()) do
-				if v:IsA'TextButton' and v.Name == 'TabButton' then
-					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-						BackgroundTransparency = 1
-					})
-					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-						TextTransparency = 0.7
-					})
-					TweenObject(v.ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-						ImageTransparency = 0.7
-					})
-				end
-			end
-			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-				BackgroundTransparency = 0.95
-			})
-			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-				TextTransparency = 0.4
-			})
-			TweenObject(ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
-				ImageTransparency = 0.4
-			})
-		end
-		if WinHandle.TabCount == 1 then
-			SectionHandle.Open()
-		end
-		function SectionHandle.Section(side)
-			local Section = CreateObject("Frame", {
-				Name = "Section",	Parent = (side == 'left' and Left or Right),	AutomaticSize = Enum.AutomaticSize.Y,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.949999988079071,	Size = UDim2.new(1,0,-0.51585041880607605,58),	Transparency = 0.949999988079071,
-			})
-			local UICorner = CreateObject("UICorner", {
-				Parent = Section,	CornerRadius = UDim.new(0,4),
-			})
-			local UIStroke = CreateObject("UIStroke", {
-				Parent = Section,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
-			})
-			local UIPadding = CreateObject("UIPadding", {
-				Parent = Section,	PaddingBottom = UDim.new(0,5),	PaddingLeft = UDim.new(0,5),	PaddingRight = UDim.new(0,5),	PaddingTop = UDim.new(0,5),
-			})
-			local UIListLayout = CreateObject("UIListLayout", {
-				Parent = Section,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,5),
-			})
-			local AssetHandler = {}
-			function AssetHandler.Button(name, callback)
-				local Button = CreateObject("Frame", {
-					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.6512274742126465,0),	Size = UDim2.new(1,0,0,35),	Transparency = 1,
-				})
-				local TextButton = CreateObject("TextButton", {
-					Parent = Button,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9700000286102295,	Position = UDim2.new(0.4969879388809204,0,0.5,0),	Size = UDim2.new(0.949999988079071,0,0,23),	AutoButtonColor = false,	Font = Enum.Font.SourceSans,Text =name,	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
-				})
-				local UIPadding = CreateObject("UIPadding", {
-					Parent = TextButton,	PaddingLeft = UDim.new(0,10),
-				})
-				local UICorner = CreateObject("UICorner", {
-					Parent = TextButton,	CornerRadius = UDim.new(0,4),
-				})
-				local UIStroke = CreateObject("UIStroke", {
-					Parent = TextButton,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
-				})
-				TextButton.MouseButton1Down:Connect(function()
-					task.spawn(callback)
-					TextButton.BackgroundTransparency = 0.96
-					wait()
-					TextButton.BackgroundTransparency = 0.9700000286102295
-				end)
-				local Handler = {
-					Button = Button
-				}
-				return Handler
-			end
-			function AssetHandler.Slider(name, min, max, default, symbol, callback)
-    local Slider = CreateObject("Frame", {
-        Name = name,
-        Parent = Section,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 30),
-        Transparency = 1,
+function WinHandle.Separator()
+    local FSeparation = CreateObject("Frame", {
+        Name = "FSeparation",    
+        Parent = ETabs,    
+        BackgroundColor3 = Color3.fromRGB(255,255,255),    
+        BackgroundTransparency = 0.9300000071525574,    
+        BorderColor3 = Color3.fromRGB(27,42,53),    
+        BorderSizePixel = 0,    
+        Position = UDim2.new(0.11104323714971542, 0, 0.8424820899963379, 0),    
+        Size = UDim2.new(0.8389567136764526, 0, 0, 1),    
+        Transparency = 0.9300000071525574,
     })
+end
 
-    local TextButton = CreateObject("TextButton", {
-        Parent = Slider,
-        Text = name,
-        TextTransparency = 1,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 1, 0),
-        Font = Enum.Font.SourceSans,
-        Text = "",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 16,
-        TextTransparency = 0.5,
+function WinHandle.Tab(name, img)
+    WinHandle.TabCount = WinHandle.TabCount +  1
+    local TabButton = CreateObject("TextButton", {
+        Name = "TabButton",    
+        Parent = ETabs,    
+        BackgroundColor3 = Color3.fromRGB(255,255,255),    
+        BackgroundTransparency = 1,    
+        Position = UDim2.new(0.09612662345170975, 0, 0, 0),    
+        Size = UDim2.new(0.8077465891838074, 0, 0.014869890175759792, 25),    
+        AutoButtonColor = false,    
+        Font = Enum.Font.SourceSans, 
+        Text = (name or "Tab"),
+        TextColor3 = Color3.fromRGB(255,255,255),    
+        TextSize = 18,    
+        TextTransparency = 0.7,    
         TextXAlignment = Enum.TextXAlignment.Left,
     })
-
-    local UIPadding = CreateObject("UIPadding", {
-        Parent = TextButton,
-        PaddingLeft = UDim.new(0, 5),
-    })
-
-    local TextLabel = CreateObject("TextLabel", {
-        Parent = TextButton,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0.007, 0, 0.067, 0),
-        Size = UDim2.new(0, 38, 0, 24),
-        Font = Enum.Font.SourceSans,
-        Text = name,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        TextTransparency = 0.5,
-        TextWrapped = true,
-        TextXAlignment = Enum.TextXAlignment.Left,
-    })
-
-    TextLabel.Text = name
-
-    local BG = CreateObject("Frame", {
-        Name = "BG",
-        Parent = TextButton,
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 0.75,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.285, 0, 0.5, 0),
-        Size = UDim2.new(0, 77, 0, 2),
-        Transparency = 0.75,
-    })
-
-    local Frame = CreateObject("Frame", {
-        Parent = TextButton,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 1,
-        BorderColor3 = Color3.fromRGB(27, 42, 53),
-        Position = UDim2.new(0.280, 0, 0.300, 0),
-        Size = UDim2.new(0, 77, 0, 12),
-        Transparency = 1,
-    })
-
-    local Ball = CreateObject("Frame", {
-        Name = "Ball",
-        Parent = Frame,
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundColor3 = Color3.fromRGB(198, 198, 198),
-        Position = UDim2.new(0, 3, 0.5, 0),
-        Size = UDim2.new(0, 10, 0, 10),
-    })
-
     local UICorner = CreateObject("UICorner", {
-        Parent = Ball,
-        CornerRadius = UDim.new(1, 0),
-    })
-
-    local Amount = CreateObject("TextLabel", {
-        Name = "Amount",
-        Parent = TextButton,
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 0.949999988079071,
-        Position = UDim2.new(0.801, 0, 0.5, 0),
-        Size = UDim2.new(0, 26, 0, 15),
-        Font = Enum.Font.SourceSans,
-        Text = default .. symbol,
-        TextColor3 = Color3.fromRGB(202, 202, 202),
-        TextSize = 14,
-        TextWrapped = true,
-    })
-
-    local UICorner2 = CreateObject("UICorner", {
-        Parent = Amount,
+        Parent = TabButton,    
         CornerRadius = UDim.new(0, 4),
     })
-
-    local UIStroke = CreateObject("UIStroke", {
-        Parent = Amount,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1.2,
-        Transparency = 0.925,
+    local UIPadding = CreateObject("UIPadding", {
+        Parent = TabButton,    
+        PaddingLeft = UDim.new(0, 30),
     })
+    local ImageLabel = CreateObject("ImageLabel", {
+        Parent = TabButton,    
+        BackgroundColor3 = Color3.fromRGB(255,255,255),    
+        AnchorPoint = Vector2.new(0, 0.45), 
+        BackgroundTransparency = 1,    
+        Position = UDim2.new(-0.16325347125530243, 0, 0.5, 0),    
+        Size = UDim2.new(0, 12, 0, 12),    
+        Image = (img or "http://www.roblox.com/asset/?id=11854792250"),    
+        ImageTransparency = 0.7,
+    })
+    local Tab = CreateObject("Frame", {
+        Name = "Tab",    
+        Parent = TabFrame,    
+        BackgroundColor3 = Color3.fromRGB(255,255,255),    
+        BackgroundTransparency = 1,    
+        Position = UDim2.new(0.018, 0, 0.122, 0),    
+        Size = UDim2.new(0, 372, 0, 359),    
+        Transparency = 1,
+    })
+    local Left = CreateObject("ScrollingFrame", {
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,    
+        Name = "Left",    
+        Parent = Tab,    
+        Active = true,    
+        BackgroundColor3 = Color3.fromRGB(255,255,255),    
+        BackgroundTransparency = 1,    
+        BorderSizePixel = 0,    
+        Size = UDim2.new(0.5, 0, 1, 0),    
+        Transparency = 1,    
+        CanvasSize = UDim2.new(0, 0, 0, 0),    
+        ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0),    
+        ScrollBarThickness = 0,
+    })
+    local UIListLayout = CreateObject("UIListLayout", {
+        Parent = Left,    
+        SortOrder = Enum.SortOrder.LayoutOrder,    
+        Padding = UDim.new(0, 8),
+    })
+    local UIPadding = CreateObject("UIPadding", {
+        Parent = Left,    
+        PaddingLeft = UDim.new(0, 5),    
+        PaddingRight = UDim.new(0, 5),    
+        PaddingTop = UDim.new(0, 5), 
+        PaddingBottom = UDim.new(0, 5),
+    })
+    local Right = CreateObject("ScrollingFrame", {
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,    
+        Name = "Right",    
+        Parent = Tab,    
+        Active = true,    
+        BackgroundColor3 = Color3.fromRGB(255,255,255),    
+        BackgroundTransparency = 1,    
+        BorderSizePixel = 0,    
+        Position = UDim2.new(0.5, 0, 0, 0),    
+        Size = UDim2.new(0.5, 0, 1, 0),    
+        Transparency = 1,    
+        CanvasSize = UDim2.new(0, 0, 0, 0),    
+        ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0),    
+        ScrollBarThickness = 0,
+    })
+    local UIListLayout2 = CreateObject("UIListLayout", {
+        Parent = Right,    
+        SortOrder = Enum.SortOrder.LayoutOrder,    
+        Padding = UDim.new(0, 8),
+    })
+    local UIPadding2 = CreateObject("UIPadding", {
+        Parent = Right,    
+        PaddingLeft = UDim.new(0, 5),    
+        PaddingRight = UDim.new(0, 5),    
+        PaddingTop = UDim.new(0, 5), 
+        PaddingBottom = UDim.new(0, 5),
+    })
+    
+    -- Rest of the logic for tabs...
 
-    local slider = Framework.PositionSlider(Frame, Ball, min, max, 0.1)
-    slider:set(default)  -- Ensure the slider is set to the correct initial value
+    local SectionHandle = {}
+    function SectionHandle.Open()
+        -- Rest of the logic for tab opening...
+    end
+    if WinHandle.TabCount == 1 then
+        SectionHandle.Open()
+    end
 
-    -- Update the displayed value when the slider changes
-    slider.Updated:connect(function(value)
-        Amount.Text = value .. symbol  -- Update displayed amount based on slider
-        task.spawn(function()
-            pcall(function()
-                callback(value)
-            end)
-        end)
-    end)
+    function SectionHandle.Section(side)
+        local Section = CreateObject("Frame", {
+            Name = "Section",    
+            Parent = (side == 'left' and Left or Right),    
+            AutomaticSize = Enum.AutomaticSize.Y,    
+            BackgroundColor3 = Color3.fromRGB(255,255,255),    
+            BackgroundTransparency = 0.949999988079071,    
+            Size = UDim2.new(1, 0, -0.51585041880607605, 58),    
+            Transparency = 0.949999988079071,
+        })
+        local UICorner = CreateObject("UICorner", {
+            Parent = Section,    
+            CornerRadius = UDim.new(0, 4),
+        })
+        local UIStroke = CreateObject("UIStroke", {
+            Parent = Section,    
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,    
+            Color = Color3.fromRGB(255,255,255),    
+            Thickness = 1.2000000476837158,    
+            Transparency = 0.925000011920929,
+        })
+        local UIPadding = CreateObject("UIPadding", {
+            Parent = Section,    
+            PaddingBottom = UDim.new(0, 5),    
+            PaddingLeft = UDim.new(0, 5),    
+            PaddingRight = UDim.new(0, 5),    
+            PaddingTop = UDim.new(0, 5),
+        })
+        local UIListLayout = CreateObject("UIListLayout", {
+            Parent = Section,    
+            SortOrder = Enum.SortOrder.LayoutOrder,    
+            Padding = UDim.new(0, 5),
+        })
+        local AssetHandler = {}
+        
+        -- Slider Update Functionality
+        function AssetHandler.Slider(name, min, max, default, symbol, callback)
+            local Slider = CreateObject("Frame", {
+                Name = name,
+                Parent = Section,
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 30),
+                Transparency = 1,
+            })
 
-    -- Handle updating the slider visually
-    local Handle = {
-        Update = function(num)
-            slider:set(num)  -- Set the slider's current value
-            Amount.Text = num .. symbol  -- Update the displayed amount
-        end
-    }
+            local TextButton = CreateObject("TextButton", {
+                Parent = Slider,
+                Text = "",
+                TextTransparency = 1,
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Font = Enum.Font.SourceSans,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 16,
+                TextTransparency = 0.5,
+                TextXAlignment = Enum.TextXAlignment.Left,
+            })
+            local UIPadding = CreateObject("UIPadding", {
+                Parent = TextButton,
+                PaddingLeft = UDim.new(0, 5),
+            })
 
-    -- Make the number clickable and editable
-    Amount.MouseButton1Click:Connect(function()
-        local newText = Instance.new("TextBox", Amount)
-        newText.Size = UDim2.new(1, 0, 1, 0)
-        newText.BackgroundTransparency = 1
-        newText.Text = Amount.Text
-        newText.TextColor3 = Color3.fromRGB(202, 202, 202)
-        newText.Font = Enum.Font.SourceSans
-        newText.TextSize = 14
-        newText.ClearTextOnFocus = false
-        newText.TextXAlignment = Enum.TextXAlignment.Center
-        newText.Parent = Amount
-        newText.FocusLost:Connect(function(enterPressed)
-            if enterPressed then
-                local value = tonumber(newText.Text)
-                if value and value >= min and value <= max then
-                    Handle.Update(value)
+            local TextLabel = CreateObject("TextLabel", {
+                Parent = TextButton,
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0.007, 0, 0.067, 0),
+                Size = UDim2.new(0, 38, 0, 24),
+                Font = Enum.Font.SourceSans,
+                Text = "FOV",
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 12,
+                TextTransparency = 0.5,
+                TextWrapped = true,
+                TextXAlignment = Enum.TextXAlignment.Left,
+            })
+            TextLabel.Text = name
+
+            local BG = CreateObject("Frame", {
+                Name = "BG",
+                Parent = TextButton,
+                AnchorPoint = Vector2.new(0, 0.5),
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 0.75,
+                BorderSizePixel = 0,
+                Position = UDim2.new(0.285, 0, 0.5, 0),
+                Size = UDim2.new(0, 77, 0, 2),
+                Transparency = 0.75,
+            })
+
+            local Frame = CreateObject("Frame", {
+                Parent = TextButton,
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                BorderColor3 = Color3.fromRGB(27, 42, 53),
+                Position = UDim2.new(0.280, 0, 0.300, 0),
+                Size = UDim2.new(0, 77, 0, 12),
+                Transparency = 1,
+            })
+
+            local AmountButton = CreateObject("TextButton", {
+                Name = "AmountButton",
+                Parent = Frame,
+                AnchorPoint = Vector2.new(0, 0.5),
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = 0.949999988079071,
+                Position = UDim2.new(0.801, 0, 0.5, 0),
+                Size = UDim2.new(0, 26, 0, 15),
+                Font = Enum.Font.SourceSans,
+                Text = default .. symbol,  -- Display the default value
+                TextColor3 = Color3.fromRGB(202, 202, 202),
+                TextSize = 14,
+                TextWrapped = true,
+            })
+
+            -- Add interaction for clicking the button
+            AmountButton.MouseButton1Click:Connect(function()
+                local userInput = game:GetService("TextBox")  -- Example input method
+                local success, newValue = pcall(function()
+                    return tonumber(userInput)  -- Validate the input
+                end)
+                if success and newValue then
+                    slider:set(newValue)
+                    AmountButton.Text = newValue .. symbol
+                    callback(newValue)
                 else
-                    Handle.Update(default)
+                    print("Invalid input")
                 end
-            end
-            newText:Destroy()
-        end)
-    end)
+            end)
 
-    return Handle
+            -- Add UICorner, UIStroke for styling
+            local UICorner2 = CreateObject("UICorner", {
+                Parent = AmountButton,
+                CornerRadius = UDim.new(0, 4),
+            })
+
+            local UIStroke = CreateObject("UIStroke", {
+                Parent = AmountButton,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                Color = Color3.fromRGB(255, 255, 255),
+                Thickness = 1.2,
+                Transparency = 0.925,
+            })
+        end
+    end
 end
 
 
