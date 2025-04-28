@@ -1593,7 +1593,6 @@ end
 
 
 
-
 function AssetHandler.MultiSelectDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1677,12 +1676,6 @@ function AssetHandler.MultiSelectDropdown(name, default, list, callback)
         Padding = UDim.new(0, 5),
     })
 
-    local UIPadding3 = CreateObject("UIPadding", {
-        Parent = ScrollingFrame,
-        PaddingBottom = UDim.new(0, 1),
-        PaddingTop = UDim.new(0, 1),
-    })
-
     Dropper.Size = UDim2.new(1, 0, 0, 0)
 
     OpenBtn.MouseButton1Down:Connect(function()
@@ -1692,8 +1685,10 @@ function AssetHandler.MultiSelectDropdown(name, default, list, callback)
         })
     end)
 
-    callback(SelectedOptions) -- Initial callback with the selected options
+    -- Call the callback with the initial selected options
+    callback(SelectedOptions)
 
+    -- Create dropdown items for each option in the list
     for i, v in pairs(list) do
         local DropButton = CreateObject("TextButton", {
             Name = "DropButton",
@@ -1731,13 +1726,14 @@ function AssetHandler.MultiSelectDropdown(name, default, list, callback)
         })
 
         DropButton.MouseButton1Down:Connect(function()
+            -- Toggle selection state of the item
             if table.find(SelectedOptions, v) then
-                table.remove(SelectedOptions, table.find(SelectedOptions, v))
+                table.remove(SelectedOptions, table.find(SelectedOptions, v)) -- Deselect
             else
-                table.insert(SelectedOptions, v)
+                table.insert(SelectedOptions, v) -- Select
             end
 
-            -- Update the background transparency of buttons
+            -- Update button transparency based on selection
             for _, button in pairs(ScrollingFrame:GetChildren()) do
                 if button:IsA('TextButton') then
                     TweenObject(button, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
@@ -1746,7 +1742,7 @@ function AssetHandler.MultiSelectDropdown(name, default, list, callback)
                 end
             end
 
-            -- Close the dropdown
+            -- Close the dropdown after selection
             TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                 Size = UDim2.new(1, 0, 0, 0)
             })
@@ -1763,6 +1759,7 @@ function AssetHandler.MultiSelectDropdown(name, default, list, callback)
     local Set = {}
 
     function Set.Update(List)
+        -- Update the list of dropdown options
         for _, button in pairs(ScrollingFrame:GetChildren()) do
             button:Destroy()
         end
