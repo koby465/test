@@ -194,11 +194,11 @@ Framework = {
 
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
-    for i,v in pairs (AllChildren) do 
-        if v:IsA("ScrollingFrame") then 
-            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")then
+    for i,v in pairs(AllChildren) do
+        if v:IsA("ScrollingFrame") then
+            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout") then
                 local Layout = v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")
-                local function UpdateSize(FrameInstance,LayoutInstance)
+                local function UpdateSize(FrameInstance, LayoutInstance)
                     if FrameInstance and LayoutInstance then
                         local PaddingX = 0
                         local PaddingY = 0
@@ -210,148 +210,92 @@ function Library.Init()
                             PaddingY += UIPadding.PaddingTop.Offset
                         end
                         if FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.Y then
-                            FrameInstance.CanvasSize = UDim2.new(0,0,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            FrameInstance.CanvasSize = UDim2.new(0, 0, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.X then
-                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,0)
+                            FrameInstance.CanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, 0)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.XY then
-                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            FrameInstance.CanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         end
                     end
                 end
-                UpdateSize(v,Layout)
-                Layout.Changed:connect(function() UpdateSize(v,Layout) end)
-                v:GetPropertyChangedSignal("AutomaticCanvasSize"):connect(function() UpdateSize(v,Layout) end)
+                UpdateSize(v, Layout)
+                Layout.Changed:Connect(function() UpdateSize(v, Layout) end)
+                v:GetPropertyChangedSignal("AutomaticCanvasSize"):Connect(function() UpdateSize(v, Layout) end)
             end
         end
     end
-end 
+end
 
 function Library.New()
     local FrameMain = CreateObject("Frame", {
-        Name = "FrameMain", Parent = Library.Core, BackgroundColor3 = Color3.fromRGB(14, 13, 13), BackgroundTransparency = 0.1, ClipsDescendants = true, Position = UDim2.new(0.5, -357.5, 0.5, -215), Size = UDim2.new(0,715,0,430), Transparency = 0.10000000149011612,
+        Name = "FrameMain", Parent = Library.Core, BackgroundColor3 = Color3.fromRGB(14, 13, 13), BackgroundTransparency = 0.1, ClipsDescendants = true, Position = UDim2.new(0.5, -357.5, 0.5, -215), Size = UDim2.new(0, 715, 0, 430), Transparency = 0.10000000149011612,
     })
     local UICorner = CreateObject("UICorner", {
-        Parent = FrameMain, CornerRadius = UDim.new(0,6),
+        Parent = FrameMain, CornerRadius = UDim.new(0, 6),
     })
-	local Sidebar = CreateObject("Frame", {
-		Name = "Sidebar",	Parent = FrameMain,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(0,179,0,419),	Transparency = 1,
-	})
-	local UIListLayout = CreateObject("UIListLayout", {
-		Parent = Sidebar,	HorizontalAlignment = Enum.HorizontalAlignment.Center,	Padding = UDim.new(0,4),
-	})
-	local AControlModule = CreateObject("Frame", {
-		Name = "AControlModule",	Parent = Sidebar,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(0,179,0,22),	Transparency = 1,
-	})
-	local UIListLayout2 = CreateObject("UIListLayout", {
-		Parent = AControlModule,	FillDirection = Enum.FillDirection.Horizontal,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,4),
-	})
-	local Exit = CreateObject("TextButton", {
-		Name = "Exit",	Parent = AControlModule,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(0,7,1,0),	Font = Enum.Font.SourceSans,	Text = "",	TextColor3 = Color3.fromRGB(0,0,0),	TextSize = 14,
-	})
-	local Frame = CreateObject("Frame", {
-		Parent = Exit,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(215,108,96),	BorderSizePixel = 0,	Position = UDim2.new(0.5,0,0.5,0),	Size = UDim2.new(0,6,0,6),
-	})
-	local UICorner2 = CreateObject("UICorner", {
-		Parent = Frame,	CornerRadius = UDim.new(1,0),
-	})
-	local UIStroke = CreateObject("UIStroke", {
-		Parent = Frame,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(215,108,96),	Thickness = 2,	Transparency = 0.8500000238418579,
-	})
-	local UIPadding = CreateObject("UIPadding", {
-		Parent = AControlModule,	PaddingLeft = UDim.new(0,13),	PaddingTop = UDim.new(0,5),
-	})
-	local Minimize = CreateObject("TextButton", {
-		Name = "Minimize",	Parent = AControlModule,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(0,7,1,0),	Font = Enum.Font.SourceSans,	Text = "",	TextColor3 = Color3.fromRGB(0,0,0),	TextSize = 14,
-	})
-	local Frame2 = CreateObject("Frame", {
-		Parent = Minimize,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(233,196,104),	BorderSizePixel = 0,	Position = UDim2.new(0.5,0,0.5,0),	Size = UDim2.new(0,6,0,6),
-	})
-	local UICorner3 = CreateObject("UICorner", {
-		Parent = Frame2,	CornerRadius = UDim.new(1,0),
-	})
-	local UIStroke2 = CreateObject("UIStroke", {
-		Parent = Frame2,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(233,196,104),	Thickness = 2,	Transparency = 0.8500000238418579,
-	})
-	local Maximize = CreateObject("TextButton", {
-		Name = "Maximize",	Parent = AControlModule,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(0,7,1,0),	Font = Enum.Font.SourceSans,	Text = "",	TextColor3 = Color3.fromRGB(0,0,0),	TextSize = 14,
-	})
-	local Frame3 = CreateObject("Frame", {
-		Parent = Maximize,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(124,156,99),	BorderSizePixel = 0,	Position = UDim2.new(0.5,0,0.5,0),	Size = UDim2.new(0,6,0,6),
-	})
-	local UICorner4 = CreateObject("UICorner", {
-		Parent = Frame3,	CornerRadius = UDim.new(1,0),
-	})
-	local UIStroke3 = CreateObject("UIStroke", {
-		Parent = Frame3,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(174,218,138),	Thickness = 2,	Transparency = 0.8500000238418579,
-	})
-	local TextLabel = CreateObject("TextLabel", {
-		Parent = AControlModule,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.19879518449306488,0,0,0),	Size = UDim2.new(-0.40361446142196655,200,1,0),	Font = Enum.Font.JosefinSans,	Text = "Future Client",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 14,	TextTransparency = 0.75,	TextXAlignment = Enum.TextXAlignment.Right,
-	})
-	local UIPadding2 = CreateObject("UIPadding", {
-		Parent = TextLabel,	PaddingBottom = UDim.new(0,-1),	PaddingRight = UDim.new(0,6),
-	})
-	local BSeparation = CreateObject("Frame", {
-		Name = "BSeparation",	Parent = Sidebar,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9300000071525574,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Size = UDim2.new(1,0,0,1),	Transparency = 0.9300000071525574,
-	})
-	local CSearch = CreateObject("Frame", {
-		Name = "CSearch",	Parent = Sidebar,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Position = UDim2.new(0,0,0.07398568093776703,0),	Size = UDim2.new(1,0,0.069212406873703,1),	Transparency = 1,
-	})
-	local TextBox = CreateObject("TextBox", {
-		Parent = CSearch,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9900000095367432,	Position = UDim2.new(0.5,0,0.5,0),	Size = UDim2.new(0.8999999761581421,0,0.9599999785423279,0),	ClearTextOnFocus = false,	Font = Enum.Font.SourceSans,	PlaceholderColor3 = Color3.fromRGB(149,149,149),	PlaceholderText = "Search...",	Text = "",	TextColor3 = Color3.fromRGB(202,202,202),	TextSize = 18,	TextWrapped = true,	TextXAlignment = Enum.TextXAlignment.Left,
-	})
-	
-	local UICorner5 = CreateObject("UICorner", {
-		Parent = TextBox,	CornerRadius = UDim.new(0,4),
-	})
-	local UIStroke4 = CreateObject("UIStroke", {
-		Parent = TextBox,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.8999999761581421,
-	})
-	local UIPadding3 = CreateObject("UIPadding", {
-		Parent = TextBox,	PaddingBottom = UDim.new(0,2),	PaddingLeft = UDim.new(0,30),	PaddingRight = UDim.new(0,25),
-	})
-	local search = CreateObject("ImageButton", {
-		Name = "search",	Parent = TextBox,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundTransparency = 1,	LayoutOrder = 1,	Position = UDim2.new(-0.1437101662158966,0,0.5373134613037109,0),	Size = UDim2.new(0,10,0,10),	ZIndex = 2,	Image = "rbxassetid://3926305904",	ImageRectOffset = Vector2.new(964,324),	ImageRectSize = Vector2.new(36,36),
-	})
-	local close = CreateObject("ImageButton", {
-		Name = "close",	Parent = TextBox,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundTransparency = 1,	Position = UDim2.new(1.0999622344970703,0,0.5373134613037109,0),	Size = UDim2.new(0,10,0,10),	ZIndex = 2,	Image = "rbxassetid://3926305904",	ImageRectOffset = Vector2.new(284,4),	ImageRectSize = Vector2.new(24,24),
-	})
-	local ETabs = CreateObject("Frame", {
-		Name = "ETabs",	Parent = Sidebar,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Position = UDim2.new(0,0,0.16706444323062897,0),	Size = UDim2.new(1,0,0.6634843945503235,1),	Transparency = 1,
-	})
-	local UIPadding4 = CreateObject("UIPadding", {
-		Parent = ETabs,	PaddingTop = UDim.new(0,10),
-	})
-	local UIListLayout3 = CreateObject("UIListLayout", {
-		Parent = ETabs,	HorizontalAlignment = Enum.HorizontalAlignment.Center,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,4),
-	})
-	local FSeparation = CreateObject("Frame", {
-		Name = "FSeparation",	Parent = Sidebar,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9300000071525574,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Position = UDim2.new(0.11104323714971542,0,0.8424820899963379,0),	Size = UDim2.new(0.8389567136764526,0,0,1),	Transparency = 0.9300000071525574,
-	})
-	local GProfile = CreateObject("Frame", {
-		Name = "GProfile",	Parent = Sidebar,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Position = UDim2.new(0,0,0.8544152975082397,0),	Size = UDim2.new(1,0,0.14319808781147003,1),	Transparency = 1,
-	})
-	local UserProfileImage = CreateObject("ImageLabel", {
-		Parent = GProfile,	BackgroundColor3 = Color3.fromRGB(22, 22, 22),	Position = UDim2.new(0.12849164009094238,0,0.16393440961837769,0),	Size = UDim2.new(0,23,0,23),	Image = "rbxassetid://17640958405",
-	})
-	local UICorner6 = CreateObject("UICorner", {
-		Parent = UserProfileImage,	CornerRadius = UDim.new(1,0),
-	})
-	local UIStroke5 = CreateObject("UIStroke", {
-		Parent = UserProfileImage,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(28,30,31),
-	})
-	local UserProfileNam = CreateObject("TextLabel", {
-		Parent = GProfile,	AutomaticSize = Enum.AutomaticSize.X,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.29608938097953796,0,0.16393442451953888,0),	Size = UDim2.new(0,0,0,15),	Font = Enum.Font.SourceSans, Text = "User",	TextColor3 = Color3.fromRGB(229,229,229),	TextSize = 18,	TextWrapped = true,	TextXAlignment = Enum.TextXAlignment.Left,
-	})
-	local Future ClientBadgeIcon = CreateObject("ImageButton", {
-		Name = "Icon",	Parent = UserProfileNam,	AnchorPoint = Vector2.new(0,0.5),	ImageTransparency = 0.3, BackgroundTransparency = 1,	Position = UDim2.new(1,-4,0.5349999761581421,0),	Size = UDim2.new(0,20,0,17),	ZIndex = 2,	Image = "rbxassetid://1",
-	})
-	local UIGradient41341 = CreateObject("UIGradient", {
-		Parent = ClientBadgeIcon,	Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(37, 182, 237)), ColorSequenceKeypoint.new(1, Color3.fromRGB(173, 62, 252))} ,	Offset = Vector2.new(0,0),
-	})
-    Framework.AllowDragging(FrameMain, FrameMain, 0.2)  -- Adjust speed of dragging
-    Framework.AllowResizing(FrameMain, FrameMain, 0.2)  -- Adjust speed of resizing
+    local Sidebar = CreateObject("Frame", {
+        Name = "Sidebar", Parent = FrameMain, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Size = UDim2.new(0, 179, 0, 419), Transparency = 1,
+    })
+    local UIListLayout = CreateObject("UIListLayout", {
+        Parent = Sidebar, HorizontalAlignment = Enum.HorizontalAlignment.Center, Padding = UDim.new(0, 4),
+    })
+    local AControlModule = CreateObject("Frame", {
+        Name = "AControlModule", Parent = Sidebar, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Size = UDim2.new(0, 179, 0, 22), Transparency = 1,
+    })
+    local UIListLayout2 = CreateObject("UIListLayout", {
+        Parent = AControlModule, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4),
+    })
+    local Exit = CreateObject("TextButton", {
+        Name = "Exit", Parent = AControlModule, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Size = UDim2.new(0, 7, 1, 0), Font = Enum.Font.SourceSans, Text = "", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14,
+    })
+    local Frame = CreateObject("Frame", {
+        Parent = Exit, AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(215, 108, 96), BorderSizePixel = 0, Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 6, 0, 6),
+    })
+    local UICorner2 = CreateObject("UICorner", {
+        Parent = Frame, CornerRadius = UDim.new(1, 0),
+    })
+    local UIStroke = CreateObject("UIStroke", {
+        Parent = Frame, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = Color3.fromRGB(215, 108, 96), Thickness = 2, Transparency = 0.8500000238418579,
+    })
+    local UIPadding = CreateObject("UIPadding", {
+        Parent = AControlModule, PaddingLeft = UDim.new(0, 13), PaddingTop = UDim.new(0, 5),
+    })
+    local Minimize = CreateObject("TextButton", {
+        Name = "Minimize", Parent = AControlModule, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Size = UDim2.new(0, 7, 1, 0), Font = Enum.Font.SourceSans, Text = "", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14,
+    })
+    local Frame2 = CreateObject("Frame", {
+        Parent = Minimize, AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(233, 196, 104), BorderSizePixel = 0, Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 6, 0, 6),
+    })
+    local UICorner3 = CreateObject("UICorner", {
+        Parent = Frame2, CornerRadius = UDim.new(1, 0),
+    })
+    local UIStroke2 = CreateObject("UIStroke", {
+        Parent = Frame2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = Color3.fromRGB(233, 196, 104), Thickness = 2, Transparency = 0.8500000238418579,
+    })
+    local Maximize = CreateObject("TextButton", {
+        Name = "Maximize", Parent = AControlModule, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Size = UDim2.new(0, 7, 1, 0), Font = Enum.Font.SourceSans, Text = "", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14,
+    })
+    local Frame3 = CreateObject("Frame", {
+        Parent = Maximize, AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(124, 156, 99), BorderSizePixel = 0, Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 6, 0, 6),
+    })
+    local UICorner4 = CreateObject("UICorner", {
+        Parent = Frame3, CornerRadius = UDim.new(1, 0),
+    })
+    local UIStroke3 = CreateObject("UIStroke", {
+        Parent = Frame3, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = Color3.fromRGB(174, 218, 138), Thickness = 2, Transparency = 0.8500000238418579,
+    })
+    local TextLabel = CreateObject("TextLabel", {
+        Name = "TextLabel", Parent = Sidebar, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(0, 157, 0, 24), Font = Enum.Font.SourceSans, Text = "My Library", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left,
+    })
+    local UIStroke4 = CreateObject("UIStroke", {
+        Parent = Sidebar, Color = Color3.fromRGB(174, 218, 138), Thickness = 2, Transparency = 0.8500000238418579,
+    })
+    local UIListLayout3 = CreateObject("UIListLayout", {
+        Parent = Sidebar, HorizontalAlignment = Enum.HorizontalAlignment.Center, Padding = UDim.new(0, 4),
+    })
 end
-end
+
+
 
 
 
