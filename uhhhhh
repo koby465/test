@@ -1546,7 +1546,6 @@ end
 
 
 
-
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1595,6 +1594,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         Transparency = 0.925000011920929,
     })
 
+    -- Create a frame for the dropdown items
     local Dropper = CreateObject("Frame", {
         ClipsDescendants = true,
         Name = "Dropper",
@@ -1602,11 +1602,12 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 0, 0.5938987731933594, 0),
-        Size = UDim2.new(1, 0, 0, 100),
+        Size = UDim2.new(1, 0, 0, 0), -- Start with height 0, we'll animate it later
         Transparency = 1,
         Visible = false,
     })
 
+    -- Scrollable frame to hold the dropdown items
     local ScrollingFrame = CreateObject("ScrollingFrame", {
         ClipsDescendants = true,
         Parent = Dropper,
@@ -1615,7 +1616,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(1, 0, 0.7, 0),
+        Size = UDim2.new(1, 0, 1, 0),
         Transparency = 1,
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -1623,6 +1624,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         ScrollBarThickness = 0,
     })
 
+    -- Layout for the dropdown items inside the scrolling frame
     local UIListLayout = CreateObject("UIListLayout", {
         Parent = ScrollingFrame,
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -1632,15 +1634,18 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
 
     Dropper.Size = UDim2.new(1, 0, 0, 0)
 
+    -- Toggle visibility of dropdown items when clicking the button
     OpenBtn.MouseButton1Down:Connect(function()
         Dropper.Visible = true
         TweenObject(Dropper, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-            Size = UDim2.new(1, 0, 0, 100)
+            Size = UDim2.new(1, 0, 0, 100) -- Animate dropdown expansion
         })
     end)
 
-    callback(SelectedOptions) -- Initial callback with the selected options
+    -- Initial callback with the selected options
+    callback(SelectedOptions)
 
+    -- Create buttons for each item in the list
     for i, v in pairs(list) do
         local DropButton = CreateObject("TextButton", {
             Name = "DropButton",
@@ -1659,16 +1664,19 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             TextXAlignment = Enum.TextXAlignment.Left,
         })
 
+        -- Add padding to the dropdown button
         local UIPadding2 = CreateObject("UIPadding", {
             Parent = DropButton,
             PaddingLeft = UDim.new(0, 10),
         })
 
+        -- Add corner rounding to the button
         local UICorner2 = CreateObject("UICorner", {
             Parent = DropButton,
             CornerRadius = UDim.new(0, 4),
         })
 
+        -- Add border stroke to the button
         local UIStroke2 = CreateObject("UIStroke", {
             Parent = DropButton,
             ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -1677,6 +1685,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             Transparency = 0.925000011920929,
         })
 
+        -- Toggle selection on button click
         DropButton.MouseButton1Down:Connect(function()
             if table.find(SelectedOptions, v) then
                 -- Deselect the option
@@ -1703,7 +1712,6 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
 
     return {}
 end
-
 
 
 
