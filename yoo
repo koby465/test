@@ -85,90 +85,121 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-	Framework = {
-		AllowDragging = function(Object, Frame, Speed)
-			local dragToggle = nil
-			local dragSpeed = 0
-			local dragInput = nil
-			local dragStart = nil
-			local dragPos = nil
-			local Util = {
-				Enabled = true
-			}
-			local function updateInput(input)
-				if not Util.Enabled then return end
-				local Delta = input.Position - dragStart
-				local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-				game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-					Position = Position
-				}):Play()
-			end
-			Object.InputBegan:Connect(function(input)
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-					dragToggle = true
-					dragStart = input.Position
-					startPos = Frame.Position
-					input.Changed:Connect(function()
-						if input.UserInputState == Enum.UserInputState.End then
-							dragToggle = false
-						end
-					end)
-				end
-			end)
-			Object.InputChanged:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-					dragInput = input
-				end
-			end)
-			game:GetService("UserInputService").InputChanged:Connect(function(input)
-				if input == dragInput and dragToggle then
-					updateInput(input)
-				end
-			end)
-			
-			return Util
-		end
-	}
+	local TweenService = game:GetService("TweenService")
+
+-- Framework setup (dragging functionality remains the same)
+Framework = {
+    AllowDragging = function(Object, Frame, Speed)
+        local dragToggle = nil
+        local dragSpeed = 0
+        local dragInput = nil
+        local dragStart = nil
+        local dragPos = nil
+        local Util = { Enabled = true }
+
+        local function updateInput(input)
+            if not Util.Enabled then return end
+            local Delta = input.Position - dragStart
+            local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+            game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), { Position = Position }):Play()
+        end
+
+        Object.InputBegan:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+                dragToggle = true
+                dragStart = input.Position
+                startPos = Frame.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragToggle = false
+                    end
+                end)
+            end
+        end)
+
+        Object.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if input == dragInput and dragToggle then
+                updateInput(input)
+            end
+        end)
+
+        return Util
+    end
 }
+
+-- Library initialization function
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
-    for i,v in pairs (AllChildren) do 
-        if v:IsA("ScrollingFrame") then 
-            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")then
+    for i, v in pairs(AllChildren) do
+        if v:IsA("ScrollingFrame") then
+            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout") then
                 local Layout = v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")
-                local function UpdateSize(FrameInstance,LayoutInstance)
+                local function UpdateSize(FrameInstance, LayoutInstance)
                     if FrameInstance and LayoutInstance then
-                        local PaddingX = 0
-                        local PaddingY = 0
+                        local PaddingX, PaddingY = 0, 0
                         if FrameInstance:FindFirstChildOfClass("UIPadding") then
                             local UIPadding = FrameInstance:FindFirstChildOfClass("UIPadding")
-                            PaddingX += UIPadding.PaddingLeft.Offset
-                            PaddingX += UIPadding.PaddingRight.Offset
-                            PaddingY += UIPadding.PaddingBottom.Offset
-                            PaddingY += UIPadding.PaddingTop.Offset
+                            PaddingX = PaddingX + UIPadding.PaddingLeft.Offset + UIPadding.PaddingRight.Offset
+                            PaddingY = PaddingY + UIPadding.PaddingTop.Offset + UIPadding.PaddingBottom.Offset
                         end
+
+                        -- Smooth resizing with Tween
+                        local targetCanvasSize
                         if FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.Y then
-                            FrameInstance.CanvasSize = UDim2.new(0,0,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            targetCanvasSize = UDim2.new(0, 0, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.X then
-                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,0)
+                            targetCanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, 0)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.XY then
-                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            targetCanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         end
+
+                        -- Tween to smooth resize the canvas
+                        game:GetService("TweenService"):Create(FrameInstance, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                            CanvasSize = targetCanvasSize
+                        }):Play()
                     end
                 end
-                UpdateSize(v,Layout)
-                Layout.Changed:connect(function() UpdateSize(v,Layout) end)
-                v:GetPropertyChangedSignal("AutomaticCanvasSize"):connect(function() UpdateSize(v,Layout) end)
+                UpdateSize(v, Layout)
+                Layout.Changed:Connect(function() UpdateSize(v, Layout) end)
+                v:GetPropertyChangedSignal("AutomaticCanvasSize"):Connect(function() UpdateSize(v, Layout) end)
             end
         end
     end
-    
 end
+
+-- New FrameMain Creation with Smooth Resizing
 function Library.New()
-	
-	local FrameMain = CreateObject("Frame", {
-		Name = "FrameMain",	Parent = Library.Core,	BackgroundColor3 = Color3.fromRGB(14, 13, 13),	BackgroundTransparency = 0.1,	ClipsDescendants = true,	Position = UDim2.new(0.5, -357.5, 0.5, -215),	Size = UDim2.new(0,715,0,430),	Transparency = 0.10000000149011612,
-	})
+    local FrameMain = CreateObject("Frame", {
+        Name = "FrameMain",
+        Parent = Library.Core,
+        BackgroundColor3 = Color3.fromRGB(14, 13, 13),
+        BackgroundTransparency = 0.1,
+        ClipsDescendants = true,
+        Position = UDim2.new(0.5, -357.5, 0.5, -215),
+        Size = UDim2.new(0, 715, 0, 430),
+        Transparency = 0.10000000149011612,
+    })
+
+    -- Smoothly resize FrameMain if needed (can be triggered dynamically later)
+    local function ResizeMainFrame(newSize)
+        game:GetService("TweenService"):Create(FrameMain, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = newSize
+        }):Play()
+    end
+
+    -- Example of resizing the frame dynamically
+    wait(2) -- Simulate a delay
+    ResizeMainFrame(UDim2.new(0, 800, 0, 500)) -- Resize to new dimensions
+
+    return FrameMain
+end
+
 	local UICorner = CreateObject("UICorner", {
 		Parent = FrameMain,	CornerRadius = UDim.new(0,6),
 	})
@@ -605,277 +636,293 @@ end)
 
 
 
-function WinHandle.Separator()
-    local FSeparation = CreateObject("Frame", {
-        Name = "FSeparation",    
-        Parent = ETabs,    
-        BackgroundColor3 = Color3.fromRGB(255,255,255),    
-        BackgroundTransparency = 0.9300000071525574,    
-        BorderColor3 = Color3.fromRGB(27,42,53),    
-        BorderSizePixel = 0,    
-        Position = UDim2.new(0.11104323714971542, 0, 0.8424820899963379, 0),    
-        Size = UDim2.new(0.8389567136764526, 0, 0, 1),    
-        Transparency = 0.9300000071525574,
-    })
-end
 
-function WinHandle.Tab(name, img)
-    WinHandle.TabCount = WinHandle.TabCount +  1
-    local TabButton = CreateObject("TextButton", {
-        Name = "TabButton",    
-        Parent = ETabs,    
-        BackgroundColor3 = Color3.fromRGB(255,255,255),    
-        BackgroundTransparency = 1,    
-        Position = UDim2.new(0.09612662345170975, 0, 0, 0),    
-        Size = UDim2.new(0.8077465891838074, 0, 0.014869890175759792, 25),    
-        AutoButtonColor = false,    
-        Font = Enum.Font.SourceSans, 
-        Text = (name or "Tab"),
-        TextColor3 = Color3.fromRGB(255,255,255),    
-        TextSize = 18,    
-        TextTransparency = 0.7,    
-        TextXAlignment = Enum.TextXAlignment.Left,
-    })
-    local UICorner = CreateObject("UICorner", {
-        Parent = TabButton,    
-        CornerRadius = UDim.new(0, 4),
-    })
-    local UIPadding = CreateObject("UIPadding", {
-        Parent = TabButton,    
-        PaddingLeft = UDim.new(0, 30),
-    })
-    local ImageLabel = CreateObject("ImageLabel", {
-        Parent = TabButton,    
-        BackgroundColor3 = Color3.fromRGB(255,255,255),    
-        AnchorPoint = Vector2.new(0, 0.45), 
-        BackgroundTransparency = 1,    
-        Position = UDim2.new(-0.16325347125530243, 0, 0.5, 0),    
-        Size = UDim2.new(0, 12, 0, 12),    
-        Image = (img or "http://www.roblox.com/asset/?id=11854792250"),    
-        ImageTransparency = 0.7,
-    })
-    local Tab = CreateObject("Frame", {
-        Name = "Tab",    
-        Parent = TabFrame,    
-        BackgroundColor3 = Color3.fromRGB(255,255,255),    
-        BackgroundTransparency = 1,    
-        Position = UDim2.new(0.018, 0, 0.122, 0),    
-        Size = UDim2.new(0, 372, 0, 359),    
+
+	function WinHandle.Separator()
+		local FSeparation = CreateObject("Frame", {
+			Name = "FSeparation",	Parent = ETabs,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9300000071525574,	BorderColor3 = Color3.fromRGB(27,42,53),	BorderSizePixel = 0,	Position = UDim2.new(0.11104323714971542,0,0.8424820899963379,0),	Size = UDim2.new(0.8389567136764526,0,0,1),	Transparency = 0.9300000071525574,
+		})
+	end
+	function WinHandle.Tab(name, img)
+		WinHandle.TabCount = WinHandle.TabCount +  1
+		local TabButton = CreateObject("TextButton", {
+			Name = "TabButton",	Parent = ETabs,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.09612662345170975,0,0,0),	Size = UDim2.new(0.8077465891838074,0,0.014869890175759792,25),	AutoButtonColor = false,	Font = Enum.Font.SourceSans, Text = (name or "Tab"),	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,	TextTransparency = 0.7,	TextXAlignment = Enum.TextXAlignment.Left,
+		})
+		local UICorner = CreateObject("UICorner", {
+			Parent = TabButton,	CornerRadius = UDim.new(0,4),
+		})
+		local UIPadding = CreateObject("UIPadding", {
+			Parent = TabButton,	PaddingLeft = UDim.new(0,30),
+		})
+		local ImageLabel = CreateObject("ImageLabel", {
+			Parent = TabButton,	BackgroundColor3 = Color3.fromRGB(255,255,255),	AnchorPoint = Vector2.new(0, 0.45), BackgroundTransparency = 1,	Position = UDim2.new(-0.16325347125530243,0,0.5,0),	Size = UDim2.new(0,12,0,12),	Image = (img or "http://www.roblox.com/asset/?id=11854792250"),	ImageTransparency = 0.7,
+		})
+		local Tab = CreateObject("Frame", {
+			Name = "Tab",	Parent = TabFrame,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.018,0,0.122,0),	Size = UDim2.new(0,372,0,359),	Transparency = 1,
+		})
+		local Left = CreateObject("ScrollingFrame", {
+			AutomaticCanvasSize = Enum.AutomaticSize.Y, Name = "Left",	Parent = Tab,	Active = true,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderSizePixel = 0,	Size = UDim2.new(0.5,0,1,0),	Transparency = 1,	CanvasSize = UDim2.new(0,0,0,0),	ScrollBarImageColor3 = Color3.fromRGB(0,0,0),	ScrollBarThickness = 0,
+		})
+		local UIListLayout = CreateObject("UIListLayout", {
+			Parent = Left,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,8),
+		})
+		local UIPadding = CreateObject("UIPadding", {
+			Parent = Left,	PaddingLeft = UDim.new(0,5),	PaddingRight = UDim.new(0,5),	PaddingTop = UDim.new(0,5), PaddingBottom = UDim.new(0,5)
+		})
+		local Right = CreateObject("ScrollingFrame", {
+		    AutomaticCanvasSize = Enum.AutomaticSize.Y, 	Name = "Right",	Parent = Tab,	Active = true,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	BorderSizePixel = 0,	Position = UDim2.new(0.5,0,0,0),	Size = UDim2.new(0.5,0,1,0),	Transparency = 1,	CanvasSize = UDim2.new(0,0,0,0),	ScrollBarImageColor3 = Color3.fromRGB(0,0,0),	ScrollBarThickness = 0,
+		})
+		local UIListLayout2 = CreateObject("UIListLayout", {
+			Parent = Right,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,8),
+		})
+		local UIPadding2 = CreateObject("UIPadding", {
+			Parent = Right,	PaddingLeft = UDim.new(0,5),	PaddingRight = UDim.new(0,5),	PaddingTop = UDim.new(0,5), PaddingBottom = UDim.new(0,5)
+		})
+		TabButton.MouseButton1Down:Connect(function()
+			TabName.Text = name
+			
+			for i,v in pairs(TabFrame:GetChildren()) do
+				if v:IsA'Frame' and v.Name == 'Tab' then
+					v.Visible = false
+				end
+			end
+			Tab.Visible = true
+			for i,v in pairs(ETabs:GetChildren()) do
+				if v:IsA'TextButton' and v.Name == 'TabButton' then
+					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+						BackgroundTransparency = 1
+					})
+					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+						TextTransparency = 0.7
+					})
+					TweenObject(v.ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+						ImageTransparency = 0.7
+					})
+				end
+			end
+			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 0.95
+			})
+			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+				TextTransparency = 0.4
+			})
+			TweenObject(ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+				ImageTransparency = 0.4
+			})
+		end)
+		local SectionHandle = {}
+		function SectionHandle.Open()
+			TabName.Text = name
+			
+			for i,v in pairs(TabFrame:GetChildren()) do
+				if v:IsA'Frame' and v.Name == 'Tab' then
+					v.Visible = false
+				end
+			end
+			Tab.Visible = true
+			for i,v in pairs(ETabs:GetChildren()) do
+				if v:IsA'TextButton' and v.Name == 'TabButton' then
+					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+						BackgroundTransparency = 1
+					})
+					TweenObject(v, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+						TextTransparency = 0.7
+					})
+					TweenObject(v.ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+						ImageTransparency = 0.7
+					})
+				end
+			end
+			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 0.95
+			})
+			TweenObject(TabButton, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+				TextTransparency = 0.4
+			})
+			TweenObject(ImageLabel, Enum.EasingStyle.Circular, 0.1, Enum.EasingDirection.Out, {
+				ImageTransparency = 0.4
+			})
+		end
+		if WinHandle.TabCount == 1 then
+			SectionHandle.Open()
+		end
+		function SectionHandle.Section(side)
+			local Section = CreateObject("Frame", {
+				Name = "Section",	Parent = (side == 'left' and Left or Right),	AutomaticSize = Enum.AutomaticSize.Y,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.949999988079071,	Size = UDim2.new(1,0,-0.51585041880607605,58),	Transparency = 0.949999988079071,
+			})
+			local UICorner = CreateObject("UICorner", {
+				Parent = Section,	CornerRadius = UDim.new(0,4),
+			})
+			local UIStroke = CreateObject("UIStroke", {
+				Parent = Section,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
+			})
+			local UIPadding = CreateObject("UIPadding", {
+				Parent = Section,	PaddingBottom = UDim.new(0,5),	PaddingLeft = UDim.new(0,5),	PaddingRight = UDim.new(0,5),	PaddingTop = UDim.new(0,5),
+			})
+			local UIListLayout = CreateObject("UIListLayout", {
+				Parent = Section,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,5),
+			})
+			local AssetHandler = {}
+			function AssetHandler.Button(name, callback)
+				local Button = CreateObject("Frame", {
+					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.6512274742126465,0),	Size = UDim2.new(1,0,0,35),	Transparency = 1,
+				})
+				local TextButton = CreateObject("TextButton", {
+					Parent = Button,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9700000286102295,	Position = UDim2.new(0.4969879388809204,0,0.5,0),	Size = UDim2.new(0.949999988079071,0,0,23),	AutoButtonColor = false,	Font = Enum.Font.SourceSans,Text =name,	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
+				})
+				local UIPadding = CreateObject("UIPadding", {
+					Parent = TextButton,	PaddingLeft = UDim.new(0,10),
+				})
+				local UICorner = CreateObject("UICorner", {
+					Parent = TextButton,	CornerRadius = UDim.new(0,4),
+				})
+				local UIStroke = CreateObject("UIStroke", {
+					Parent = TextButton,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
+				})
+				TextButton.MouseButton1Down:Connect(function()
+					task.spawn(callback)
+					TextButton.BackgroundTransparency = 0.96
+					wait()
+					TextButton.BackgroundTransparency = 0.9700000286102295
+				end)
+				local Handler = {
+					Button = Button
+				}
+				return Handler
+			end
+			function AssetHandler.Slider(name, min, max, default, symbol, callback)
+    local Slider = CreateObject("Frame", {
+        Name = name,
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 30),
         Transparency = 1,
     })
-    local Left = CreateObject("ScrollingFrame", {
-        AutomaticCanvasSize = Enum.AutomaticSize.Y,    
-        Name = "Left",    
-        Parent = Tab,    
-        Active = true,    
-        BackgroundColor3 = Color3.fromRGB(255,255,255),    
-        BackgroundTransparency = 1,    
-        BorderSizePixel = 0,    
-        Size = UDim2.new(0.5, 0, 1, 0),    
-        Transparency = 1,    
-        CanvasSize = UDim2.new(0, 0, 0, 0),    
-        ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0),    
-        ScrollBarThickness = 0,
+    
+    local TextButton = CreateObject("TextButton", {
+        Parent = Slider,
+        Text = name,
+        TextTransparency = 1,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        Font = Enum.Font.SourceSans,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 16,
+        TextTransparency = 0.5,
+        TextXAlignment = Enum.TextXAlignment.Left,
     })
-    local UIListLayout = CreateObject("UIListLayout", {
-        Parent = Left,    
-        SortOrder = Enum.SortOrder.LayoutOrder,    
-        Padding = UDim.new(0, 8),
-    })
+
     local UIPadding = CreateObject("UIPadding", {
-        Parent = Left,    
-        PaddingLeft = UDim.new(0, 5),    
-        PaddingRight = UDim.new(0, 5),    
-        PaddingTop = UDim.new(0, 5), 
-        PaddingBottom = UDim.new(0, 5),
+        Parent = TextButton,
+        PaddingLeft = UDim.new(0, 5),
     })
-    local Right = CreateObject("ScrollingFrame", {
-        AutomaticCanvasSize = Enum.AutomaticSize.Y,    
-        Name = "Right",    
-        Parent = Tab,    
-        Active = true,    
-        BackgroundColor3 = Color3.fromRGB(255,255,255),    
-        BackgroundTransparency = 1,    
-        BorderSizePixel = 0,    
-        Position = UDim2.new(0.5, 0, 0, 0),    
-        Size = UDim2.new(0.5, 0, 1, 0),    
-        Transparency = 1,    
-        CanvasSize = UDim2.new(0, 0, 0, 0),    
-        ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0),    
-        ScrollBarThickness = 0,
-    })
-    local UIListLayout2 = CreateObject("UIListLayout", {
-        Parent = Right,    
-        SortOrder = Enum.SortOrder.LayoutOrder,    
-        Padding = UDim.new(0, 8),
-    })
-    local UIPadding2 = CreateObject("UIPadding", {
-        Parent = Right,    
-        PaddingLeft = UDim.new(0, 5),    
-        PaddingRight = UDim.new(0, 5),    
-        PaddingTop = UDim.new(0, 5), 
-        PaddingBottom = UDim.new(0, 5),
+
+    local TextLabel = CreateObject("TextLabel", {
+        Parent = TextButton,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.007, 0, 0.067, 0),
+        Size = UDim2.new(0, 38, 0, 24),
+        Font = Enum.Font.SourceSans,
+        Text = "FOV",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 12,
+        TextTransparency = 0.5,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
     })
     
-    -- Rest of the logic for tabs...
+    TextLabel.Text = name
 
-    local SectionHandle = {}
-    function SectionHandle.Open()
-        -- Rest of the logic for tab opening...
-    end
-    if WinHandle.TabCount == 1 then
-        SectionHandle.Open()
-    end
+    local BG = CreateObject("Frame", {
+        Name = "BG",
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.75,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.285, 0, 0.5, 0),
+        Size = UDim2.new(0, 77, 0, 2),
+        Transparency = 0.75,
+    })
 
-    function SectionHandle.Section(side)
-        local Section = CreateObject("Frame", {
-            Name = "Section",    
-            Parent = (side == 'left' and Left or Right),    
-            AutomaticSize = Enum.AutomaticSize.Y,    
-            BackgroundColor3 = Color3.fromRGB(255,255,255),    
-            BackgroundTransparency = 0.949999988079071,    
-            Size = UDim2.new(1, 0, -0.51585041880607605, 58),    
-            Transparency = 0.949999988079071,
-        })
-        local UICorner = CreateObject("UICorner", {
-            Parent = Section,    
-            CornerRadius = UDim.new(0, 4),
-        })
-        local UIStroke = CreateObject("UIStroke", {
-            Parent = Section,    
-            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,    
-            Color = Color3.fromRGB(255,255,255),    
-            Thickness = 1.2000000476837158,    
-            Transparency = 0.925000011920929,
-        })
-        local UIPadding = CreateObject("UIPadding", {
-            Parent = Section,    
-            PaddingBottom = UDim.new(0, 5),    
-            PaddingLeft = UDim.new(0, 5),    
-            PaddingRight = UDim.new(0, 5),    
-            PaddingTop = UDim.new(0, 5),
-        })
-        local UIListLayout = CreateObject("UIListLayout", {
-            Parent = Section,    
-            SortOrder = Enum.SortOrder.LayoutOrder,    
-            Padding = UDim.new(0, 5),
-        })
-        local AssetHandler = {}
-        
-        -- Slider Update Functionality
-        function AssetHandler.Slider(name, min, max, default, symbol, callback)
-            local Slider = CreateObject("Frame", {
-                Name = name,
-                Parent = Section,
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 0, 30),
-                Transparency = 1,
-            })
+    local Frame = CreateObject("Frame", {
+        Parent = TextButton,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        BorderColor3 = Color3.fromRGB(27, 42, 53),
+        Position = UDim2.new(0.280, 0, 0.300, 0),
+        Size = UDim2.new(0, 77, 0, 12),
+        Transparency = 1,
+    })
 
-            local TextButton = CreateObject("TextButton", {
-                Parent = Slider,
-                Text = "",
-                TextTransparency = 1,
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0),
-                Font = Enum.Font.SourceSans,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-                TextSize = 16,
-                TextTransparency = 0.5,
-                TextXAlignment = Enum.TextXAlignment.Left,
-            })
-            local UIPadding = CreateObject("UIPadding", {
-                Parent = TextButton,
-                PaddingLeft = UDim.new(0, 5),
-            })
+    local Ball = CreateObject("Frame", {
+        Name = "Ball",
+        Parent = Frame,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(198, 198, 198),
+        Position = UDim2.new(0, 3, 0.5, 0),
+        Size = UDim2.new(0, 10, 0, 10),
+    })
 
-            local TextLabel = CreateObject("TextLabel", {
-                Parent = TextButton,
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0.007, 0, 0.067, 0),
-                Size = UDim2.new(0, 38, 0, 24),
-                Font = Enum.Font.SourceSans,
-                Text = "FOV",
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-                TextSize = 12,
-                TextTransparency = 0.5,
-                TextWrapped = true,
-                TextXAlignment = Enum.TextXAlignment.Left,
-            })
-            TextLabel.Text = name
+    local UICorner = CreateObject("UICorner", {
+        Parent = Ball,
+        CornerRadius = UDim.new(1, 0),
+    })
 
-            local BG = CreateObject("Frame", {
-                Name = "BG",
-                Parent = TextButton,
-                AnchorPoint = Vector2.new(0, 0.5),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 0.75,
-                BorderSizePixel = 0,
-                Position = UDim2.new(0.285, 0, 0.5, 0),
-                Size = UDim2.new(0, 77, 0, 2),
-                Transparency = 0.75,
-            })
+    local Amount = CreateObject("TextLabel", {
+        Name = "Amount",
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.949999988079071,
+        Position = UDim2.new(0.801, 0, 0.5, 0),
+        Size = UDim2.new(0, 26, 0, 15),
+        Font = Enum.Font.SourceSans,
+        Text = default .. symbol,
+        TextColor3 = Color3.fromRGB(202, 202, 202),
+        TextSize = 14,
+        TextWrapped = true,
+    })
 
-            local Frame = CreateObject("Frame", {
-                Parent = TextButton,
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 1,
-                BorderColor3 = Color3.fromRGB(27, 42, 53),
-                Position = UDim2.new(0.280, 0, 0.300, 0),
-                Size = UDim2.new(0, 77, 0, 12),
-                Transparency = 1,
-            })
+    local UICorner2 = CreateObject("UICorner", {
+        Parent = Amount,
+        CornerRadius = UDim.new(0, 4),
+    })
 
-            local AmountButton = CreateObject("TextButton", {
-                Name = "AmountButton",
-                Parent = Frame,
-                AnchorPoint = Vector2.new(0, 0.5),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 0.949999988079071,
-                Position = UDim2.new(0.801, 0, 0.5, 0),
-                Size = UDim2.new(0, 26, 0, 15),
-                Font = Enum.Font.SourceSans,
-                Text = default .. symbol,  -- Display the default value
-                TextColor3 = Color3.fromRGB(202, 202, 202),
-                TextSize = 14,
-                TextWrapped = true,
-            })
+    local UIStroke = CreateObject("UIStroke", {
+        Parent = Amount,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.2,
+        Transparency = 0.925,
+    })
 
-            -- Add interaction for clicking the button
-            AmountButton.MouseButton1Click:Connect(function()
-                local userInput = game:GetService("TextBox")  -- Example input method
-                local success, newValue = pcall(function()
-                    return tonumber(userInput)  -- Validate the input
-                end)
-                if success and newValue then
-                    slider:set(newValue)
-                    AmountButton.Text = newValue .. symbol
-                    callback(newValue)
-                else
-                    print("Invalid input")
-                end
+    local slider = Framework.PositionSlider(Frame, Ball, min, max, 0.1)
+    slider:set(default)  -- Ensure the slider is set to the correct initial value
+
+    -- Update the displayed value when the slider changes
+    slider.Updated:connect(function(value)
+        Amount.Text = value .. symbol  -- Update displayed amount based on slider
+        task.spawn(function()
+            pcall(function()
+                callback(value)
             end)
+        end)
+    end)
 
-            -- Add UICorner, UIStroke for styling
-            local UICorner2 = CreateObject("UICorner", {
-                Parent = AmountButton,
-                CornerRadius = UDim.new(0, 4),
-            })
-
-            local UIStroke = CreateObject("UIStroke", {
-                Parent = AmountButton,
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                Color = Color3.fromRGB(255, 255, 255),
-                Thickness = 1.2,
-                Transparency = 0.925,
-            })
+    -- Handle updating the slider visually
+    local Handle = {
+        Update = function(num)
+            slider:set(num)  -- Set the slider's current value
+            Amount.Text = num .. symbol  -- Update the displayed amount
         end
-    end
+    }
+    return Handle
 end
-
 
 			function AssetHandler.Keybind(name, Dkey, callback, onchanged)
 				local Keybind = CreateObject("Frame", {
@@ -919,187 +966,6 @@ end
 				
 				key:set(Dkey or Enum.KeyCode.Q)
 			end
-
-
-
-
-
-
-
-
-
-
-function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
-    local State = defaultState
-
-    local Toggle = CreateObject("Frame", {
-        Name = name,
-        Parent = Section,
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1,0,0,30),
-    })
-
-    local TextButton = CreateObject("TextButton", {
-        Parent = Toggle,
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1,0,1,0),
-        Font = Enum.Font.SourceSans,
-        Text = "",
-        TextColor3 = Color3.fromRGB(255,255,255),
-        TextSize = 17,
-        TextXAlignment = Enum.TextXAlignment.Left,
-    })
-
-    CreateObject("UIPadding", {
-        Parent = TextButton,
-        PaddingLeft = UDim.new(0,5),
-    })
-
-    local Label = CreateObject("TextLabel", {
-        Parent = TextButton,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(0.6, 0, 1, 0),
-        Font = Enum.Font.SourceSans,
-        Text = name,
-        TextColor3 = Color3.fromRGB(255,255,255),
-        TextSize = 16,
-        TextXAlignment = Enum.TextXAlignment.Left,
-    })
-
-    -- Adjust splash position to be further right
-    local Splash = CreateObject("Frame", {
-        Parent = TextButton,
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 0.9,
-        Position = UDim2.new(0.78, 0, 0.5, 0), -- Slightly adjusted to the right
-        Size = UDim2.new(0, 30, 0, 15),
-    })
-    CreateObject("UICorner", {Parent = Splash, CornerRadius = UDim.new(1,0)})
-
-    local Dot = CreateObject("Frame", {
-        Parent = Splash,
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 0.65,
-        Position = UDim2.new(0,3,0.5,0),
-        Size = UDim2.new(0,10,0,10),
-    })
-    CreateObject("UICorner", {Parent = Dot, CornerRadius = UDim.new(1,0)})
-
-    -- Move keybind slightly left
-    local Amount = CreateObject("TextLabel", {
-        Name = "Amount",
-        Parent = TextButton,
-        AnchorPoint = Vector2.new(0, 0.5),
-        AutomaticSize = Enum.AutomaticSize.X,
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 0.949999988079071,
-        Position = UDim2.new(0.6, 0, 0.5, 0), -- Moved slightly left
-        Size = UDim2.new(0,3,0,15),
-        Font = Enum.Font.SourceSans,
-        Text = Dkey.Name,
-        TextColor3 = Color3.fromRGB(202,202,202),
-        TextSize = 11,
-        TextWrapped = true,
-        TextXAlignment = Enum.TextXAlignment.Right,
-    })
-
-    CreateObject("UICorner", {Parent = Amount, CornerRadius = UDim.new(0,4)})
-    CreateObject("UIStroke", {
-        Parent = Amount,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = Color3.fromRGB(255,255,255),
-        Thickness = 1.2,
-        Transparency = 0.925,
-    })
-    CreateObject("UIPadding", {
-        Parent = Amount,
-        PaddingLeft = UDim.new(0,5),
-        PaddingRight = UDim.new(0,5),
-    })
-
-    -- Local function to update toggle state
-    local function UpdateToggleVisual()
-        if State then
-            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                AnchorPoint = Vector2.new(1, 0.5),
-                Position = UDim2.new(1, -3, 0.5, 0),
-                BackgroundTransparency = 0,
-            })
-            TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0.8,
-            })
-            Label.TextTransparency = 0
-        else
-            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.new(0, 3, 0.5, 0),
-                BackgroundTransparency = 0.65,
-            })
-            TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0.9,
-            })
-            Label.TextTransparency = 0.5
-        end
-    end
-
-    -- Local function to toggle the state
-    local function SetToggleState(newState)
-        State = newState
-        UpdateToggleVisual()
-        callback(State)
-    end
-
-    -- Mouse button click handling (to toggle state)
-    TextButton.MouseButton1Down:Connect(function(x, y)
-        -- Only toggle the state if the left part of the button or splash is clicked
-        if x < TextButton.AbsoluteSize.X * 0.75 or x > Splash.AbsolutePosition.X and x < Splash.AbsolutePosition.X + Splash.AbsoluteSize.X then
-            SetToggleState(not State)  -- Toggle the state if clicked on the left side or splash
-        else
-            -- Do nothing (keybind display area)
-            Amount.Text = "..."
-        end
-    end)
-
-    -- Keybind setup (ensure it's separate from other keybinds)
-    local key = Framework.Keybind(TextButton, { Enum.KeyCode.Space, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D, Enum.KeyCode.LeftShift, Enum.KeyCode.LeftControl, Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2 })
-
-    -- Ensure that keybind actions are isolated (no interference with other codes)
-    key.Updated:Connect(function(newKey)
-        Amount.Text = tostring(newKey.Name)
-    end)
-
-    -- Trigger toggle when keybind is pressed
-    key.Pressed:Connect(function()
-        SetToggleState(not State)  -- Toggle the state when the keybind is pressed
-        Amount.BackgroundTransparency = 0.9  -- Highlight keybind button
-        task.wait()
-        Amount.BackgroundTransparency = 0.949999988079071  -- Reset transparency
-    end)
-
-    key:set(Dkey or Enum.KeyCode.Q)  -- Default keybind
-
-    -- Initial visual update
-    task.defer(UpdateToggleVisual)
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			function AssetHandler.ColorPicker(name, preset, callback)
 				local ColorPicker = CreateObject("Frame", {
 					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.7777777910232544,0),	Size = UDim2.new(1,0,0,38),	Transparency = 1,
