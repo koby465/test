@@ -414,8 +414,11 @@ end)
 local JSON = Library.JSON
 local player = game.Players.LocalPlayer
 local userId = player.UserId
+
+-- Retrieve player's profile image URL
 local playerImage = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
 
+-- Ensure ProfileData exists and save if not
 if not JSON.DataExist('ProfileData') then
     JSON.WriteData('ProfileData', {
         Name = player.Name,
@@ -423,79 +426,96 @@ if not JSON.DataExist('ProfileData') then
     })
 end
 
-	if not JSON.DataExist('UIData') then
-		JSON.WriteData('UIData', {
-			Opacity = true
-		})
-	end
-	if not JSON.DataExist('DragData') then
-		JSON.WriteData('DragData', {
-			Enabled = true
-		})
-	end
-    if not JSON.DataExist('Config') then
-		JSON.WriteData('config', {
-			"possible configs"
-		})
-	end
-	local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
-	
-	local ProfileData = JSON.ReadData('ProfileData')
-	local UIData = JSON.ReadData('UIData')
-	local Dragging = JSON.ReadData('DragData')
+-- Ensure other settings data exists
+if not JSON.DataExist('UIData') then
+    JSON.WriteData('UIData', {
+        Opacity = true
+    })
+end
 
-	UserProfileNam.Text = ProfileData.Name:sub(1, 15)
-	UserProfileImage.Image = 'rbxassetid://'..ProfileData.Image
+if not JSON.DataExist('DragData') then
+    JSON.WriteData('DragData', {
+        Enabled = true
+    })
+end
 
-	FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
-	FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
+if not JSON.DataExist('Config') then
+    JSON.WriteData('Config', {
+        "possible configs"
+    })
+end
 
-	MainDrag.Enabled = Dragging.Enabled
+-- Set up the drag functionality for the main frame
+local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
 
-	local Drag = Library.Framework.AllowDragging(Drag, FrameMain, 0.1)
-	Drag.Enabled = true
+-- Read data
+local ProfileData = JSON.ReadData('ProfileData')
+local UIData = JSON.ReadData('UIData')
+local Dragging = JSON.ReadData('DragData')
 
-	local TabName = TabTitle
-	local WinHandle = {
-		TabCount = 0,
-		Exit = function()
-			Library.Core:Destroy()
-		end,
-		ProfileData = ProfileData,
-		UIData = UIData,
-		DragData = Dragging.Enabled
-	}
-	local FullDrag
+-- Update UI elements based on ProfileData
+UserProfileNam.Text = ProfileData.Name:sub(1, 15)
+UserProfileImage.Image = ProfileData.Image  -- Directly use the URL for the image
 
-	function WinHandle.UpdateProfile(data)
-		JSON.WriteData('ProfileData', data)
-		UserProfileNam.Text = data.Name:sub(1, 15)
-		UserProfileImage.Image = 'rbxassetid://'..data.Image
-	end
-	function WinHandle.UpdateWindowData(data)
-		JSON.WriteData('UIData', data)
-		FrameMain.BackgroundTransparency = (data.Opacity and 0.1 or 0)
-		FrameMain.BackgroundColor3 = (data.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
-	end
-	function WinHandle.UpdateTopData(data)
-		JSON.WriteData('DragData', data)
-		MainDrag.Enabled = data.Enabled
-		WinHandle.DragData = data.Enabled
-	end
-	function WinHandle.AskQuestion(question, callback)
-		local Clone = Question:Clone()
-		Clone.Parent = FrameMain
-		Clone.Title.Text = question
-		Clone.button1.MouseButton1Down:Connect(function()
-			Clone:Destroy()
-			callback(true)
-		end)
-		Clone.button2.MouseButton1Down:Connect(function()
-			Clone:Destroy()
-			callback(false)
-		end)
-		Clone.Visible = true
-	end
+-- Set background transparency based on UI settings
+FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
+FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
+
+-- Set drag functionality
+MainDrag.Enabled = Dragging.Enabled
+
+-- Setup the top-level dragging functionality
+local Drag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.1)
+Drag.Enabled = true
+
+-- Create WinHandle for managing the window state
+local WinHandle = {
+    TabCount = 0,
+    Exit = function()
+        Library.Core:Destroy()
+    end,
+    ProfileData = ProfileData,
+    UIData = UIData,
+    DragData = Dragging.Enabled
+}
+
+-- Function to update Profile Data
+function WinHandle.UpdateProfile(data)
+    JSON.WriteData('ProfileData', data)
+    UserProfileNam.Text = data.Name:sub(1, 15)
+    UserProfileImage.Image = data.Image  -- Use the image URL
+end
+
+-- Function to update UI data
+function WinHandle.UpdateWindowData(data)
+    JSON.WriteData('UIData', data)
+    FrameMain.BackgroundTransparency = (data.Opacity and 0.1 or 0)
+    FrameMain.BackgroundColor3 = (data.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
+end
+
+-- Function to update drag data
+function WinHandle.UpdateTopData(data)
+    JSON.WriteData('DragData', data)
+    MainDrag.Enabled = data.Enabled
+    WinHandle.DragData = data.Enabled
+end
+
+-- Function to ask a question
+function WinHandle.AskQuestion(question, callback)
+    local Clone = Question:Clone()
+    Clone.Parent = FrameMain
+    Clone.Title.Text = question
+    Clone.button1.MouseButton1Down:Connect(function()
+        Clone:Destroy()
+        callback(true)
+    end)
+    Clone.button2.MouseButton1Down:Connect(function()
+        Clone:Destroy()
+        callback(false)
+    end)
+    Clone.Visible = true
+end
+
 
 local UserInputService = game:GetService("UserInputService")
 
