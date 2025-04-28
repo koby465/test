@@ -775,19 +775,21 @@ function AssetHandler.Button(name, callback)
         Transparency = 0.925,
     })
 
-    -- 🧠 Smooth click feedback animation
+    -- 🧠 Smooth clean click animation
     TextButton.MouseButton1Down:Connect(function()
-        -- When pressed, make it brighter
-        TweenObject(TextButton, Enum.EasingStyle.Quint, 0.1, Enum.EasingDirection.Out, {
-            BackgroundTransparency = 0.9,
-            TextTransparency = 0.3,
+        -- 1. Shrink + darken when clicked
+        TweenObject(TextButton, Enum.EasingStyle.Quad, 0.15, Enum.EasingDirection.Out, {
+            Size = UDim2.new(0.93, 0, 0, 22),
+            BackgroundTransparency = 0.92,
+            TextTransparency = 0.35,
         })
 
-        task.spawn(callback) -- Still call your button function
+        task.spawn(callback)
 
-        -- Then quickly fade it back to normal
-        task.delay(0.15, function()
-            TweenObject(TextButton, Enum.EasingStyle.Quint, 0.2, Enum.EasingDirection.Out, {
+        -- 2. Then after a small delay, expand + lighten back
+        task.delay(0.2, function()
+            TweenObject(TextButton, Enum.EasingStyle.Quad, 0.25, Enum.EasingDirection.Out, {
+                Size = UDim2.new(0.95, 0, 0, 23),
                 BackgroundTransparency = 0.97,
                 TextTransparency = 0.5,
             })
