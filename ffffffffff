@@ -383,26 +383,29 @@ local Resize = CreateObject("ImageButton", {
     ImageTransparency = 0.5,
 })
 
-
 local dragging = false
 local startMousePos = nil
 local startSize = nil
 
 Resize.MouseButton1Down:Connect(function(input)
-    dragging = true
-    startMousePos = input.Position
-    startSize = FrameMain.Size
+    -- Ensure that input.Position is valid
+    if input then
+        dragging = true
+        startMousePos = input.Position
+        startSize = FrameMain.Size
+    end
 end)
 
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging then
+        -- Check if the input is of the type MouseMovement
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            -- Ensure startMousePos is not nil
             if startMousePos then
-                local deltaY = input.Position.Y - startMousePos.Y  -- Get the mouse movement in the Y direction
+                -- Calculate the mouse movement
+                local deltaY = input.Position.Y - startMousePos.Y
 
                 -- Resize FrameMain height based on mouse movement
-                local newHeight = math.max(200, startSize.Y.Offset + deltaY)
+                local newHeight = math.max(200, startSize.Y.Offset + deltaY)  -- Prevent shrinking too small
                 FrameMain.Size = UDim2.new(0, startSize.X.Offset, 0, newHeight)
 
                 -- Resize Sidebar and other elements proportionally
@@ -413,8 +416,6 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
                 if AControlModule then
                     AControlModule.Size = UDim2.new(0, FrameMain.Size.X.Offset * 0.25, 0, FrameMain.Size.Y.Offset * 0.1)
                 end
-
-                -- Update other elements if needed...
             end
         end
     end
