@@ -85,59 +85,51 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-
-    Framework = {
-        AllowDragging = function(Object, Frame, Speed)
-            local dragToggle = nil
-            local dragSpeed = 0
-            local dragInput = nil
-            local dragStart = nil
-            local dragPos = nil
-            local Util = {
-                Enabled = true
-            }
-            local function updateInput(input)
-                if not Util.Enabled then return end
-                local Delta = input.Position - dragStart
-                local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-                game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-                    Position = Position
-                }):Play()
-            end
-
-            -- Input Begin event
-            Object.InputBegan:Connect(function(input)
-                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-                    dragToggle = true
-                    dragStart = input.Position
-                    startPos = Frame.Position
-                    input.Changed:Connect(function()
-                        if input.UserInputState == Enum.UserInputState.End then
-                            dragToggle = false
-                        end
-                    end)
-                end
-            end)
-
-            -- Input Changed event for dragging
-            Object.InputChanged:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                    dragInput = input
-                end
-            end)
-
-            -- Updating the position of the frame during dragging
-            game:GetService("UserInputService").InputChanged:Connect(function(input)
-                if input == dragInput and dragToggle then
-                    updateInput(input)
-                end
-            end)
-
-            return Util
-        end
-    }
+	Framework = {
+		AllowDragging = function(Object, Frame, Speed)
+			local dragToggle = nil
+			local dragSpeed = 0
+			local dragInput = nil
+			local dragStart = nil
+			local dragPos = nil
+			local Util = {
+				Enabled = true
+			}
+			local function updateInput(input)
+				if not Util.Enabled then return end
+				local Delta = input.Position - dragStart
+				local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+				game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
+					Position = Position
+				}):Play()
+			end
+			Object.InputBegan:Connect(function(input)
+				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+					dragToggle = true
+					dragStart = input.Position
+					startPos = Frame.Position
+					input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							dragToggle = false
+						end
+					end)
+				end
+			end)
+			Object.InputChanged:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+					dragInput = input
+				end
+			end)
+			game:GetService("UserInputService").InputChanged:Connect(function(input)
+				if input == dragInput and dragToggle then
+					updateInput(input)
+				end
+			end)
+			
+			return Util
+		end
+	}
 }
-
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
     for i,v in pairs (AllChildren) do 
@@ -173,19 +165,10 @@ function Library.Init()
     
 end
 function Library.New()
-
-local FrameMain = CreateObject("Frame", {
-    Name = "FrameMain", 
-    Parent = Library.Core, 
-    BackgroundColor3 = Color3.fromRGB(14, 13, 13), 
-    BackgroundTransparency = 0.1, 
-    ClipsDescendants = true, 
-    Position = UDim2.new(0.5, -357.5, 0.5, -215), 
-    Size = UDim2.new(0, 715, 0, 430), 
-    Transparency = 0.10000000149011612,
-})
-local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
-
+	
+	local FrameMain = CreateObject("Frame", {
+		Name = "FrameMain",	Parent = Library.Core,	BackgroundColor3 = Color3.fromRGB(14, 13, 13),	BackgroundTransparency = 0.1,	ClipsDescendants = true,	Position = UDim2.new(0.5, -357.5, 0.5, -215),	Size = UDim2.new(0,715,0,430),	Transparency = 0.10000000149011612,
+	})
 	local UICorner = CreateObject("UICorner", {
 		Parent = FrameMain,	CornerRadius = UDim.new(0,6),
 	})
@@ -450,29 +433,66 @@ end)
 			"possible configs"
 		})
 	end
-local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
+	local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
+	
+	local ProfileData = JSON.ReadData('ProfileData')
+	local UIData = JSON.ReadData('UIData')
+	local Dragging = JSON.ReadData('DragData')
 
-local ProfileData = JSON.ReadData('ProfileData')
-local UIData = JSON.ReadData('UIData')
-local Dragging = JSON.ReadData('DragData')
+	UserProfileNam.Text = ProfileData.Name:sub(1, 15)
+	UserProfileImage.Image = 'rbxassetid://'..ProfileData.Image
 
-UserProfileNam.Text = ProfileData.Name:sub(1, 15)
-UserProfileImage.Image = 'rbxassetid://'..ProfileData.Image
+	FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
+	FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
 
-FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
-FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
+	MainDrag.Enabled = Dragging.Enabled
 
-MainDrag.Enabled = Dragging.Enabled
+	local Drag = Library.Framework.AllowDragging(Drag, FrameMain, 0.1)
+	Drag.Enabled = true
 
--- Resizing functionality
-local ResizeHandle = Instance.new("Frame")
-ResizeHandle.Size = UDim2.new(0, 20, 0, 20)  -- Resize handle size
-ResizeHandle.Position = UDim2.new(1, -20, 1, -20)  -- Bottom-right corner
-ResizeHandle.AnchorPoint = Vector2.new(1, 1)
-ResizeHandle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ResizeHandle.Parent = FrameMain
+	local TabName = TabTitle
+	local WinHandle = {
+		TabCount = 0,
+		Exit = function()
+			Library.Core:Destroy()
+		end,
+		ProfileData = ProfileData,
+		UIData = UIData,
+		DragData = Dragging.Enabled
+	}
+	local FullDrag
 
-local ResizeDrag = Library.Framework.AllowResizing(ResizeHandle, FrameMain, 0.1)
+	function WinHandle.UpdateProfile(data)
+		JSON.WriteData('ProfileData', data)
+		UserProfileNam.Text = data.Name:sub(1, 15)
+		UserProfileImage.Image = 'rbxassetid://'..data.Image
+	end
+	function WinHandle.UpdateWindowData(data)
+		JSON.WriteData('UIData', data)
+		FrameMain.BackgroundTransparency = (data.Opacity and 0.1 or 0)
+		FrameMain.BackgroundColor3 = (data.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
+	end
+	function WinHandle.UpdateTopData(data)
+		JSON.WriteData('DragData', data)
+		MainDrag.Enabled = data.Enabled
+		WinHandle.DragData = data.Enabled
+	end
+	function WinHandle.AskQuestion(question, callback)
+		local Clone = Question:Clone()
+		Clone.Parent = FrameMain
+		Clone.Title.Text = question
+		Clone.button1.MouseButton1Down:Connect(function()
+			Clone:Destroy()
+			callback(true)
+		end)
+		Clone.button2.MouseButton1Down:Connect(function()
+			Clone:Destroy()
+			callback(false)
+		end)
+		Clone.Visible = true
+	end
+
+local UserInputService = game:GetService("UserInputService")
 
 
 local Minimizing = false
@@ -915,6 +935,187 @@ end
 				
 				key:set(Dkey or Enum.KeyCode.Q)
 			end
+
+
+
+
+
+
+
+
+
+
+function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
+    local State = defaultState
+
+    local Toggle = CreateObject("Frame", {
+        Name = name,
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1,0,0,30),
+    })
+
+    local TextButton = CreateObject("TextButton", {
+        Parent = Toggle,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1,0,1,0),
+        Font = Enum.Font.SourceSans,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255,255,255),
+        TextSize = 17,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    CreateObject("UIPadding", {
+        Parent = TextButton,
+        PaddingLeft = UDim.new(0,5),
+    })
+
+    local Label = CreateObject("TextLabel", {
+        Parent = TextButton,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0.6, 0, 1, 0),
+        Font = Enum.Font.SourceSans,
+        Text = name,
+        TextColor3 = Color3.fromRGB(255,255,255),
+        TextSize = 16,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    -- Adjust splash position to be further right
+    local Splash = CreateObject("Frame", {
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.9,
+        Position = UDim2.new(0.78, 0, 0.5, 0), -- Slightly adjusted to the right
+        Size = UDim2.new(0, 30, 0, 15),
+    })
+    CreateObject("UICorner", {Parent = Splash, CornerRadius = UDim.new(1,0)})
+
+    local Dot = CreateObject("Frame", {
+        Parent = Splash,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.65,
+        Position = UDim2.new(0,3,0.5,0),
+        Size = UDim2.new(0,10,0,10),
+    })
+    CreateObject("UICorner", {Parent = Dot, CornerRadius = UDim.new(1,0)})
+
+    -- Move keybind slightly left
+    local Amount = CreateObject("TextLabel", {
+        Name = "Amount",
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        AutomaticSize = Enum.AutomaticSize.X,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.949999988079071,
+        Position = UDim2.new(0.6, 0, 0.5, 0), -- Moved slightly left
+        Size = UDim2.new(0,3,0,15),
+        Font = Enum.Font.SourceSans,
+        Text = Dkey.Name,
+        TextColor3 = Color3.fromRGB(202,202,202),
+        TextSize = 11,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Right,
+    })
+
+    CreateObject("UICorner", {Parent = Amount, CornerRadius = UDim.new(0,4)})
+    CreateObject("UIStroke", {
+        Parent = Amount,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255,255,255),
+        Thickness = 1.2,
+        Transparency = 0.925,
+    })
+    CreateObject("UIPadding", {
+        Parent = Amount,
+        PaddingLeft = UDim.new(0,5),
+        PaddingRight = UDim.new(0,5),
+    })
+
+    -- Local function to update toggle state
+    local function UpdateToggleVisual()
+        if State then
+            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.new(1, -3, 0.5, 0),
+                BackgroundTransparency = 0,
+            })
+            TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                BackgroundTransparency = 0.8,
+            })
+            Label.TextTransparency = 0
+        else
+            TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.new(0, 3, 0.5, 0),
+                BackgroundTransparency = 0.65,
+            })
+            TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                BackgroundTransparency = 0.9,
+            })
+            Label.TextTransparency = 0.5
+        end
+    end
+
+    -- Local function to toggle the state
+    local function SetToggleState(newState)
+        State = newState
+        UpdateToggleVisual()
+        callback(State)
+    end
+
+    -- Mouse button click handling (to toggle state)
+    TextButton.MouseButton1Down:Connect(function(x, y)
+        -- Only toggle the state if the left part of the button or splash is clicked
+        if x < TextButton.AbsoluteSize.X * 0.75 or x > Splash.AbsolutePosition.X and x < Splash.AbsolutePosition.X + Splash.AbsoluteSize.X then
+            SetToggleState(not State)  -- Toggle the state if clicked on the left side or splash
+        else
+            -- Do nothing (keybind display area)
+            Amount.Text = "..."
+        end
+    end)
+
+    -- Keybind setup (ensure it's separate from other keybinds)
+    local key = Framework.Keybind(TextButton, { Enum.KeyCode.Space, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D, Enum.KeyCode.LeftShift, Enum.KeyCode.LeftControl, Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2 })
+
+    -- Ensure that keybind actions are isolated (no interference with other codes)
+    key.Updated:Connect(function(newKey)
+        Amount.Text = tostring(newKey.Name)
+    end)
+
+    -- Trigger toggle when keybind is pressed
+    key.Pressed:Connect(function()
+        SetToggleState(not State)  -- Toggle the state when the keybind is pressed
+        Amount.BackgroundTransparency = 0.9  -- Highlight keybind button
+        task.wait()
+        Amount.BackgroundTransparency = 0.949999988079071  -- Reset transparency
+    end)
+
+    key:set(Dkey or Enum.KeyCode.Q)  -- Default keybind
+
+    -- Initial visual update
+    task.defer(UpdateToggleVisual)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			function AssetHandler.ColorPicker(name, preset, callback)
 				local ColorPicker = CreateObject("Frame", {
 					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.7777777910232544,0),	Size = UDim2.new(1,0,0,38),	Transparency = 1,
