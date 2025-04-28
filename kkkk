@@ -838,7 +838,7 @@ function AssetHandler.Slider(name, min, max, default, symbol, callback)
         CornerRadius = UDim.new(1, 0),
     })
 
-    local Amount = CreateObject("TextBox", { -- TextLabel changed to TextBox
+    local Amount = CreateObject("TextBox", { -- it's a TextBox now
         Name = "Amount",
         Parent = TextButton,
         AnchorPoint = Vector2.new(0, 0.5),
@@ -871,7 +871,7 @@ function AssetHandler.Slider(name, min, max, default, symbol, callback)
     local slider = Framework.PositionSlider(Frame, Ball, min, max, 0.1)
     slider:set(default)
 
-    -- Update displayed value when slider moves
+    -- Update display when slider moves
     slider.Updated:Connect(function(value)
         Amount.Text = value .. symbol
         task.spawn(function()
@@ -881,13 +881,13 @@ function AssetHandler.Slider(name, min, max, default, symbol, callback)
         end)
     end)
 
-    -- Auto-select all text on click
-    Amount.FocusGained:Connect(function()
+    -- ✅ Correct: Auto-select text on Focused event
+    Amount.Focused:Connect(function()
         Amount.CursorPosition = #Amount.Text + 1
         Amount.SelectionStart = 1
     end)
 
-    -- Handle input after typing a new number
+    -- Handle user input after editing
     Amount.FocusLost:Connect(function(enterPressed)
         if enterPressed then
             local input = tonumber(Amount.Text:match("%d+"))
@@ -916,6 +916,7 @@ function AssetHandler.Slider(name, min, max, default, symbol, callback)
 
     return Handle
 end
+
 
 
 			function AssetHandler.Keybind(name, Dkey, callback, onchanged)
