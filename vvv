@@ -368,58 +368,6 @@ end)
 	local Drag = CreateObject("ImageButton", {
 		Name = "Drag",	Parent = UpperSection,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.999999999545558,0,0.5,0),	Size = UDim2.new(0,10,0,10),	AutoButtonColor = false,	Image = "http://www.roblox.com/asset/?id=5172066892",	ImageTransparency = 0.5,
 	})
--- Resize
-local Resize = CreateObject("ImageButton", {
-    Name = "Resize", 
-    Parent = FrameMain, 
-    AnchorPoint = Vector2.new(0.5, 1), 
-    BackgroundColor3 = Color3.fromRGB(255, 255, 255), 
-    BackgroundTransparency = 1, 
-    Position = UDim2.new(0.5, 0, 1, 0),  -- Position at the bottom center
-    Size = UDim2.new(0, 20, 0, 20),  -- Resize button size
-    AutoButtonColor = false, 
-    Image = "http://www.roblox.com/asset/?id=5172066892", 
-    ImageTransparency = 0.5,
-})
-
-local dragging = false
-local startMousePos = nil
-local startSize = nil
-
--- When the user presses the mouse button down
-Resize.MouseButton1Down:Connect(function(input)
-    -- Start dragging, store initial mouse position and frame size
-    dragging = true
-    startMousePos = input.Position
-    startSize = FrameMain.Size
-end)
-
--- Listen for changes in input (mouse movement)
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        -- Check if the mouse position is valid before proceeding
-        if input.Position then
-            -- Calculate how much the mouse moved vertically
-            local deltaY = input.Position.Y - startMousePos.Y
-            -- Update the height of the frame based on mouse movement
-            local newHeight = math.max(200, startSize.Y.Offset + deltaY)  -- Prevent shrinking too small
-            -- Apply the new height while keeping the width fixed
-            FrameMain.Size = UDim2.new(0, startSize.X.Offset, 0, newHeight)
-        end
-    end
-end)
-
--- When the user releases the mouse button
-Resize.MouseButton1Up:Connect(function()
-    dragging = false
-end)
-
-
-
-
-
-
-
 	local TabTitle = CreateObject("TextLabel", {
 		Name = "TabTitle",	Parent = UpperSection,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.04675324633717537,0,0,0),	Size = UDim2.new(0,182,0,46),	Font = Enum.Font.SourceSans,	Text = "Home",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,	TextTransparency = 0.25999999046325684,	TextXAlignment = Enum.TextXAlignment.Left,
 	})
@@ -1991,11 +1939,11 @@ end
 
 if not _G.Notification then
     _G.activeNotifications = {}
-    _G.notificationHeight = 85
+    _G.notificationHeight = 60  -- Adjust height to fit just two lines
     _G.notificationSpacing = 10
     _G.startY = 50
 
-    function _G:Notification(title, desc, folder, visibletime)
+    function _G:Notification(title, desc, visibletime)
         task.spawn(function()
             pcall(function()
                 -- Create screenGui
@@ -2009,9 +1957,6 @@ if not _G.Notification then
                     ["UICorner_2"] = Instance.new("UICorner"),
                     ["TextLabel_1"] = Instance.new("TextLabel"),
                     ["TextLabel_2"] = Instance.new("TextLabel"),
-                    ["TextLabel_3"] = Instance.new("TextLabel"),
-                    ["ProgressBar"] = Instance.new("Frame"),
-                    ["ProgressFill"] = Instance.new("Frame"),
                 }
 
                 -- Frame and styling
@@ -2046,33 +1991,11 @@ if not _G.Notification then
                 instances.TextLabel_2.Position = UDim2.new(0, 10, 0, 25)
                 instances.TextLabel_2.Size = UDim2.new(1, -20, 0, 20)
 
-                instances.TextLabel_3.Parent = instances.Frame_1
-                instances.TextLabel_3.Font = Enum.Font.SourceSans
-                instances.TextLabel_3.Text = folder
-                instances.TextLabel_3.TextColor3 = Color3.fromRGB(150, 150, 150)
-                instances.TextLabel_3.TextSize = 17
-                instances.TextLabel_3.TextXAlignment = Enum.TextXAlignment.Left
-                instances.TextLabel_3.BackgroundTransparency = 1
-                instances.TextLabel_3.Position = UDim2.new(0, 10, 0, 45)
-                instances.TextLabel_3.Size = UDim2.new(1, -20, 0, 20)
-
-                -- Progress Bar
-                instances.ProgressBar.Parent = instances.Frame_1
-                instances.ProgressBar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-                instances.ProgressBar.Size = UDim2.new(1, -20, 0, 5)
-                instances.ProgressBar.Position = UDim2.new(0, 10, 0, 70)
-
-                instances.ProgressFill.Parent = instances.ProgressBar
-                instances.ProgressFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-                instances.ProgressFill.Size = UDim2.new(0, 0, 1, 0)
+                -- Progress Bar Removed
 
                 local targetY = _G.startY + (#_G.activeNotifications * (_G.notificationHeight + _G.notificationSpacing))
                 screenGui.Parent = game:GetService("CoreGui")
                 instances.Frame_1:TweenPosition(UDim2.new(0, 10, 0, targetY), "InOut", "Sine", 0.5, true)
-
-                -- Create progress bar animation
-                local progressTween = game:GetService("TweenService"):Create(instances.ProgressFill, TweenInfo.new(visibletime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.new(1, 0, 1, 0)})
-                progressTween:Play()
 
                 -- Add notification to active notifications list
                 table.insert(_G.activeNotifications, {gui = screenGui, frame = instances.Frame_1})
@@ -2082,7 +2005,6 @@ if not _G.Notification then
                     wait(visibletime)
                     -- Cleanup after notification time
                     instances.Frame_1:TweenPosition(UDim2.new(-1, 0, 0, targetY), "InOut", "Sine", 0.6, true)
-                    instances.ProgressFill:TweenSize(UDim2.new(0, 0, 1, 0), "InOut", "Sine", 0.3, true)
                     wait(0.3)
 
                     -- Remove from active notifications and destroy the notification
