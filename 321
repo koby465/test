@@ -1584,7 +1584,7 @@ end
 					Parent = TextButton,	PaddingLeft = UDim.new(0,5),
 				})
 				local Splash = CreateObject("Frame", {
-					Name = "Splash",	Parent = TextButton,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.8999999761581421,	Position = UDim2.new(0.7751553058624268,0,0.5,0),	Size = UDim2.new(0,30,0,15),	Transparency = 0.8999999761581421,
+					Name = "Splash",	Parent = TextButton,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.8999999761581421,	Position = UDim2.new(0.9, 0, 0.5, 0),	Size = UDim2.new(0,30,0,15),	Transparency = 0.8999999761581421,
 				})
 				local UICorner = CreateObject("UICorner", {
 					Parent = Splash,	CornerRadius = UDim.new(1,0),
