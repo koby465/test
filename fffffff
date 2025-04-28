@@ -388,21 +388,21 @@ local startPos = nil
 local startSize = nil
 local startMousePos = nil
 
--- Ensure the FrameMain and other objects are accessible
-local FrameMain = script.Parent -- Adjust the reference based on where FrameMain is located
+-- Assuming FrameMain is already created in the 'Library.New' function
+local FrameMain = Library.Core:FindFirstChild("FrameMain")
 local Sidebar = FrameMain:FindFirstChild("Sidebar")
-local AControlModule = FrameMain:FindFirstChild("AControlModule")
+local AControlModule = Sidebar and Sidebar:FindFirstChild("AControlModule")
 
--- Make sure Resize button is accessible
-local Resize = FrameMain:FindFirstChild("Resize")
-
-if not FrameMain or not Resize then
-    warn("FrameMain or Resize button not found!")
-    return
-end
+local Resize = CreateObject("TextButton", { -- Assuming the resize button exists in the FrameMain
+    Name = "Resize",
+    Parent = FrameMain,
+    BackgroundColor3 = Color3.fromRGB(255, 0, 0),
+    Size = UDim2.new(0, 20, 0, 20),
+    Position = UDim2.new(1, -20, 1, -20),
+    Text = "",
+})
 
 Resize.MouseButton1Down:Connect(function(input)
-    -- When the mouse button is clicked, initialize the dragging state
     dragging = true
     startMousePos = input.Position
     startSize = FrameMain.Size
@@ -412,24 +412,21 @@ end)
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging then
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            -- Calculate the difference in position
             local deltaX = input.Position.X - startMousePos.X
             local deltaY = input.Position.Y - startMousePos.Y
 
-            -- Ensure new sizes are at least 200px
+            -- Resize FrameMain based on the mouse movement
             local newWidth = math.max(200, startSize.X.Offset + deltaX)
             local newHeight = math.max(200, startSize.Y.Offset + deltaY)
-
-            -- Resize the main frame
             FrameMain.Size = UDim2.new(0, newWidth, 0, newHeight)
 
-            -- Resize the Sidebar and other child frames based on the new size
+            -- Resize Sidebar and other elements accordingly
             if Sidebar then
-                Sidebar.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight) -- Adjust Sidebar proportionally
+                Sidebar.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight)
             end
 
             if AControlModule then
-                AControlModule.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight * 0.1) -- Adjust AControlModule proportionally
+                AControlModule.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight * 0.1)
             end
         end
     end
@@ -438,6 +435,7 @@ end)
 Resize.MouseButton1Up:Connect(function()
     dragging = false
 end)
+
 
 
 
