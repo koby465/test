@@ -943,11 +943,6 @@ end
 
 
 
-
-
-
-
-
 -- Helper function to create the Toggle with Keybind
 function AssetHandler.ToggleWithKeybind(name, state, callback, keybind)
     local ToggleState = state
@@ -1046,29 +1041,42 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, keybind)
         end)
     end
 
-    -- Connect the TextButton click to toggle the state
+    -- Click to toggle the state
     TextButton.MouseButton1Down:Connect(Toggle)
 
-    -- Setup keybind
-    local key = Framework.Keybind(TextButton, {
-        Enum.KeyCode.Space, Enum.KeyCode.W, Enum.KeyCode.A,
-        Enum.KeyCode.S, Enum.KeyCode.D, Enum.KeyCode.LeftShift,
-        Enum.KeyCode.LeftControl, Enum.UserInputType.MouseButton1,
-        Enum.UserInputType.MouseButton2
-    })
+    -- Now let's make the keybind changeable when clicked
+    local key = keybind or Enum.KeyCode.Q  -- Default key is Q
+    local keyText = key.Name
 
-    -- Update keybind display
-    key.Updated:connect(function(key)
-        TextButton.Text = name .. " (" .. key.Name .. ")"
+    -- Update the key display on the button text
+    TextButton.Text = name .. " (" .. keyText .. ")"
+
+    -- Function to allow user to change the keybind
+    local function changeKeybind()
+        local inputConnection
+        TextButton.Text = "Press a key..."
+
+        -- Wait for the user to press a key
+        inputConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+            if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard then
+                key = input.KeyCode
+                keyText = key.Name
+                TextButton.Text = name .. " (" .. keyText .. ")"
+                inputConnection:Disconnect()
+            end
+        end)
+    end
+
+    -- Allow the user to click the button to change the keybind
+    TextButton.MouseButton1Click:Connect(changeKeybind)
+
+    -- Listen for key press to toggle the state
+    local keyPressedConnection
+    keyPressedConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+        if input.KeyCode == key then
+            Toggle()
+        end
     end)
-
-    -- Pressing the key will toggle the state
-    key.Pressed:connect(function()
-        Toggle()
-    end)
-
-    -- Initial keybind setup
-    key:set(keybind or Enum.KeyCode.Q)
 
     -- Return custom functions to control toggle externally
     local Customability = {}
@@ -1081,6 +1089,10 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, keybind)
 
     return Customability
 end
+
+
+
+
 
 
 
