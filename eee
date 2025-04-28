@@ -85,51 +85,55 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-	Framework = {
-		AllowDragging = function(Object, Frame, Speed)
-			local dragToggle = nil
-			local dragSpeed = 0
-			local dragInput = nil
-			local dragStart = nil
-			local dragPos = nil
-			local Util = {
-				Enabled = true
-			}
-			local function updateInput(input)
-				if not Util.Enabled then return end
-				local Delta = input.Position - dragStart
-				local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-				game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-					Position = Position
-				}):Play()
-			end
-			Object.InputBegan:Connect(function(input)
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-					dragToggle = true
-					dragStart = input.Position
-					startPos = Frame.Position
-					input.Changed:Connect(function()
-						if input.UserInputState == Enum.UserInputState.End then
-							dragToggle = false
-						end
-					end)
-				end
-			end)
-			Object.InputChanged:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-					dragInput = input
-				end
-			end)
-			game:GetService("UserInputService").InputChanged:Connect(function(input)
-				if input == dragInput and dragToggle then
-					updateInput(input)
-				end
-			end)
-			
-			return Util
-		end
-	}
+	 Framework = {
+        AllowResizing = function(Object, Frame, Speed)
+            local resizeToggle = nil
+            local resizeSpeed = 0
+            local resizeInput = nil
+            local resizeStart = nil
+            local resizePos = nil
+            local Util = {
+                Enabled = true
+            }
+            local function updateInput(input)
+                if not Util.Enabled then return end
+                local Delta = input.Position - resizeStart
+                local Size = UDim2.new(startSize.X.Scale, startSize.X.Offset + Delta.X, startSize.Y.Scale, startSize.Y.Offset + Delta.Y)
+                game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
+                    Size = Size
+                }):Play()
+            end
+
+            Object.InputBegan:Connect(function(input)
+                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+                    resizeToggle = true
+                    resizeStart = input.Position
+                    startSize = Frame.Size
+                    input.Changed:Connect(function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            resizeToggle = false
+                        end
+                    end)
+                end
+            end)
+
+            Object.InputChanged:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                    resizeInput = input
+                end
+            end)
+
+            game:GetService("UserInputService").InputChanged:Connect(function(input)
+                if input == resizeInput and resizeToggle then
+                    updateInput(input)
+                end
+            end)
+
+            return Util
+        end
+    }
 }
+
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
     for i,v in pairs (AllChildren) do 
@@ -173,7 +177,7 @@ local FrameMain = CreateObject("Frame", {
     BackgroundTransparency = 0.1, 
     ClipsDescendants = true, 
     Position = UDim2.new(0.5, -357.5, 0.5, -215), 
-    Size = UDim2.new(0, 815, 0, 530),  -- Increased size (from 715x430 to 815x530)
+    Size = UDim2.new(0, 715, 0, 430), 
     Transparency = 0.10000000149011612,
 })
 
@@ -441,66 +445,29 @@ end)
 			"possible configs"
 		})
 	end
-	local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
-	
-	local ProfileData = JSON.ReadData('ProfileData')
-	local UIData = JSON.ReadData('UIData')
-	local Dragging = JSON.ReadData('DragData')
+local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
 
-	UserProfileNam.Text = ProfileData.Name:sub(1, 15)
-	UserProfileImage.Image = 'rbxassetid://'..ProfileData.Image
+local ProfileData = JSON.ReadData('ProfileData')
+local UIData = JSON.ReadData('UIData')
+local Dragging = JSON.ReadData('DragData')
 
-	FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
-	FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
+UserProfileNam.Text = ProfileData.Name:sub(1, 15)
+UserProfileImage.Image = 'rbxassetid://'..ProfileData.Image
 
-	MainDrag.Enabled = Dragging.Enabled
+FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
+FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
 
-	local Drag = Library.Framework.AllowDragging(Drag, FrameMain, 0.1)
-	Drag.Enabled = true
+MainDrag.Enabled = Dragging.Enabled
 
-	local TabName = TabTitle
-	local WinHandle = {
-		TabCount = 0,
-		Exit = function()
-			Library.Core:Destroy()
-		end,
-		ProfileData = ProfileData,
-		UIData = UIData,
-		DragData = Dragging.Enabled
-	}
-	local FullDrag
+-- Resizing functionality
+local ResizeHandle = Instance.new("Frame")
+ResizeHandle.Size = UDim2.new(0, 20, 0, 20)  -- Resize handle size
+ResizeHandle.Position = UDim2.new(1, -20, 1, -20)  -- Bottom-right corner
+ResizeHandle.AnchorPoint = Vector2.new(1, 1)
+ResizeHandle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ResizeHandle.Parent = FrameMain
 
-	function WinHandle.UpdateProfile(data)
-		JSON.WriteData('ProfileData', data)
-		UserProfileNam.Text = data.Name:sub(1, 15)
-		UserProfileImage.Image = 'rbxassetid://'..data.Image
-	end
-	function WinHandle.UpdateWindowData(data)
-		JSON.WriteData('UIData', data)
-		FrameMain.BackgroundTransparency = (data.Opacity and 0.1 or 0)
-		FrameMain.BackgroundColor3 = (data.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
-	end
-	function WinHandle.UpdateTopData(data)
-		JSON.WriteData('DragData', data)
-		MainDrag.Enabled = data.Enabled
-		WinHandle.DragData = data.Enabled
-	end
-	function WinHandle.AskQuestion(question, callback)
-		local Clone = Question:Clone()
-		Clone.Parent = FrameMain
-		Clone.Title.Text = question
-		Clone.button1.MouseButton1Down:Connect(function()
-			Clone:Destroy()
-			callback(true)
-		end)
-		Clone.button2.MouseButton1Down:Connect(function()
-			Clone:Destroy()
-			callback(false)
-		end)
-		Clone.Visible = true
-	end
-
-local UserInputService = game:GetService("UserInputService")
+local ResizeDrag = Library.Framework.AllowResizing(ResizeHandle, FrameMain, 0.1)
 
 
 local Minimizing = false
