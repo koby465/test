@@ -948,6 +948,10 @@ end
 
 
 
+
+
+
+
 function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     local State = defaultState
 
@@ -1072,46 +1076,36 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
         callback(State)
     end
 
-    -- Mouse button click handling
+    -- Mouse button click handling (to toggle state)
     TextButton.MouseButton1Down:Connect(function(x, y)
         if x < TextButton.AbsoluteSize.X * 0.75 then
-            SetToggleState(not State)
+            SetToggleState(not State)  -- Toggle the state if clicked on the left side
         else
-            Amount.Text = "..."
+            Amount.Text = "..."  -- Keybind indicator click (do nothing for toggle)
         end
     end)
 
-    -- Keybind setup
-    local key = Framework.Keybind(TextButton, {
-        Enum.KeyCode.Space,
-        Enum.KeyCode.W,
-        Enum.KeyCode.A,
-        Enum.KeyCode.S,
-        Enum.KeyCode.D,
-        Enum.KeyCode.LeftShift,
-        Enum.KeyCode.LeftControl,
-        Enum.UserInputType.MouseMovement,
-        Enum.UserInputType.MouseButton1,
-        Enum.UserInputType.MouseButton2,
-    })
+    -- Keybind setup (ensure it's separate from other keybinds)
+    local key = Framework.Keybind(TextButton, { Enum.KeyCode.Space, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D, Enum.KeyCode.LeftShift, Enum.KeyCode.LeftControl, Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2 })
 
+    -- Update the Amount text when key changes
     key.Updated:Connect(function(newKey)
         Amount.Text = tostring(newKey.Name)
     end)
 
+    -- Trigger toggle when keybind is pressed
     key.Pressed:Connect(function()
-        SetToggleState(not State)
-        Amount.BackgroundTransparency = 0.9
+        SetToggleState(not State)  -- Toggle the state when the keybind is pressed
+        Amount.BackgroundTransparency = 0.9  -- Highlight keybind button
         task.wait()
-        Amount.BackgroundTransparency = 0.949999988079071
+        Amount.BackgroundTransparency = 0.949999988079071  -- Reset transparency
     end)
 
-    key:set(Dkey or Enum.KeyCode.Q)
+    key:set(Dkey or Enum.KeyCode.Q)  -- Default keybind
 
     -- Initial visual update
     task.defer(UpdateToggleVisual)
 end
-
 
 
 
