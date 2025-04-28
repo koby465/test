@@ -453,9 +453,23 @@ local ProfileData = JSON.ReadData('ProfileData')
 local UIData = JSON.ReadData('UIData')
 local Dragging = JSON.ReadData('DragData')
 
--- Update UI elements based on ProfileData
-UserProfileNam.Text = ProfileData.Name:sub(1, 15)
-UserProfileImage.Image = ProfileData.Image  -- Directly use the URL for the image
+-- Initialize UserProfileNam and UserProfileImage if they're not already initialized
+if not UserProfileNam then
+    UserProfileNam = FrameMain:FindFirstChild("UserProfileNam")
+end
+
+if not UserProfileImage then
+    UserProfileImage = FrameMain:FindFirstChild("UserProfileImage")
+end
+
+-- Ensure the elements exist before trying to set them
+if UserProfileNam then
+    UserProfileNam.Text = ProfileData.Name:sub(1, 15)
+end
+
+if UserProfileImage then
+    UserProfileImage.Image = ProfileData.Image  -- Directly use the URL for the image
+end
 
 -- Set background transparency based on UI settings
 FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
@@ -467,6 +481,25 @@ MainDrag.Enabled = Dragging.Enabled
 -- Setup the top-level dragging functionality
 local Drag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.1)
 Drag.Enabled = true
+
+-- Add the acj Naubdrag functionality here, without modifying anything else
+local Naubdrag = {
+    Enabled = true,
+    Toggle = function(self)
+        self.Enabled = not self.Enabled
+        if self.Enabled then
+            -- Enable dragging or perform any specific actions when toggled on
+            MainDrag.Enabled = true
+        else
+            -- Disable dragging or perform any specific actions when toggled off
+            MainDrag.Enabled = false
+        end
+    end
+}
+
+-- Example of using acj Naubdrag
+-- Toggling the drag functionality:
+Naubdrag:Toggle()
 
 -- Create WinHandle for managing the window state
 local WinHandle = {
@@ -482,8 +515,12 @@ local WinHandle = {
 -- Function to update Profile Data
 function WinHandle.UpdateProfile(data)
     JSON.WriteData('ProfileData', data)
-    UserProfileNam.Text = data.Name:sub(1, 15)
-    UserProfileImage.Image = data.Image  -- Use the image URL
+    if UserProfileNam then
+        UserProfileNam.Text = data.Name:sub(1, 15)
+    end
+    if UserProfileImage then
+        UserProfileImage.Image = data.Image  -- Use the image URL
+    end
 end
 
 -- Function to update UI data
