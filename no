@@ -900,10 +900,11 @@ function AssetHandler.Slider(name, min, max, default, symbol, callback)
         end)
     end)
 
-    -- ✅ Correct: Auto-select text on Focused event
+    -- ✅ Clear the text when clicked (and allow typing a new one)
     Amount.Focused:Connect(function()
-        Amount.CursorPosition = #Amount.Text + 1
-        Amount.SelectionStart = 1
+        Amount.Text = ""  -- Clear the text on focus
+        Amount.CursorPosition = 1
+        Amount.SelectionStart = 0
     end)
 
     -- Handle user input after editing
@@ -935,6 +936,7 @@ function AssetHandler.Slider(name, min, max, default, symbol, callback)
 
     return Handle
 end
+
 
 
 
