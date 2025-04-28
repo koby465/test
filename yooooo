@@ -1,209 +1,177 @@
+---/// UI
+local Framework = loadstring(game:HttpGet("https://pastebin.com/raw/mRvnKmR2"))()
 local UIS = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 
--- Function for creating tween animation
 local function TweenObject(object, style, speed, direction, info)
-    TweenService:Create(object, TweenInfo.new(speed, style, direction), info):Play()
+	game.TweenService:Create(object, TweenInfo.new(speed, style, direction), info):Play()
 end
-
--- Function to check if a table index exists
 local function IndexExists(table, index)
-    return table[index] ~= nil
+	return table[index]~=nil
 end
-
--- Create object utility function
 function CreateObject(className, properties)
-    local instance = Instance.new(className)
-    local parent
-    for propertyName, propertyValue in pairs(properties) do
-        if propertyName ~= "Parent" then
-            instance[propertyName] = propertyValue
-        else
-            parent = propertyValue
-        end
-    end
-    instance.Parent = parent
-    return instance
+	local instance = Instance.new(className)
+	local parent
+	for propertyName, propertyValue in pairs(properties) do
+		if propertyName ~= "Parent" then
+			instance[propertyName] = propertyValue
+		else
+			parent = propertyValue
+		end
+	end
+	instance.Parent = parent
+	return instance
 end
-
--- Clean up previous CoreGui objects
-for i, v in pairs(game.CoreGui:GetChildren()) do
-    if v.Name == 'Core' or v.Name == 'WM' then
-        v:Destroy()
-    end
+for i,v in pairs(game.CoreGui:GetChildren()) do
+	if v.Name == 'Core' or v.Name == 'WM' then
+		v:Destroy()
+	end
 end
-
--- Create folder structure for the client if not exists
 if not isfolder('Future Client') then
     makefolder('Future Client')
-    makefolder('Future Client\\Data')
-    makefolder('Future Client\\Cache')
-    makefolder('Future Client\\Audio')
-    makefolder('Future Client\\Configuration')
-
-    -- Write necessary files
-    writefile('Future Client\\Data\\readme.txt', [[
-        Welcome!
-        Do not touch anything as it can break your Future Client Experience.
-    ]])
-    writefile('Future Client\\Data\\stitch.txt', [[
-        (<3)
-        ;stitch; x3
-    ]])
+	makefolder('Future Client\\Data')
+	makefolder('Future Client\\Cache')
+	makefolder('Future Client\\Audio')
+	makefolder('Future Client\\Configuration')
+	-- Begin
+	writefile('Future Client\\Data\\readme.txt', [[
+		Welcome!
+		Do not touch anything as it can break your Future Client Experience.
+	]])
+	writefile('Future Client\\Data\\stitch.txt', [[
+		(<3)
+		;stitch; x3
+	]])
     writefile('Future Client\\Data\\config.cfg', [[
-        (<3)
-        ;stitch; x3
-    ]])
-    writefile('Future Client\\Cache\\readme.txt', [[
-        Welcome!
-        Do not touch anything as it can break your Future Client Experience.
-    ]])
-    writefile('Future Client\\Audio\\readme.txt', [[
-        Welcome!
-        To create a playlist, make a new folder in this directory then drag in any .mp3 files.
-        Keep names short!
-    ]])
-    writefile('Future Client\\Configuration\\confighelp.txt', [[
-        Welcome!
-        Drag in any JSON (.json) files in here if you would like custom Future Client configs.
-    ]])
-    writefile('Future Client\\welcome.txt', [[
-        == Thank you for using Future Client! ==
-        For any support you may need, feel free to join our Discord community: discord.gg/9nY7VEHw3s.
-    ]])
+		(<3)
+		;stitch; x3
+	]])
+	writefile('Future Client\\Cache\\readme.txt', [[
+		Welcome!
+		Do not touch anything as it can break your Future Client Experience.
+	]])
+	writefile('Future Client\\Audio\\readme.txt', [[
+		Welcome!
+		To create a playlist, make a new folder in this directory then drag in any .mp3 files.
+		Keep names short!
+	]])
+	writefile('Future Client\\Configuration\\confighelp.txt', [[
+		Welcome!
+		Drag in any JSON (.json) files in here if you would like custom Future Client configs.
+	]])
+	writefile('Future Client\\welcome.txt', [[
+		== Thank you for using Future Client! ==
+		For any support you may need, feel free to join our Discord community: discord.gg/9nY7VEHw3s.
+	]])
 end
-
--- Library setup
 local Library = {
-    LibraryMetadata = {
-        Name = "Headshot"
-    },
-    Core = CreateObject("ScreenGui", {
-        Name = "Core", Parent = game.CoreGui,
-    }),
-    JSON = {
-        WriteData = function(name, data)
-            local file = 'Future Client\\Data\\'..name..".json"
-            writefile(file, game:GetService("HttpService"):JSONEncode(data))
-        end,
-        ReadData = function(name)
-            local file = 'Future Client\\Data\\'..name..".json"
-            local raw_data = readfile(file)
-            local data = game:GetService("HttpService"):JSONDecode(raw_data)
-            return data
-        end,
-        DataExist = function(name)
-            return isfile('Future Client\\Data\\'..name..'.json')
-        end
-    }
-}
-
--- Framework for drag functionality
+	LibraryMetadata = {
+		Name = "Headshot"
+	},
+	Core = CreateObject("ScreenGui", {
+		Name = "Core",	Parent = game.CoreGui,
+	}),
+	JSON = {
+		WriteData = function(name, data)
+			local file = 'Future Client\\Data\\'..name..".json"
+			writefile(file, game:GetService("HttpService"):JSONEncode(data))
+		end,
+		ReadData = function(name)
+			local file = 'Future Client\\Data\\'..name..".json"
+			local raw_data = readfile(file)
+    		local data = game:GetService("HttpService"):JSONDecode(raw_data)
+    		return data
+		end,
+		DataExist = function(name)
+			return isfile('Future Client\\Data\\'..name..'.json')
+		end
+	},
 Framework = {
-    AllowDragging = function(Object, Frame, Speed)
-        local dragToggle = nil
-        local dragStart = nil
-        local startPos = nil
-        local dragInput = nil
-
+    AllowResizing = function(Object, Frame, Speed)
+        local resizeToggle = nil
+        local resizeSpeed = 0
+        local resizeInput = nil
+        local resizeStart = nil
+        local resizePos = nil
+        local Util = {
+            Enabled = true
+        }
         local function updateInput(input)
-            if dragToggle then
-                local Delta = input.Position - dragStart
-                local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-                TweenObject(Frame, Enum.EasingStyle.Quad, Speed, Enum.EasingDirection.Out, {Position = Position})
-            end
+            if not Util.Enabled then return end
+            local Delta = input.Position - resizeStart
+            local Size = UDim2.new(startSize.X.Scale, startSize.X.Offset + Delta.X, startSize.Y.Scale, startSize.Y.Offset + Delta.Y)
+            game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
+                Size = Size
+            }):Play()
         end
 
         Object.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragToggle = true
-                dragStart = input.Position
-                startPos = Frame.Position
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+                resizeToggle = true
+                resizeStart = input.Position
+                startSize = Frame.Size
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        resizeToggle = false
+                    end
+                end)
             end
         end)
 
         Object.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                dragInput = input
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                resizeInput = input
             end
         end)
 
         game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if input == dragInput and dragToggle then
+            if input == resizeInput and resizeToggle then
                 updateInput(input)
             end
         end)
 
-        return { Enabled = true }
+        return Util
     end
 }
 
--- Function to initialize the library
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
-    for i, v in pairs(AllChildren) do
-        if v:IsA("ScrollingFrame") then
-            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout") then
+    for i,v in pairs (AllChildren) do 
+        if v:IsA("ScrollingFrame") then 
+            if v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")then
                 local Layout = v:FindFirstChildOfClass("UIListLayout") or v:FindFirstChildOfClass("UIGridLayout")
-                
-                local function UpdateSize(FrameInstance, LayoutInstance)
+                local function UpdateSize(FrameInstance,LayoutInstance)
                     if FrameInstance and LayoutInstance then
-                        local PaddingX, PaddingY = 0, 0
+                        local PaddingX = 0
+                        local PaddingY = 0
                         if FrameInstance:FindFirstChildOfClass("UIPadding") then
                             local UIPadding = FrameInstance:FindFirstChildOfClass("UIPadding")
-                            PaddingX = PaddingX + UIPadding.PaddingLeft.Offset + UIPadding.PaddingRight.Offset
-                            PaddingY = PaddingY + UIPadding.PaddingTop.Offset + UIPadding.PaddingBottom.Offset
+                            PaddingX += UIPadding.PaddingLeft.Offset
+                            PaddingX += UIPadding.PaddingRight.Offset
+                            PaddingY += UIPadding.PaddingBottom.Offset
+                            PaddingY += UIPadding.PaddingTop.Offset
                         end
-
-                        -- Smooth resize with Tween
-                        local targetCanvasSize
                         if FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.Y then
-                            targetCanvasSize = UDim2.new(0, 0, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            FrameInstance.CanvasSize = UDim2.new(0,0,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.X then
-                            targetCanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, 0)
+                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,0)
                         elseif FrameInstance.AutomaticCanvasSize == Enum.AutomaticSize.XY then
-                            targetCanvasSize = UDim2.new(0, LayoutInstance.AbsoluteContentSize.X + PaddingX, 0, LayoutInstance.AbsoluteContentSize.Y + PaddingY)
+                            FrameInstance.CanvasSize = UDim2.new(0,LayoutInstance.AbsoluteContentSize.X + PaddingX,0,LayoutInstance.AbsoluteContentSize.Y + PaddingY)
                         end
-
-                        -- Use Tween for smooth resizing
-                        TweenObject(FrameInstance, Enum.EasingStyle.Quad, 0.3, Enum.EasingDirection.Out, {CanvasSize = targetCanvasSize})
                     end
                 end
-                UpdateSize(v, Layout)
-                Layout.Changed:Connect(function() UpdateSize(v, Layout) end)
-                v:GetPropertyChangedSignal("AutomaticCanvasSize"):Connect(function() UpdateSize(v, Layout) end)
+                UpdateSize(v,Layout)
+                Layout.Changed:connect(function() UpdateSize(v,Layout) end)
+                v:GetPropertyChangedSignal("AutomaticCanvasSize"):connect(function() UpdateSize(v,Layout) end)
             end
         end
     end
+    
 end
-
--- Create and resize a new frame
 function Library.New()
-    local FrameMain = CreateObject("Frame", {
-        Name = "FrameMain",
-        Parent = Library.Core,
-        BackgroundColor3 = Color3.fromRGB(14, 13, 13),
-        BackgroundTransparency = 0.1,
-        ClipsDescendants = true,
-        Position = UDim2.new(0.5, -357.5, 0.5, -215),
-        Size = UDim2.new(0, 715, 0, 430),
-        Transparency = 0.1,
-    })
-
-    -- Smooth resize of FrameMain
-    local function ResizeMainFrame(newSize)
-        TweenObject(FrameMain, Enum.EasingStyle.Quad, 0.3, Enum.EasingDirection.Out, {Size = newSize})
-    end
-
-    -- Example of resizing the frame
-    wait(2)
-    ResizeMainFrame(UDim2.new(0, 800, 0, 500))
-
-    return FrameMain
-end
-
-
-
+	
+	local FrameMain = CreateObject("Frame", {
+		Name = "FrameMain",	Parent = Library.Core,	BackgroundColor3 = Color3.fromRGB(14, 13, 13),	BackgroundTransparency = 0.1,	ClipsDescendants = true,	Position = UDim2.new(0.5, -357.5, 0.5, -215),	Size = UDim2.new(0,715,0,430),	Transparency = 0.10000000149011612,
+	})
 	local UICorner = CreateObject("UICorner", {
 		Parent = FrameMain,	CornerRadius = UDim.new(0,6),
 	})
