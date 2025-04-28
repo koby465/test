@@ -951,7 +951,6 @@ end
 
 
 
-
 function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     local State = defaultState
 
@@ -1078,17 +1077,19 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
 
     -- Mouse button click handling (to toggle state)
     TextButton.MouseButton1Down:Connect(function(x, y)
+        -- Only toggle the state if the left part of the button is clicked
         if x < TextButton.AbsoluteSize.X * 0.75 then
             SetToggleState(not State)  -- Toggle the state if clicked on the left side
         else
-            Amount.Text = "..."  -- Keybind indicator click (do nothing for toggle)
+            -- Do nothing (keybind display area)
+            Amount.Text = "..."
         end
     end)
 
     -- Keybind setup (ensure it's separate from other keybinds)
     local key = Framework.Keybind(TextButton, { Enum.KeyCode.Space, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D, Enum.KeyCode.LeftShift, Enum.KeyCode.LeftControl, Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2 })
 
-    -- Update the Amount text when key changes
+    -- Ensure that keybind actions are isolated (no interference with other codes)
     key.Updated:Connect(function(newKey)
         Amount.Text = tostring(newKey.Name)
     end)
@@ -1106,6 +1107,13 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     -- Initial visual update
     task.defer(UpdateToggleVisual)
 end
+
+
+
+
+
+
+
 
 
 
