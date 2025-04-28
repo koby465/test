@@ -732,77 +732,33 @@ end)
 				Parent = Section,	SortOrder = Enum.SortOrder.LayoutOrder,	Padding = UDim.new(0,5),
 			})
 			local AssetHandler = {}
-function AssetHandler.Button(name, callback)
-    local Button = CreateObject("Frame", {
-        Name = name,
-        Parent = Section,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 35),
-    })
-
-    local TextButton = CreateObject("TextButton", {
-        Parent = Button,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 0.97,
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0.95, 0, 0, 23),
-        AutoButtonColor = false,
-        Font = Enum.Font.SourceSans,
-        Text = name,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 18,
-        TextTransparency = 0.5,
-        TextXAlignment = Enum.TextXAlignment.Left,
-    })
-
-    CreateObject("UICorner", {
-        Parent = TextButton,
-        CornerRadius = UDim.new(0, 4),
-    })
-
-    CreateObject("UIPadding", {
-        Parent = TextButton,
-        PaddingLeft = UDim.new(0, 10),
-    })
-
-    CreateObject("UIStroke", {
-        Parent = TextButton,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1.2,
-        Transparency = 0.925,
-    })
-
-    -- 🧠 Smooth clean click animation
-    TextButton.MouseButton1Down:Connect(function()
-        -- 1. Shrink + darken when clicked
-        TweenObject(TextButton, Enum.EasingStyle.Quad, 0.15, Enum.EasingDirection.Out, {
-            Size = UDim2.new(0.93, 0, 0, 22),
-            BackgroundTransparency = 0.92,
-            TextTransparency = 0.35,
-        })
-
-        task.spawn(callback)
-
-        -- 2. Then after a small delay, expand + lighten back
-        task.delay(0.2, function()
-            TweenObject(TextButton, Enum.EasingStyle.Quad, 0.25, Enum.EasingDirection.Out, {
-                Size = UDim2.new(0.95, 0, 0, 23),
-                BackgroundTransparency = 0.97,
-                TextTransparency = 0.5,
-            })
-        end)
-    end)
-
-    local Handler = {
-        Button = Button
-    }
-    return Handler
-end
-
-
+			function AssetHandler.Button(name, callback)
+				local Button = CreateObject("Frame", {
+					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.6512274742126465,0),	Size = UDim2.new(1,0,0,35),	Transparency = 1,
+				})
+				local TextButton = CreateObject("TextButton", {
+					Parent = Button,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9700000286102295,	Position = UDim2.new(0.4969879388809204,0,0.5,0),	Size = UDim2.new(0.949999988079071,0,0,23),	AutoButtonColor = false,	Font = Enum.Font.SourceSans,Text =name,	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
+				})
+				local UIPadding = CreateObject("UIPadding", {
+					Parent = TextButton,	PaddingLeft = UDim.new(0,10),
+				})
+				local UICorner = CreateObject("UICorner", {
+					Parent = TextButton,	CornerRadius = UDim.new(0,4),
+				})
+				local UIStroke = CreateObject("UIStroke", {
+					Parent = TextButton,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
+				})
+				TextButton.MouseButton1Down:Connect(function()
+					task.spawn(callback)
+					TextButton.BackgroundTransparency = 0.96
+					wait()
+					TextButton.BackgroundTransparency = 0.9700000286102295
+				end)
+				local Handler = {
+					Button = Button
+				}
+				return Handler
+			end
 function AssetHandler.Slider(name, min, max, default, symbol, callback)
     local Slider = CreateObject("Frame", {
         Name = name,
