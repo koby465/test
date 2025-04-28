@@ -369,7 +369,6 @@ end)
 		Name = "Drag",	Parent = UpperSection,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.999999999545558,0,0.5,0),	Size = UDim2.new(0,10,0,10),	AutoButtonColor = false,	Image = "http://www.roblox.com/asset/?id=5172066892",	ImageTransparency = 0.5,
 	})
 -- Resize
-
 local Resize = CreateObject("ImageButton", {
     Name = "Resize", 
     Parent = FrameMain, 
@@ -388,35 +387,28 @@ local startMousePos = nil
 local startSize = nil
 
 Resize.MouseButton1Down:Connect(function(input)
-    -- Initialize dragging and start tracking the mouse position
+    -- Begin dragging, store initial mouse position and frame size
     dragging = true
     startMousePos = input.Position
     startSize = FrameMain.Size
 end)
 
 game:GetService("UserInputService").InputChanged:Connect(function(input)
-    -- Handle mouse movement while dragging
     if dragging then
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            -- Calculate the difference in Y position between current and initial mouse position
+            -- Track the difference in mouse movement on the Y-axis
             local deltaY = input.Position.Y - startMousePos.Y
-            -- Resize the FrameMain height based on the mouse movement
-            local newHeight = math.max(200, startSize.Y.Offset + deltaY)  -- Prevent it from shrinking too small
+            -- Adjust the size based on mouse movement
+            local newHeight = math.max(200, startSize.Y.Offset + deltaY)  -- Prevent shrinking too much
             FrameMain.Size = UDim2.new(0, startSize.X.Offset, 0, newHeight)
-
-            -- Optionally, resize Sidebar and other elements proportionally
-            if Sidebar then
-                Sidebar.Size = UDim2.new(0, FrameMain.Size.X.Offset * 0.25, 0, FrameMain.Size.Y.Offset)
-            end
         end
     end
 end)
 
 Resize.MouseButton1Up:Connect(function()
-    -- Stop resizing when mouse button is released
+    -- End the dragging when the mouse button is released
     dragging = false
 end)
-
 
 
 
