@@ -1551,7 +1551,6 @@ end
 
 
 
-
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1757,6 +1756,15 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             OpenBtn.Text = DisplayText
             
             callback(SelectedOptions)  -- Call the callback with the selected options
+
+            -- Animate the button to show a selection effect
+            local originalColor = DropButton.BackgroundColor3
+            DropButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Set color to white
+
+            -- Animate back to the original color after a short delay
+            TweenObject(DropButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+                BackgroundColor3 = originalColor
+            })
         end)
     end
 
