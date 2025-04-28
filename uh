@@ -1548,6 +1548,9 @@ end
 
 
 
+
+
+
 function AssetHandler.MultiDropdown(name, default, list, callback)
     local Dropdown = CreateObject("Frame", {
         Name = name,
@@ -1559,8 +1562,8 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         Transparency = 1,
     })
     
-    local SelectedOptions = default or {}  -- Default to empty table for multi-selection
-    local DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None") -- Display the selected options
+    local SelectedOptions = default or {} -- Default to an empty table for multi-select
+    local DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None") -- Display selected options
 
     local OpenBtn = CreateObject("TextButton", {
         Parent = Dropdown,
@@ -1648,7 +1651,7 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
             Parent = ScrollingFrame,
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            BackgroundTransparency = (table.find(SelectedOptions, v) and 0.9 or 0.9700000286102295),  -- Highlight selected option
+            BackgroundTransparency = (table.find(SelectedOptions, v) and 0.9 or 0.9700000286102295), -- Highlight selected options
             Position = UDim2.new(0.4870184361934662, 0, 0.18865394592285156, 0),
             Size = UDim2.new(0.974037230014801, -3, 0, 23),
             AutoButtonColor = false,
@@ -1679,32 +1682,32 @@ function AssetHandler.MultiDropdown(name, default, list, callback)
         })
         
         DropButton.MouseButton1Down:Connect(function()
+            -- Toggle the option in SelectedOptions
             if table.find(SelectedOptions, v) then
-                -- Deselect the option if it's already selected
+                -- Deselect option
                 table.remove(SelectedOptions, table.find(SelectedOptions, v))
                 TweenObject(DropButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                     BackgroundTransparency = 0.9700000286102295
                 })
             else
-                -- Select the option if it's not selected
+                -- Select option
                 table.insert(SelectedOptions, v)
                 TweenObject(DropButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                     BackgroundTransparency = 0.9
                 })
             end
 
-            -- Update the display text with selected options
+            -- Update button text to show selected options
             DisplayText = name .. ": " .. (next(SelectedOptions) and table.concat(SelectedOptions, ", ") or "None")
             OpenBtn.Text = DisplayText
 
-            callback(SelectedOptions) -- Call the callback with the new selected options
+            -- Callback with selected options
+            callback(SelectedOptions)
         end)
     end
 
     return {}
 end
-
-
 
 
 
