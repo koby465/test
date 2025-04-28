@@ -768,7 +768,7 @@ end)
         Size = UDim2.new(1, 0, 0, 30),
         Transparency = 1,
     })
-    
+
     local TextButton = CreateObject("TextButton", {
         Parent = Slider,
         Text = name,
@@ -796,14 +796,14 @@ end)
         Position = UDim2.new(0.007, 0, 0.067, 0),
         Size = UDim2.new(0, 38, 0, 24),
         Font = Enum.Font.SourceSans,
-        Text = "FOV",
+        Text = name,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 12,
         TextTransparency = 0.5,
         TextWrapped = true,
         TextXAlignment = Enum.TextXAlignment.Left,
     })
-    
+
     TextLabel.Text = name
 
     local BG = CreateObject("Frame", {
@@ -890,8 +890,35 @@ end)
             Amount.Text = num .. symbol  -- Update the displayed amount
         end
     }
+
+    -- Make the number clickable and editable
+    Amount.MouseButton1Click:Connect(function()
+        local newText = Instance.new("TextBox", Amount)
+        newText.Size = UDim2.new(1, 0, 1, 0)
+        newText.BackgroundTransparency = 1
+        newText.Text = Amount.Text
+        newText.TextColor3 = Color3.fromRGB(202, 202, 202)
+        newText.Font = Enum.Font.SourceSans
+        newText.TextSize = 14
+        newText.ClearTextOnFocus = false
+        newText.TextXAlignment = Enum.TextXAlignment.Center
+        newText.Parent = Amount
+        newText.FocusLost:Connect(function(enterPressed)
+            if enterPressed then
+                local value = tonumber(newText.Text)
+                if value and value >= min and value <= max then
+                    Handle.Update(value)
+                else
+                    Handle.Update(default)
+                end
+            end
+            newText:Destroy()
+        end)
+    end)
+
     return Handle
 end
+
 
 			function AssetHandler.Keybind(name, Dkey, callback, onchanged)
 				local Keybind = CreateObject("Frame", {
