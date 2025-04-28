@@ -192,6 +192,15 @@ Framework = {
     end
 }
 
+-- Define the CreateObject function to create UI elements
+function CreateObject(ObjectType, Properties)
+    local NewObject = Instance.new(ObjectType)
+    for property, value in pairs(Properties) do
+        NewObject[property] = value
+    end
+    return NewObject
+end
+
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
     for i,v in pairs(AllChildren) do
@@ -294,6 +303,7 @@ function Library.New()
         Parent = Sidebar, HorizontalAlignment = Enum.HorizontalAlignment.Center, Padding = UDim.new(0, 4),
     })
 end
+
 
 
 
