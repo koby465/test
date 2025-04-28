@@ -1621,39 +1621,113 @@ end
 				end)
 			end
 			function AssetHandler.Toggle(name, state, callback)
-				local State = false
-				local Toggle = CreateObject("Frame", {
-					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(1,0,0,30),	Transparency = 1,
-				})
-				Toggle.Name = name
-				local TextButton = CreateObject("TextButton", {
-					Parent = Toggle,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(1,0,1,0),	Font = Enum.Font.SourceSans,	Text = name,	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 17,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
-				})
-				local UIPadding = CreateObject("UIPadding", {
-					Parent = TextButton,	PaddingLeft = UDim.new(0,5),
-				})
-				local Splash = CreateObject("Frame", {
-					Name = "Splash",	Parent = TextButton,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.8999999761581421,	Position = UDim2.new(0.7751553058624268,0,0.5,0),	Size = UDim2.new(0,30,0,15),	Transparency = 0.8999999761581421,
-				})
-				local UICorner = CreateObject("UICorner", {
-					Parent = Splash,	CornerRadius = UDim.new(1,0),
-				})
-				local Frame = CreateObject("Frame", {
-					Parent = Splash,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.6499999761581421,	Position = UDim2.new(0,3,0.5,0),	Size = UDim2.new(0,10,0,10),	Transparency = 0.6499999761581421,
-				})
-				local UICorner2 = CreateObject("UICorner", {
-					Parent = Frame,	CornerRadius = UDim.new(1,0),
-				})
-				function Toggle()
-					State = not State
-					if State then
-						TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-							AnchorPoint = Vector2.new(1,0.5)
-						})
-						TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-							Position = UDim2.new(1,-3, 0.5, 0)
-						})
-						TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+	local State = false
+	local Toggle = CreateObject("Frame", {
+		Name = name,
+		Parent = Section,
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1,0,0,30),
+		Transparency = 1,
+	})
+
+	Toggle.Name = name
+
+	local TextButton = CreateObject("TextButton", {
+		Parent = Toggle,
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1,0,1,0),
+		Font = Enum.Font.SourceSans,
+		Text = name,
+		TextColor3 = Color3.fromRGB(255,255,255),
+		TextSize = 17,
+		TextTransparency = 0.5,
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
+
+	local UIPadding = CreateObject("UIPadding", {
+		Parent = TextButton,
+		PaddingLeft = UDim.new(0,5),
+	})
+
+	local Splash = CreateObject("Frame", {
+		Name = "Splash",
+		Parent = TextButton,
+		AnchorPoint = Vector2.new(0,0.5),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 0.9,
+		Position = UDim2.new(0.7751553058624268,0,0.5,0),
+		Size = UDim2.new(0,30,0,15),
+		Transparency = 0.9,
+	})
+
+	local UICorner = CreateObject("UICorner", {
+		Parent = Splash,
+		CornerRadius = UDim.new(1,0),
+	})
+
+	local Frame = CreateObject("Frame", {
+		Parent = Splash,
+		AnchorPoint = Vector2.new(0,0.5),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 0.65,
+		Position = UDim2.new(0,3,0.5,0),
+		Size = UDim2.new(0,10,0,10),
+		Transparency = 0.65,
+	})
+
+	local UICorner2 = CreateObject("UICorner", {
+		Parent = Frame,
+		CornerRadius = UDim.new(1,0),
+	})
+
+	function Toggle()
+		State = not State
+		if State then
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				AnchorPoint = Vector2.new(1,0.5)
+			})
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				Position = UDim2.new(1,-3,0.5,0)
+			})
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 0
+			})
+			TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 0.8
+			})
+			-- Change TextButton color when toggled ON
+			TextButton.TextColor3 = Color3.fromRGB(85, 255, 127) -- Light green
+			TextButton.TextTransparency = 0 -- Fully visible
+		else
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				AnchorPoint = Vector2.new(0,0.5)
+			})
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				Position = UDim2.new(0,3,0.5,0)
+			})
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 0.65
+			})
+			TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
+				BackgroundTransparency = 0.9
+			})
+			-- Change TextButton color when toggled OFF
+			TextButton.TextColor3 = Color3.fromRGB(255,255,255) -- White
+			TextButton.TextTransparency = 0.5 -- Half transparent
+		end
+
+		task.spawn(function()
+			callback(State)
+		end)
+	end
+
+	if state then
+		Toggle()
+	end
+end
+			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
 							BackgroundTransparency = 0
 						})
 						TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
