@@ -945,6 +945,10 @@ end
 
 
 
+
+
+
+
 function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     local State = state or false
     
@@ -961,13 +965,22 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
         TextSize = 17, TextTransparency = 0.5, TextXAlignment = Enum.TextXAlignment.Left,
     })
     
-    -- Create the keybind display next to the title
+    -- Keybind display (to be placed next to the title)
     local KeybindLabel = CreateObject("TextLabel", {
         Name = "Keybind", Parent = ToggleWithKeybindFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), 
         BackgroundTransparency = 1, Size = UDim2.new(0.2, 0, 1, 0), Font = Enum.Font.SourceSans, 
         Text = tostring(Dkey.Name), TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 16, TextTransparency = 0.5,
         TextXAlignment = Enum.TextXAlignment.Center,
     })
+    
+    -- Now adding the keybind input function
+    AssetHandler.Keybind(name, Dkey, function()
+        -- Keybind pressed, trigger the callback
+        callback()
+    end, function(key)
+        -- Update keybind when it's changed
+        KeybindLabel.Text = tostring(key.Name)
+    end)
     
     -- Create the toggle button to the right of the keybind
     local ToggleFrame = CreateObject("Frame", {
@@ -989,12 +1002,6 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     -- Corner radius for styling
     local UICorner = CreateObject("UICorner", { Parent = Frame, CornerRadius = UDim.new(1, 0) })
     local UICorner2 = CreateObject("UICorner", { Parent = Splash, CornerRadius = UDim.new(1, 0) })
-    
-    -- Keybind functionality
-    local key = Framework.Keybind(TextButton, { Dkey })
-    key.Updated:connect(function(key)
-        KeybindLabel.Text = tostring(key.Name)  -- Update the displayed keybind
-    end)
     
     -- Toggle function when clicked
     local function Toggle()
@@ -1024,13 +1031,7 @@ function AssetHandler.ToggleWithKeybind(name, state, callback, Dkey)
     
     -- Mouse click event for the toggle button
     TextButton.MouseButton1Down:Connect(Toggle)
-    
-    -- Keypress functionality to toggle the state
-    key.Pressed:connect(function()
-        Toggle()
-    end)
 end
-
 
 
 
