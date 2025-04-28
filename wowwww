@@ -948,9 +948,6 @@ end
 
 
 
-
-
-
 function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     local State = defaultState
 
@@ -1077,9 +1074,9 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
 
     -- Mouse button click handling (to toggle state)
     TextButton.MouseButton1Down:Connect(function(x, y)
-        -- Only toggle the state if the left part of the button is clicked
-        if x < TextButton.AbsoluteSize.X * 0.75 then
-            SetToggleState(not State)  -- Toggle the state if clicked on the left side
+        -- Only toggle the state if the left part of the button or splash is clicked
+        if x < TextButton.AbsoluteSize.X * 0.75 or x > Splash.AbsolutePosition.X and x < Splash.AbsolutePosition.X + Splash.AbsoluteSize.X then
+            SetToggleState(not State)  -- Toggle the state if clicked on the left side or splash
         else
             -- Do nothing (keybind display area)
             Amount.Text = "..."
@@ -1107,11 +1104,6 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
     -- Initial visual update
     task.defer(UpdateToggleVisual)
 end
-
-
-
-
-
 
 
 
