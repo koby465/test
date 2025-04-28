@@ -373,40 +373,25 @@ end)
 local Resize = CreateObject("ImageButton", {
     Name = "Resize", 
     Parent = FrameMain, 
-    AnchorPoint = Vector2.new(1, 1), 
-    BackgroundColor3 = Color3.fromRGB(255,255,255), 
+    AnchorPoint = Vector2.new(0.5, 1),  -- Position the button at the bottom center
+    BackgroundColor3 = Color3.fromRGB(255, 255, 255), 
     BackgroundTransparency = 1, 
-    Position = UDim2.new(1, -10, 1, -10),  -- Position at bottom right corner
-    Size = UDim2.new(0, 10, 0, 10), 
+    Position = UDim2.new(0.5, 0, 1, 0),  -- Position at the bottom center
+    Size = UDim2.new(0, 20, 0, 20),  -- Resize button size
     AutoButtonColor = false, 
-    Image = "http://www.roblox.com/asset/?id=5172066892",  -- Resize icon
+    Image = "http://www.roblox.com/asset/?id=5172066892",  -- Resize image
     ImageTransparency = 0.5,
 })
 
+
 local dragging = false
-local startPos = nil
-local startSize = nil
 local startMousePos = nil
-
--- Assuming FrameMain is already created in the 'Library.New' function
-local FrameMain = Library.Core:FindFirstChild("FrameMain")
-local Sidebar = FrameMain:FindFirstChild("Sidebar")
-local AControlModule = Sidebar and Sidebar:FindFirstChild("AControlModule")
-
-local Resize = CreateObject("TextButton", { -- Assuming the resize button exists in the FrameMain
-    Name = "Resize",
-    Parent = FrameMain,
-    BackgroundColor3 = Color3.fromRGB(255, 0, 0),
-    Size = UDim2.new(0, 20, 0, 20),
-    Position = UDim2.new(1, -20, 1, -20),
-    Text = "",
-})
+local startSize = nil
 
 Resize.MouseButton1Down:Connect(function(input)
     dragging = true
     startMousePos = input.Position
     startSize = FrameMain.Size
-    startPos = FrameMain.Position
 end)
 
 game:GetService("UserInputService").InputChanged:Connect(function(input)
@@ -414,22 +399,22 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             -- Ensure startMousePos is not nil
             if startMousePos then
-                local deltaX = input.Position.X - startMousePos.X
-                local deltaY = input.Position.Y - startMousePos.Y
+                local deltaY = input.Position.Y - startMousePos.Y  -- Get the mouse movement in the Y direction
 
-                -- Resize FrameMain based on the mouse movement
-                local newWidth = math.max(200, startSize.X.Offset + deltaX)
+                -- Resize FrameMain height based on mouse movement
                 local newHeight = math.max(200, startSize.Y.Offset + deltaY)
-                FrameMain.Size = UDim2.new(0, newWidth, 0, newHeight)
+                FrameMain.Size = UDim2.new(0, startSize.X.Offset, 0, newHeight)
 
-                -- Resize Sidebar and other elements accordingly
+                -- Resize Sidebar and other elements proportionally
                 if Sidebar then
-                    Sidebar.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight)
+                    Sidebar.Size = UDim2.new(0, FrameMain.Size.X.Offset * 0.25, 0, FrameMain.Size.Y.Offset)
                 end
 
                 if AControlModule then
-                    AControlModule.Size = UDim2.new(0, newWidth * 0.25, 0, newHeight * 0.1)
+                    AControlModule.Size = UDim2.new(0, FrameMain.Size.X.Offset * 0.25, 0, FrameMain.Size.Y.Offset * 0.1)
                 end
+
+                -- Update other elements if needed...
             end
         end
     end
@@ -438,6 +423,7 @@ end)
 Resize.MouseButton1Up:Connect(function()
     dragging = false
 end)
+
 
 
 
