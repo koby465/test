@@ -1160,180 +1160,291 @@ end
 
 
 
+function AssetHandler.ColorPicker(name, preset, callback)
+    local ColorPicker = CreateObject("Frame", {
+        Name = name,
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0.7777777910232544, 0),
+        Size = UDim2.new(1, 0, 0, 38),
+        Transparency = 1,
+    })
+    
+    local TextButton = CreateObject("TextButton", {
+        Parent = ColorPicker,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255,255,255),
+        BackgroundTransparency = 0.9700000286102295,
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0.95, 0, 0.699999988079071, 0),
+        AutoButtonColor = false,
+        Font = Enum.Font.SourceSans,
+        Text = "Color",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 15,
+        TextTransparency = 0.5,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+    TextButton.Text = name
 
-			function AssetHandler.ColorPicker(name, preset, callback)
-				local ColorPicker = CreateObject("Frame", {
-					Name = name,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.7777777910232544,0),	Size = UDim2.new(1,0,0,38),	Transparency = 1,
-				})
-				local TextButton = CreateObject("TextButton", {
-					Parent = ColorPicker,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9700000286102295,	Position = UDim2.new(0.5,0,0.5,0),	Size = UDim2.new(0.95,0,0.699999988079071,0),	AutoButtonColor = false,	Font = Enum.Font.SourceSans,	Text = "Color",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 15,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
-				})
-				TextButton.Text = name
-				local UIPadding = CreateObject("UIPadding", {
-					Parent = TextButton,	PaddingLeft = UDim.new(0,10),
-				})
-				local UICorner = CreateObject("UICorner", {
-					Parent = TextButton,	CornerRadius = UDim.new(0,4),
-				})
-				local UIStroke = CreateObject("UIStroke", {
-					Parent = TextButton,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
-				})
-				local Preview = CreateObject("ImageLabel", {
-					Name = "Preview",	Parent = TextButton,	AnchorPoint = Vector2.new(0,0.5),	ImageColor3 = preset, BackgroundColor3 = preset,	BorderSizePixel = 0,	Position = UDim2.new(0.8610617518424988,0,0.5,0),	Size = UDim2.new(0,15,0,15),	ImageTransparency = 0.5,
-				})
-				local UIGradient = CreateObject("UIGradient", {
-					Parent = Preview,	Color =  ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(152, 152, 152))},	Rotation = 90,
-				})
-				local UICorner2 = CreateObject("UICorner", {
-					Parent = Preview,	CornerRadius = UDim.new(0,4),
-				})
-				local Glow = CreateObject("UIStroke", {
-					Parent = Preview,	Color = preset,	Thickness = 2.5,	Transparency = 0.8999999761581421,
-				})
-				callback(preset)
-				-- Picker
+    local UIPadding = CreateObject("UIPadding", {
+        Parent = TextButton,
+        PaddingLeft = UDim.new(0, 10),
+    })
 
-				local PickColor = CreateObject("Frame", {
-					Name = "PickColor",	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(1,0,0,70),	Transparency = 1, Visible = false
-				})
-				local Main = CreateObject("TextButton", {
-					Name = "Main",	Parent = PickColor,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9700000286102295,	Position = UDim2.new(0.5,0,0.4338647127151489,0),	Size = UDim2.new(0.95,0,1,0),	AutoButtonColor = false,	Font = Enum.Font.SourceSans, Text = "",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 11,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
-				})
-				local UIPadding = CreateObject("UIPadding", {
-					Parent = Main,	PaddingBottom = UDim.new(0,10),	PaddingLeft = UDim.new(0,10),	PaddingRight = UDim.new(0,10),	PaddingTop = UDim.new(0,10),
-				})
-				local UICorner = CreateObject("UICorner", {
-					Parent = Main,	CornerRadius = UDim.new(0,4),
-				})
-				local UIStroke = CreateObject("UIStroke", {
-					Parent = Main,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
-				})
-				local Darkness = CreateObject("ImageButton", {
-					Name = "Darkness",	Parent = Main,	BackgroundColor3 = preset,	BorderSizePixel = 0,	Size = UDim2.new(0,54,0,54),	AutoButtonColor = false,	Image = "rbxassetid://2615689005",	ImageColor3 = Color3.fromRGB(255,255,255),
-				})
-				local UICorner2 = CreateObject("UICorner", {
-					Parent = Darkness,
-				})
-				local UIStroke2 = CreateObject("UIStroke", {
-					Parent = Darkness,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(53,53,53),	Thickness = 0.8999999761581421,
-				})
-				local Hue = CreateObject("ImageButton", {
-					Name = "Hue",	Parent = Main,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BorderSizePixel = 0,	Position = UDim2.new(0.4636785387992859,0,0,0),	Size = UDim2.new(0,20,0,54),	AutoButtonColor = false,	Image = "rbxassetid://2615692420",
-				})
-				local UICorner3 = CreateObject("UICorner", {
-					Parent = Hue,
-				})
-				local Confirm = CreateObject("TextButton", {
-					Name = "Confirm",	Parent = Main,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 0.9700000286102295,	Position = UDim2.new(0.8266811370849609,0,0.8837237358093262,0),	Size = UDim2.new(0.316885769367218,0,0.3674473762512207,0),	AutoButtonColor = false,	Font = Enum.Font.SourceSans,	Text = "CONFIRM",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 9,	TextTransparency = 0.5,
-				})
-				local UICorner4 = CreateObject("UICorner", {
-					Parent = Confirm,	CornerRadius = UDim.new(0,4),
-				})
-				local UIStroke3 = CreateObject("UIStroke", {
-					Parent = Confirm,	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,	Color = Color3.fromRGB(255,255,255),	Thickness = 1.2000000476837158,	Transparency = 0.925000011920929,
-				})
-				local Preview2 = CreateObject("ImageLabel", {
-					Name = "Preview",	Parent = Main,	AnchorPoint = Vector2.new(0,0.5),	BackgroundColor3 = preset,	BorderSizePixel = 0,	Position = UDim2.new(0.6678623557090759,0,0.2737500071525574,0),	Size = UDim2.new(0,41,0,27),	ImageTransparency = 0.5,
-				})
-				local UIGradient = CreateObject("UIGradient", {
-					Parent = Preview2,	Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(152, 152, 152))},	Rotation = 90,
-				})
-				local UICorner5 = CreateObject("UICorner", {
-					Parent = Preview2,	CornerRadius = UDim.new(0,4),
-				})
-				TextButton.MouseButton1Down:Connect(function()
-					PickColor.Visible = not PickColor.Visible
-				end)
-				
-				local hue = Hue
-				local glow = Glow
-				local picker = Darkness
-				local testFrame = Preview
-				local testFrame2 = Preview2
-				local huedown = false
-				local wheeldown = false
-				Confirm.MouseButton1Down:Connect(function()
-					PickColor.Visible = false
-					
-				end)
-				local white, black = Color3.new(1, 1, 1), Color3.new(0, 0, 0)
-				local colors = {Color3.new(1, 0, 0), Color3.new(1, 1, 0), Color3.new(0, 1, 0), 
-					Color3.new(0, 1, 1), Color3.new(0, 0, 1), Color3.new(1, 0, 1), Color3.new(1, 0, 0)}
-			
-				hue.MouseMoved:connect(function(_, y)
-					if huedown then
-						local percent = (y-hue.AbsolutePosition.Y-36)/hue.AbsoluteSize.Y
-						local num = math.max(1, math.min(7,
-							math.floor(((percent*7+0.5)*100))/100 
-							))
-						local startC = colors[math.floor(num)]
-						local endC = colors[math.ceil(num)]
-						picker.BackgroundColor3 = startC:lerp(endC, num-math.floor(num)) or Color3.new(0, 0, 0)
-					end	
-				end)
-			
-				picker.MouseMoved:connect(function(x, y)
-					if wheeldown then
-						local xPercent = (x-picker.AbsolutePosition.X)/picker.AbsoluteSize.X
-						local yPercent = (y-picker.AbsolutePosition.Y-36)/picker.AbsoluteSize.Y
-						
-						local color = white:lerp(picker.BackgroundColor3, xPercent):lerp(black, yPercent)
-						testFrame.BackgroundColor3 = color
-						glow.Color = color
-						testFrame2.BackgroundColor3 = color
-						callback(color)
-					end
-				end)
-			
-				hue.MouseButton1Down:Connect(function()
-					huedown = true
-				end)
-				picker.MouseButton1Down:Connect(function()
-					wheeldown = true
-				end)
-			
-			
-				UIS.InputEnded:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
-						wheeldown = false
-						huedown = false
-					end
-				end)
-			end
-			function AssetHandler.Label(text)
-				local Label = CreateObject("Frame", {
-					Name = text,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.8191945552825928,0),	Size = UDim2.new(1,0,0,16),	Transparency = 1,
-				})
-				local TextButton = CreateObject("TextButton", {
-					Parent = Label,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(1,0,1,0),	Font = Enum.Font.SourceSans,	Text = text,	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 15,	TextTransparency = 0.5,	TextXAlignment = Enum.TextXAlignment.Left,
-				})
-				local UIPadding = CreateObject("UIPadding", {
-					Parent = TextButton,	PaddingLeft = UDim.new(0,5),
-				})
-				local Handler = {
-					Update = function(text)
-						TextButton.Text = text:sub(1, 30)
-					end
-				}
-				return Handler
-			end
-			function AssetHandler.BigLabel(text)
-				local Label = CreateObject("Frame", {
-					Name = text,	Parent = Section,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0,0,0.8191945552825928,0),	Size = UDim2.new(1,0,0,16),	Transparency = 1,
-				})
-				local TextButton = CreateObject("TextButton", {
-					Parent = Label,	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Size = UDim2.new(1,0,1,0),	Font = Enum.Font.SourceSans,	Text = text,	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 15,	TextTransparency = 0.3,	TextXAlignment = Enum.TextXAlignment.Left,
-				})
-				local UIPadding = CreateObject("UIPadding", {
-					Parent = TextButton,	PaddingLeft = UDim.new(0,5),
-				})
-				local Handler = {
-					Update = function(text)
-						TextButton.Text = text:sub(1, 35)
-					end
-				}
-				return Handler
-			end
+    local UICorner = CreateObject("UICorner", {
+        Parent = TextButton,
+        CornerRadius = UDim.new(0, 4),
+    })
+
+    local UIStroke = CreateObject("UIStroke", {
+        Parent = TextButton,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.2000000476837158,
+        Transparency = 0.925000011920929,
+    })
+
+    local Preview = CreateObject("ImageLabel", {
+        Name = "Preview",
+        Parent = TextButton,
+        AnchorPoint = Vector2.new(0, 0.5),
+        ImageColor3 = preset,
+        BackgroundColor3 = preset,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.8610617518424988, 0, 0.5, 0),
+        Size = UDim2.new(0, 15, 0, 15),
+        ImageTransparency = 0.5,
+    })
+
+    local UIGradient = CreateObject("UIGradient", {
+        Parent = Preview,
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(152, 152, 152))
+        },
+        Rotation = 90,
+    })
+
+    local UICorner2 = CreateObject("UICorner", {
+        Parent = Preview,
+        CornerRadius = UDim.new(0, 4),
+    })
+
+    local Glow = CreateObject("UIStroke", {
+        Parent = Preview,
+        Color = preset,
+        Thickness = 2.5,
+        Transparency = 0.8999999761581421,
+    })
+
+    callback(preset)
+
+    -- Picker
+    local PickColor = CreateObject("Frame", {
+        Name = "PickColor",
+        Parent = Section,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 70),
+        Transparency = 1,
+        Visible = false
+    })
+
+    local Main = CreateObject("TextButton", {
+        Name = "Main",
+        Parent = PickColor,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.9700000286102295,
+        Position = UDim2.new(0.5, 0, 0.4338647127151489, 0),
+        Size = UDim2.new(0.95, 0, 1, 0),
+        AutoButtonColor = false,
+        Font = Enum.Font.SourceSans,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 11,
+        TextTransparency = 0.5,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    local UIPaddingMain = CreateObject("UIPadding", {
+        Parent = Main,
+        PaddingBottom = UDim.new(0, 10),
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+    })
+
+    local UICornerMain = CreateObject("UICorner", {
+        Parent = Main,
+        CornerRadius = UDim.new(0, 4),
+    })
+
+    local UIStrokeMain = CreateObject("UIStroke", {
+        Parent = Main,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.2000000476837158,
+        Transparency = 0.925000011920929,
+    })
+
+    local Darkness = CreateObject("ImageButton", {
+        Name = "Darkness",
+        Parent = Main,
+        BackgroundColor3 = preset,
+        BorderSizePixel = 0,
+        Size = UDim2.new(0, 54, 0, 54),
+        AutoButtonColor = false,
+        Image = "rbxassetid://2615689005",
+        ImageColor3 = Color3.fromRGB(255, 255, 255),
+    })
+
+    local UICornerDarkness = CreateObject("UICorner", {
+        Parent = Darkness,
+    })
+
+    local UIStrokeDarkness = CreateObject("UIStroke", {
+        Parent = Darkness,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(53, 53, 53),
+        Thickness = 0.8999999761581421,
+    })
+
+    local Hue = CreateObject("ImageButton", {
+        Name = "Hue",
+        Parent = Main,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.4636785387992859, 0, 0, 0),
+        Size = UDim2.new(0, 20, 0, 54),
+        AutoButtonColor = false,
+        Image = "rbxassetid://2615692420",
+    })
+
+    local UICornerHue = CreateObject("UICorner", {
+        Parent = Hue,
+    })
+
+    local Confirm = CreateObject("TextButton", {
+        Name = "Confirm",
+        Parent = Main,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.9700000286102295,
+        Position = UDim2.new(0.8266811370849609, 0, 0.8837237358093262, 0),
+        Size = UDim2.new(0.316885769367218, 0, 0.3674473762512207, 0),
+        AutoButtonColor = false,
+        Font = Enum.Font.SourceSans,
+        Text = "CONFIRM",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 9,
+        TextTransparency = 0.5,
+    })
+
+    local UICornerConfirm = CreateObject("UICorner", {
+        Parent = Confirm,
+        CornerRadius = UDim.new(0, 4),
+    })
+
+    local UIStrokeConfirm = CreateObject("UIStroke", {
+        Parent = Confirm,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.2000000476837158,
+        Transparency = 0.925000011920929,
+    })
+
+    local Preview2 = CreateObject("ImageLabel", {
+        Name = "Preview",
+        Parent = Main,
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = preset,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.6678623557090759, 0, 0.2737500071525574, 0),
+        Size = UDim2.new(0, 41, 0, 27),
+        ImageTransparency = 0.5,
+    })
+
+    local UIGradient2 = CreateObject("UIGradient", {
+        Parent = Preview2,
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(152, 152, 152))
+        },
+        Rotation = 90,
+    })
+
+    local UICornerPreview2 = CreateObject("UICorner", {
+        Parent = Preview2,
+        CornerRadius = UDim.new(0, 4),
+    })
+
+    -- RGB TextBox for color input
+    local RGBTextBox = CreateObject("TextBox", {
+        Name = "RGBInput",
+        Parent = PickColor,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.5, 0, 0.9, 0),  -- Position it below the chart
+        Size = UDim2.new(0.95, 0, 0.1, 0),
+        Text = "Enter RGB (e.g., 255,255,255)",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 14,
+        ClearTextOnFocus = false,
+        Font = Enum.Font.SourceSans,
+    })
+
+    local UICornerTextBox = CreateObject("UICorner", {
+        Parent = RGBTextBox,
+        CornerRadius = UDim.new(0, 4),
+    })
+
+    local UIStrokeTextBox = CreateObject("UIStroke", {
+        Parent = RGBTextBox,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.8,
+    })
+
+    -- Function to update color based on RGB input
+    local function updateColorFromInput(inputText)
+        local rgbValues = {}
+        for value in string.gmatch(inputText, "%d+") do
+            table.insert(rgbValues, tonumber(value))
+        end
+
+        if #rgbValues == 3 then
+            local r, g, b = rgbValues[1], rgbValues[2], rgbValues[3]
+            if r and g and b and r <= 255 and g <= 255 and b <= 255 then
+                local newColor = Color3.fromRGB(r, g, b)
+                Preview.BackgroundColor3 = newColor
+                Preview2.BackgroundColor3 = newColor
+                Glow.Color = newColor
+            end
+        end
+    end
+
+    -- Connect the RGB input to the update function
+    RGBTextBox.FocusLost:Connect(function(enteredText)
+        updateColorFromInput(enteredText)
+    end)
+
+    -- Confirm button action
+    Confirm.MouseButton1Down:Connect(function()
+        PickColor.Visible = false
+        local finalColor = Preview.BackgroundColor3
+        callback(finalColor)  -- Confirm color selection
+    end)
+
+    -- Show the color picker when the button is clicked
+    TextButton.MouseButton1Down:Connect(function()
+        PickColor.Visible = true
+    end)
+end
+
 			
 
 function AssetHandler.Dropdown(name, default, list, callback)
