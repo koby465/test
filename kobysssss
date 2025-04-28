@@ -1010,7 +1010,7 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, Dkey)
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 0.949999988079071,
-        Position = UDim2.new(0.9427019953727722,0,0.5,0),
+	Position = UDim2.new(0.65, 0, 0.5, 0),
         Size = UDim2.new(0,3,0,15),
         Font = Enum.Font.SourceSans,
         Text = Dkey.Name,
