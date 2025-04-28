@@ -775,26 +775,23 @@ function AssetHandler.Button(name, callback)
         Transparency = 0.925,
     })
 
-    -- 🧠 When clicked, change visual
-    local clicked = false
+    -- 🧠 Smooth click feedback animation
     TextButton.MouseButton1Down:Connect(function()
-        clicked = not clicked -- Toggle clicked state
+        -- When pressed, make it brighter
+        TweenObject(TextButton, Enum.EasingStyle.Quint, 0.1, Enum.EasingDirection.Out, {
+            BackgroundTransparency = 0.9,
+            TextTransparency = 0.3,
+        })
 
-        if clicked then
-            -- When clicked, highlight it
-            TweenObject(TextButton, Enum.EasingStyle.Quad, 0.2, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 0.92,
-                TextTransparency = 0.3,
-            })
-        else
-            -- When unclicked, go back
-            TweenObject(TextButton, Enum.EasingStyle.Quad, 0.2, Enum.EasingDirection.Out, {
+        task.spawn(callback) -- Still call your button function
+
+        -- Then quickly fade it back to normal
+        task.delay(0.15, function()
+            TweenObject(TextButton, Enum.EasingStyle.Quint, 0.2, Enum.EasingDirection.Out, {
                 BackgroundTransparency = 0.97,
                 TextTransparency = 0.5,
             })
-        end
-
-        task.spawn(callback) -- still call the callback
+        end)
     end)
 
     local Handler = {
@@ -802,6 +799,7 @@ function AssetHandler.Button(name, callback)
     }
     return Handler
 end
+
 
 function AssetHandler.Slider(name, min, max, default, symbol, callback)
     local Slider = CreateObject("Frame", {
