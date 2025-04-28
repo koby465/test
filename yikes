@@ -1590,6 +1590,92 @@ function AssetHandler.Dropdown(name, default, list, callback)
     
     return Set
 end
+local function CreateObject(className, props)
+	local obj = Instance.new(className)
+	for i,v in pairs(props) do
+		obj[i] = v
+	end
+	return obj
+end
+
+local function TweenObject(object, style, time, direction, props)
+	local TweenService = game:GetService("TweenService")
+	local tween = TweenService:Create(object, TweenInfo.new(time, style, direction), props)
+	tween:Play()
+end
+
+local AssetHandler = {}
+
+function AssetHandler.Textbox(name, preset, callback)
+	local Textbox = CreateObject("Frame", {
+		Name = name,
+		Parent = Section,
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 0, 0.7488034963607788, 0),
+		Size = UDim2.new(1, 0, 0, 50),
+	})
+
+	local TextBox = CreateObject("TextBox", {
+		Size = UDim2.new(0.95, 0, 0, 23),
+		Parent = Textbox,
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 0.97,
+		Position = UDim2.new(0.5, 0, 0.9, 0),
+		Font = Enum.Font.SourceSans,
+		PlaceholderText = preset,
+		Text = "",
+		TextColor3 = Color3.fromRGB(255, 255, 255),
+		TextSize = 16,
+		TextStrokeColor3 = Color3.fromRGB(255, 255, 255),
+		TextTransparency = 0.59,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
+
+	CreateObject("UIPadding", {
+		Parent = TextBox,
+		PaddingLeft = UDim.new(0, 10),
+	})
+
+	CreateObject("UIStroke", {
+		Parent = TextBox,
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+		Color = Color3.fromRGB(255, 255, 255),
+		Thickness = 1.2,
+		Transparency = 0.925,
+	})
+
+	CreateObject("UICorner", {
+		Parent = TextBox,
+		CornerRadius = UDim.new(0, 4),
+	})
+
+	local TextButton = CreateObject("TextButton", {
+		Parent = Textbox,
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 20),
+		Font = Enum.Font.SourceSans,
+		Text = name,
+		TextColor3 = Color3.fromRGB(255, 255, 255),
+		TextSize = 15,
+		TextTransparency = 0.5,
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
+
+	CreateObject("UIPadding", {
+		Parent = TextButton,
+		PaddingLeft = UDim.new(0, 5),
+		PaddingBottom = UDim.new(0, 10),
+		PaddingTop = UDim.new(0, 10),
+	})
+
+	TextBox.FocusLost:Connect(function()
+		callback(TextBox.Text)
+	end)
+end
 
 function AssetHandler.Toggle(name, state, callback)
 	local State = false
@@ -1615,7 +1701,7 @@ function AssetHandler.Toggle(name, state, callback)
 		TextXAlignment = Enum.TextXAlignment.Left,
 	})
 
-	local UIPadding = CreateObject("UIPadding", {
+	CreateObject("UIPadding", {
 		Parent = TextButton,
 		PaddingLeft = UDim.new(0, 5),
 	})
@@ -1630,7 +1716,7 @@ function AssetHandler.Toggle(name, state, callback)
 		Size = UDim2.new(0, 30, 0, 15),
 	})
 
-	local SplashCorner = CreateObject("UICorner", {
+	CreateObject("UICorner", {
 		Parent = Splash,
 		CornerRadius = UDim.new(1, 0),
 	})
@@ -1644,7 +1730,7 @@ function AssetHandler.Toggle(name, state, callback)
 		Size = UDim2.new(0, 10, 0, 10),
 	})
 
-	local FrameCorner = CreateObject("UICorner", {
+	CreateObject("UICorner", {
 		Parent = Frame,
 		CornerRadius = UDim.new(1, 0),
 	})
@@ -1652,7 +1738,6 @@ function AssetHandler.Toggle(name, state, callback)
 	local function ToggleFunction()
 		State = not State
 		if State then
-			-- Toggled ON
 			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
 				AnchorPoint = Vector2.new(1, 0.5),
 				Position = UDim2.new(1, -3, 0.5, 0),
@@ -1661,12 +1746,10 @@ function AssetHandler.Toggle(name, state, callback)
 			TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
 				BackgroundTransparency = 0.8,
 			})
-			-- Change Text Transparency to 0 (full white)
 			TweenObject(TextButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-				TextTransparency = 0
+				TextTransparency = 0,
 			})
 		else
-			-- Toggled OFF
 			TweenObject(Frame, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
 				AnchorPoint = Vector2.new(0, 0.5),
 				Position = UDim2.new(0, 3, 0.5, 0),
@@ -1675,9 +1758,8 @@ function AssetHandler.Toggle(name, state, callback)
 			TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
 				BackgroundTransparency = 0.9,
 			})
-			-- Change Text Transparency back to 0.5 (semi-transparent)
 			TweenObject(TextButton, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
-				TextTransparency = 0.5
+				TextTransparency = 0.5,
 			})
 		end
 
@@ -1702,6 +1784,9 @@ function AssetHandler.Toggle(name, state, callback)
 
 	return Customability
 end
+
+return AssetHandler
+
 
 local OnGoingDino = false
 function Library.DinoGame(restart)
