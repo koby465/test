@@ -947,69 +947,72 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
     local State = defaultState
     local CurrentKey = defaultKey
 
-    -- Create the main toggle container
     local ToggleFrame = CreateObject("Frame", {
         Name = name,
         Parent = Section,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 1,
-        Size = UDim2.new(1,0,0,30),
+        Size = UDim2.new(1, 0, 0, 30),
     })
 
-    -- Create the label + clickable toggle
     local ToggleButton = CreateObject("TextButton", {
         Parent = ToggleFrame,
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 1,
-        Size = UDim2.new(0.7, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        Size = UDim2.new(1, 0, 1, 0),
+        Font = Enum.Font.SourceSans,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255,255,255),
+        TextSize = 17,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    CreateObject("UIPadding", {
+        Parent = ToggleButton,
+        PaddingLeft = UDim.new(0, 5),
+    })
+
+    local Label = CreateObject("TextLabel", {
+        Parent = ToggleButton,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0.6, 0, 1, 0),
         Font = Enum.Font.SourceSans,
         Text = name,
         TextColor3 = Color3.fromRGB(255,255,255),
-        TextSize = 17,
-        TextTransparency = 0.5,
+        TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
     local Splash = CreateObject("Frame", {
-        Name = "Splash",
         Parent = ToggleButton,
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 0.9,
-        Position = UDim2.new(0.8, 0, 0.5, 0),
+        Position = UDim2.new(0.7, 0, 0.5, 0),
         Size = UDim2.new(0, 30, 0, 15),
     })
-
-    CreateObject("UICorner", {
-        Parent = Splash,
-        CornerRadius = UDim.new(1,0),
-    })
+    CreateObject("UICorner", {Parent = Splash, CornerRadius = UDim.new(1,0)})
 
     local Dot = CreateObject("Frame", {
         Parent = Splash,
-        AnchorPoint = Vector2.new(0,0.5),
+        AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 0.65,
         Position = UDim2.new(0,3,0.5,0),
         Size = UDim2.new(0,10,0,10),
     })
+    CreateObject("UICorner", {Parent = Dot, CornerRadius = UDim.new(1,0)})
 
-    CreateObject("UICorner", {
-        Parent = Dot,
-        CornerRadius = UDim.new(1,0),
-    })
-
-    -- Create the keybind button
     local KeybindButton = CreateObject("TextButton", {
-        Parent = ToggleFrame,
+        Parent = ToggleButton,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.7, 0, 0, 0),
-        Size = UDim2.new(0.3, 0, 1, 0),
+        Position = UDim2.new(0.8, 0, 0, 0),
+        Size = UDim2.new(0.2, 0, 1, 0),
         Font = Enum.Font.SourceSans,
-        Text = defaultKey.Name,
-        TextColor3 = Color3.fromRGB(202,202,202),
-        TextSize = 14,
+        Text = CurrentKey and CurrentKey.Name or "None",
+        TextColor3 = Color3.fromRGB(200,200,200),
+        TextSize = 13,
         TextWrapped = true,
         TextXAlignment = Enum.TextXAlignment.Center,
     })
@@ -1024,7 +1027,7 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
             TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                 BackgroundTransparency = 0.8
             })
-            ToggleButton.TextTransparency = 0
+            Label.TextTransparency = 0
         else
             TweenObject(Dot, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                 AnchorPoint = Vector2.new(0, 0.5),
@@ -1034,7 +1037,7 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
             TweenObject(Splash, Enum.EasingStyle.Linear, 0.1, Enum.EasingDirection.Out, {
                 BackgroundTransparency = 0.9
             })
-            ToggleButton.TextTransparency = 0.5
+            Label.TextTransparency = 0.5
         end
     end
 
@@ -1044,42 +1047,38 @@ function AssetHandler.ToggleWithKeybind(name, defaultState, callback, defaultKey
         callback(State)
     end
 
-    ToggleButton.MouseButton1Down:Connect(function()
-        SetToggle(not State)
-    end)
-
-    local UserInputService = game:GetService("UserInputService")
-
-    -- Keybind pressing
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not gameProcessed and input.KeyCode == CurrentKey then
+    ToggleButton.MouseButton1Down:Connect(function(x,y)
+        if x < ToggleButton.AbsoluteSize.X * 0.75 then -- Only click left side to toggle, right side is keybind
             SetToggle(not State)
         end
     end)
 
-    -- Changing keybind
+    -- Handle keybind press
+    local UserInputService = game:GetService("UserInputService")
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if not processed and input.KeyCode == CurrentKey then
+            SetToggle(not State)
+        end
+    end)
+
+    -- Change keybind
     KeybindButton.MouseButton1Down:Connect(function()
         KeybindButton.Text = "..."
-        local connection
-        connection = UserInputService.InputBegan:Connect(function(input)
+        local listening
+        listening = UserInputService.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.Keyboard then
                 CurrentKey = input.KeyCode
                 KeybindButton.Text = CurrentKey.Name
-                if connection then
-                    connection:Disconnect()
-                end
+                if listening then listening:Disconnect() end
             end
         end)
     end)
 
-    -- Initial Visual
+    -- Start visual
     task.defer(function()
-        if State then
-            UpdateVisual()
-        end
+        UpdateVisual()
     end)
 end
-
 
 
 
