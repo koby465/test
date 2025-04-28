@@ -2004,7 +2004,6 @@ if not _G.Notification then
                 instances.ProgressFill.Size = UDim2.new(0, 0, 1, 0)
 
                 local targetY = _G.startY + (#_G.activeNotifications * (_G.notificationHeight + _G.notificationSpacing))
-                screenGui.Parent = game:GetService("CoreGui")
                 instances.Frame_1:TweenPosition(UDim2.new(0, 10, 0, targetY), "InOut", "Sine", 0.5, true)
 
                 -- Create progress bar animation
