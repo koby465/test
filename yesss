@@ -554,29 +554,32 @@ end
 
 -- Tuned values to make them connect cleanly around the image
 
--- Top line (slightly above image)
+-- Tuned values to make them connect cleanly around the image
+
+-- Top line (extended)
 createBoxLine(
-    UDim2.new(0.1, 0, 0, -6),   -- Slight vertical offset
-    UDim2.new(0.8, 0, 0, 2)     -- Width spans most of image, centered
+    UDim2.new(0.05, 0, 0, -6),   -- Slightly move it further left and slightly above
+    UDim2.new(0.9, 0, 0, 2)       -- Increase the width to extend the top line
 )
 
--- Bottom line (slightly below image)
+-- Bottom line (extended)
 createBoxLine(
-    UDim2.new(0.1, 0, 1, 4),
-    UDim2.new(0.8, 0, 0, 2)
+    UDim2.new(0.05, 0, 1, 4),    -- Slightly move it further left and below
+    UDim2.new(0.9, 0, 0, 2)      -- Increase the width to extend the bottom line
 )
 
 -- Left line (starts higher and goes lower to connect with top/bottom)
 createBoxLine(
-    UDim2.new(0.1, 0, 0, -6),
-    UDim2.new(0, 2, 1, 12)      -- Height includes overlap above and below
+    UDim2.new(0.05, 0, 0, -6),   -- Adjust left margin
+    UDim2.new(0, 2, 1, 12)       -- Height includes overlap above and below
 )
 
--- Right line
+-- Right line (adjusted for extension)
 createBoxLine(
-    UDim2.new(0.9, -2, 0, -6),
-    UDim2.new(0, 2, 1, 12)
+    UDim2.new(0.95, -2, 0, -6),  -- Adjust right margin
+    UDim2.new(0, 2, 1, 12)       -- Height includes overlap above and below
 )
+
 
 
 -- Expose for the toggle
