@@ -408,6 +408,7 @@ local userId = player.UserId
 local playerImage = game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 local playerName = player.Name
 
+-- Initialize Profile Data
 if not JSON.DataExist('ProfileData') then
     JSON.WriteData('ProfileData', { Name = playerName, Image = playerImage })
 end
@@ -421,9 +422,8 @@ if not JSON.DataExist('Config') then
     JSON.WriteData('Config', { "possible configs" })
 end
 
--- Drag setup for FrameMain
+-- Setup drag for Main Frame
 local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
-
 local ProfileData = JSON.ReadData('ProfileData')
 local UIData = JSON.ReadData('UIData')
 local Dragging = JSON.ReadData('DragData')
@@ -435,63 +435,16 @@ FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
 FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
 
 MainDrag.Enabled = Dragging.Enabled
-local Drag = Library.Framework.AllowDragging(Drag, FrameMain, 0.1)
-Drag.Enabled = true
 
-local TabName = TabTitle
-local WinHandle = {
-    TabCount = 0,
-    Exit = function()
-        Library.Core:Destroy()
-    end,
-    ProfileData = ProfileData,
-    UIData = UIData,
-    DragData = Dragging.Enabled
-}
-
-function WinHandle.UpdateProfile(data)
-    JSON.WriteData('ProfileData', data)
-    UserProfileNam.Text = data.Name:sub(1, 15)
-    UserProfileImage.Image = data.Image
-end
-
-function WinHandle.UpdateWindowData(data)
-    JSON.WriteData('UIData', data)
-    FrameMain.BackgroundTransparency = (data.Opacity and 0.1 or 0)
-    FrameMain.BackgroundColor3 = (data.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
-end
-
-function WinHandle.UpdateTopData(data)
-    JSON.WriteData('DragData', data)
-    MainDrag.Enabled = data.Enabled
-    WinHandle.DragData = data.Enabled
-end
-
-function WinHandle.AskQuestion(question, callback)
-    local Clone = Question:Clone()
-    Clone.Parent = FrameMain
-    Clone.Title.Text = question
-    Clone.button1.MouseButton1Down:Connect(function()
-        Clone:Destroy()
-        callback(true)
-    end)
-    Clone.button2.MouseButton1Down:Connect(function()
-        Clone:Destroy()
-        callback(false)
-    end)
-    Clone.Visible = true
-end
-
--- Preview ESP GUI (linked to FrameMain)
+-- Create Preview ESP GUI
 local playerGui = player:WaitForChild("PlayerGui")
 _G.previewGUI = Instance.new("ScreenGui")
-_G.previewGUI.Name = "AvatarDisplayGUI"
-_G.previewGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+_G.previewGUI.Name = "PreviewESP_GUI"
 _G.previewGUI.Parent = playerGui
-_G.previewGUI.Enabled = false
+_G.previewGUI.Enabled = false  -- Initially hidden
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Name = "PreviewESP"
+mainFrame.Name = "PreviewESP_Frame"
 mainFrame.Parent = _G.previewGUI
 mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 mainFrame.BackgroundTransparency = 0.1
@@ -500,9 +453,11 @@ mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
 
+-- Add rounded corners to the Preview ESP frame
 local uiCorner = Instance.new("UICorner", mainFrame)
 uiCorner.CornerRadius = UDim.new(0, 8)
 
+-- Add shadow effect to the Preview ESP frame
 local shadow = Instance.new("ImageLabel", mainFrame)
 shadow.BackgroundTransparency = 1
 shadow.Size = UDim2.new(1, 30, 1, 30)
@@ -512,6 +467,7 @@ shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
 shadow.ImageTransparency = 0.85
 shadow.ZIndex = 0
 
+-- Add title to Preview ESP
 local title = Instance.new("TextLabel", mainFrame)
 title.Text = "Preview ESP"
 title.Font = Enum.Font.GothamBold
@@ -521,11 +477,13 @@ title.BackgroundTransparency = 1
 title.Position = UDim2.new(0, 0, 0, 8)
 title.Size = UDim2.new(1, 0, 0, 30)
 
+-- Add divider under the title
 local divider = Instance.new("Frame", mainFrame)
 divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 divider.Size = UDim2.new(0.8, 0, 0, 1)
 divider.Position = UDim2.new(0.1, 0, 0, 42)
 
+-- Add image display in the Preview ESP
 local imageLabel = Instance.new("ImageLabel", mainFrame)
 imageLabel.BackgroundTransparency = 1
 imageLabel.Position = UDim2.new(0, 20, 0, 90)
@@ -542,7 +500,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
     local absPosPreview = mainFrame.AbsolutePosition
     local absSizePreview = mainFrame.AbsoluteSize
 
-    -- Snap to the screen and prevent going off-screen for both UIs
+    -- Snapping logic to ensure UI does not go off-screen
     if _G.uiSnappingEnabled then
         local screenSize = workspace.CurrentCamera.ViewportSize
         
@@ -559,7 +517,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
         )
     end
 
-    -- Apply new positions
+    -- Apply new positions to both Main UI and Preview ESP UI
     FrameMain.Position = UDim2.new(0, absPosMain.X, 0, absPosMain.Y)
     mainFrame.Position = UDim2.new(0, absPosPreview.X + absSizeMain.X + 10, 0, absPosPreview.Y)
 end)
