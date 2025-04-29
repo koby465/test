@@ -534,7 +534,7 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- ===== Create a connected ESP box around the image =====
+-- ===== Connected ESP box around imageLabel (Refined) =====
 local boxLines = {}
 
 local function createBoxLine(position, size)
@@ -550,31 +550,30 @@ local function createBoxLine(position, size)
     return line
 end
 
--- Tuned values to make them connect cleanly around the image
-
--- Top line (slightly above image)
+-- Top line: slightly above image, extended wider
 createBoxLine(
-    UDim2.new(0.1, 0, 0, -6),   -- Slight vertical offset
-    UDim2.new(0.8, 0, 0, 2)     -- Width spans most of image, centered
+    UDim2.new(-0.03, 0, 0, -6),  -- Move left slightly and shift up
+    UDim2.new(1.06, 0, 0, 2)     -- Extend width slightly
 )
 
--- Bottom line (slightly below image)
+-- Bottom line: slightly below image, extended wider
 createBoxLine(
-    UDim2.new(0.1, 0, 1, 4),
-    UDim2.new(0.8, 0, 0, 2)
+    UDim2.new(-0.03, 0, 1, 4),
+    UDim2.new(1.06, 0, 0, 2)
 )
 
--- Left line (starts higher and goes lower to connect with top/bottom)
+-- Left line: pulled slightly inward
 createBoxLine(
-    UDim2.new(0.1, 0, 0, -6),
-    UDim2.new(0, 2, 1, 12)      -- Height includes overlap above and below
-)
-
--- Right line
-createBoxLine(
-    UDim2.new(0.9, -2, 0, -6),
+    UDim2.new(0.11, 0, 0, -6),
     UDim2.new(0, 2, 1, 12)
 )
+
+-- Right line: pulled slightly inward
+createBoxLine(
+    UDim2.new(0.89, -2, 0, -6),
+    UDim2.new(0, 2, 1, 12)
+)
+
 
 
 -- Expose for the toggle
