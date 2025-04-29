@@ -534,10 +534,10 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- ===== Build the white box around the ESP image =====
+-- ===== Build the white box around the ESP image (with offset) =====
 local boxLines = {}
 
-local function createBoxLine(position, size, rotation)
+local function createBoxLine(position, size)
     local line = Instance.new("Frame")
     line.Name = "ESPBoxLine"
     line.Parent = imageLabel
@@ -545,36 +545,33 @@ local function createBoxLine(position, size, rotation)
     line.BorderSizePixel = 0
     line.Position = position
     line.Size = size
-    if rotation then
-        line.Rotation = rotation
-    end
     line.Visible = false
     table.insert(boxLines, line)
     return line
 end
 
--- Top edge
+-- Top edge (extends slightly above)
 createBoxLine(
-    UDim2.new(0, 0, 0, 0),
-    UDim2.new(1,  0, 0, 1)
+    UDim2.new(0, -2, 0, -6),
+    UDim2.new(1, 4, 0, 2)
 )
 
--- Bottom edge
+-- Bottom edge (extends slightly below)
 createBoxLine(
-    UDim2.new(0, 0, 1, -1),
-    UDim2.new(1, 0, 0, 1)
+    UDim2.new(0, -2, 1, 4),
+    UDim2.new(1, 4, 0, 2)
 )
 
--- Left edge
+-- Left edge (inset slightly inward)
 createBoxLine(
-    UDim2.new(0, 0, 0, 0),
-    UDim2.new(0, 1, 1, 0)
+    UDim2.new(0, 4, 0, -4),
+    UDim2.new(0, 2, 1, 8)
 )
 
--- Right edge
+-- Right edge (inset slightly inward)
 createBoxLine(
-    UDim2.new(1, -1, 0, 0),
-    UDim2.new(0, 1, 1, 0)
+    UDim2.new(1, -6, 0, -4),
+    UDim2.new(0, 2, 1, 8)
 )
 
 -- Expose for the toggle
