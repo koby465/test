@@ -534,62 +534,36 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- ===== Create a connected ESP box around the image =====
-local boxLines = {}
+-- Create a connected ESP box around the image
+local box = Instance.new("Frame")
+box.Name = "ESPBox"
+box.Parent = imageLabel  -- Assuming `imageLabel` is the ImageLabel you want to wrap the box around
+box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Box color
+box.BorderSizePixel = 0  -- No border, just the box
+box.Position = UDim2.new(0, -10, 0, -10)  -- Position the box around the image with some padding
+box.Size = UDim2.new(1, 20, 1, 20)  -- Box size with some padding around the image
 
-local function createBoxLine(position, size)
-    local line = Instance.new("Frame")
-    line.Name = "ESPBoxLine"
-    line.Parent = imageLabel
-    line.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    line.BorderSizePixel = 0
-    line.Position = position
-    line.Size = size
-    line.Visible = false
-    table.insert(boxLines, line)
-    return line
-end
+-- Add rounded corners if desired
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 8)
+uiCorner.Parent = box
 
--- Tuned values to make them connect cleanly around the image
+-- Set the box visibility based on the global state
+box.Visible = _G.espBoxVisible  -- Initially set visibility based on the global state
 
--- Top line (longer, but not excessive)
-createBoxLine(
-    UDim2.new(0.1, 0, 0, -20),   -- Slight vertical offset
-    UDim2.new(0.85, 0, 0, 2)     -- Width increased a bit, but not too much
-)
+-- Initialize global variable to track ESP box visibility state
+_G.espBoxVisible = false  -- Initially, ESP box is hidden
 
--- Bottom line (slightly reduced)
-createBoxLine(
-    UDim2.new(0.1, 0, 1, 15),     -- Slight vertical adjustment
-    UDim2.new(0.85, 0, 0, 2)      -- Width stays the same
-)
+-- Function to toggle the visibility of the ESP Box based on the global state
+local function toggleESPBox(state)
+    _G.espBoxVisible = state  -- Update the global state
 
--- Left line (slightly reduced in height)
-createBoxLine(
-    UDim2.new(0.1, 0, 0, -6),     -- Slight left adjustment
-    UDim2.new(0, 2, 1, 25)        -- Reduced height from 30 to 25
-)
-
--- Right line (slightly reduced in height)
-createBoxLine(
-    UDim2.new(0.9, -2, 0, -6),    -- Slight right adjustment
-    UDim2.new(0, 2, 1, 25)        -- Reduced height from 30 to 25
-)
-
-
-
-
--- Expose for the toggle
-_G.espBoxLines = boxLines
-
--- Update position with FrameMain
-game:GetService("RunService").RenderStepped:Connect(function()
-    if _G.previewGUI and _G.previewGUI.Enabled then
-        local absPos = FrameMain.AbsolutePosition
-        local absSize = FrameMain.AbsoluteSize
-        mainFrame.Position = UDim2.new(0, absPos.X + absSize.X + 10, 0, absPos.Y)
+    -- Find the ESP box in the preview GUI and update its visibility
+    local box = _G.previewGUI:FindFirstChild("PreviewESP"):FindFirstChild("ESPBox")
+    if box then
+        box.Visible = _G.espBoxVisible  -- Set the visibility based on the global state
     end
-end)
+end
 
 
 
