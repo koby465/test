@@ -534,11 +534,22 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- Update position with FrameMain
+-- Update position with FrameMain and UI Snapping logic
 game:GetService("RunService").RenderStepped:Connect(function()
     if _G.previewGUI and _G.previewGUI.Enabled then
         local absPos = FrameMain.AbsolutePosition
         local absSize = FrameMain.AbsoluteSize
+
+        -- Snap to the screen and prevent going off-screen
+        if _G.uiSnappingEnabled then
+            local screenSize = workspace.CurrentCamera.ViewportSize
+            absPos = Vector2.new(
+                math.clamp(absPos.X, 0, screenSize.X - absSize.X),
+                math.clamp(absPos.Y, 0, screenSize.Y - absSize.Y)
+            )
+        end
+
+        -- Apply new position
         mainFrame.Position = UDim2.new(0, absPos.X + absSize.X + 10, 0, absPos.Y)
     end
 end)
