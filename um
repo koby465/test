@@ -534,7 +534,7 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- ===== Build the white box around the ESP image (with offset) =====
+-- ===== Build the white box around the ESP image (with large offset) =====
 local boxLines = {}
 
 local function createBoxLine(position, size)
@@ -550,29 +550,30 @@ local function createBoxLine(position, size)
     return line
 end
 
--- Top edge (extends slightly above)
+-- Top line (extends far above the image)
 createBoxLine(
-    UDim2.new(0, -2, 0, -6),
-    UDim2.new(1, 4, 0, 2)
+    UDim2.new(0.2, 0, 0, -30), -- X position inward, Y position far above
+    UDim2.new(0.6, 0, 0, 2)    -- Width across most of the image
 )
 
--- Bottom edge (extends slightly below)
+-- Bottom line (extends far below the image)
 createBoxLine(
-    UDim2.new(0, -2, 1, 4),
-    UDim2.new(1, 4, 0, 2)
+    UDim2.new(0.2, 0, 1, 28),
+    UDim2.new(0.6, 0, 0, 2)
 )
 
--- Left edge (inset slightly inward)
+-- Left line (inset well inside from the edge)
 createBoxLine(
-    UDim2.new(0, 4, 0, -4),
-    UDim2.new(0, 2, 1, 8)
+    UDim2.new(0.25, 0, 0, -10),
+    UDim2.new(0, 2, 1, 20)     -- Vertical line that extends above and below
 )
 
--- Right edge (inset slightly inward)
+-- Right line (inset well inside from the edge)
 createBoxLine(
-    UDim2.new(1, -6, 0, -4),
-    UDim2.new(0, 2, 1, 8)
+    UDim2.new(0.75, -2, 0, -10),
+    UDim2.new(0, 2, 1, 20)
 )
+
 
 -- Expose for the toggle
 _G.espBoxLines = boxLines
