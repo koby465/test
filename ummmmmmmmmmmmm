@@ -552,28 +552,28 @@ end
 
 -- Tuned values to make them connect cleanly around the image
 
--- Top line (slightly above image)
+-- Top line (longer, but not excessive)
 createBoxLine(
     UDim2.new(0.1, 0, 0, -20),   -- Slight vertical offset
-    UDim2.new(0.8, 0, 0, 2)     -- Width spans most of image, centered
+    UDim2.new(0.85, 0, 0, 2)     -- Width increased a bit, but not too much
 )
 
--- Bottom line (slightly below image)
+-- Bottom line (slightly reduced)
 createBoxLine(
-    UDim2.new(0.1, 0, 1, 20),
-    UDim2.new(0.8, 0, 0, 2)
+    UDim2.new(0.1, 0, 1, 15),     -- Slight vertical adjustment
+    UDim2.new(0.85, 0, 0, 2)      -- Width stays the same
 )
 
--- Left line (now longer)
+-- Left line (slightly reduced in height)
 createBoxLine(
-    UDim2.new(0.1, 0, 0, -6),  -- Slight left adjustment
-    UDim2.new(0, 2, 1, 30)      -- Height increased to 30
+    UDim2.new(0.1, 0, 0, -6),     -- Slight left adjustment
+    UDim2.new(0, 2, 1, 25)        -- Reduced height from 30 to 25
 )
 
--- Right line (now longer)
+-- Right line (slightly reduced in height)
 createBoxLine(
-    UDim2.new(0.9, -2, 0, -6),  -- Slight right adjustment
-    UDim2.new(0, 2, 1, 30)      -- Height increased to 30
+    UDim2.new(0.9, -2, 0, -6),    -- Slight right adjustment
+    UDim2.new(0, 2, 1, 25)        -- Reduced height from 30 to 25
 )
 
 
