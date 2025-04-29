@@ -400,68 +400,44 @@ end)
 	local TextQ = CreateObject("TextLabel", {
 		Name = "Title", Parent = Question,	AnchorPoint = Vector2.new(0.5,0.5),	BackgroundColor3 = Color3.fromRGB(255,255,255),	BackgroundTransparency = 1,	Position = UDim2.new(0.5,0,0.46050596237182617,0),	Size = UDim2.new(0,200,0,36),	Font = Enum.Font.SourceSans,Text = "Would to exit Future Client?",	TextColor3 = Color3.fromRGB(255,255,255),	TextSize = 18,
 	})
--- Initialize JSON data for Profile, UI, Drag, and Config if they don't exist
 local JSON = Library.JSON
 local player = game.Players.LocalPlayer
 local userId = player.UserId
 
--- Retrieve the player's profile image URL using GetUserThumbnailAsync
+-- Profile and UI data
 local playerImage = game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
-
--- Retrieve the player's name
 local playerName = player.Name
 
--- Initialize Profile Data
 if not JSON.DataExist('ProfileData') then
-    JSON.WriteData('ProfileData', {
-        Name = playerName,  -- Store the player's name
-        Image = playerImage  -- Store the actual URL for the profile image
-    })
+    JSON.WriteData('ProfileData', { Name = playerName, Image = playerImage })
 end
-
--- Initialize other data if necessary
 if not JSON.DataExist('UIData') then
-    JSON.WriteData('UIData', {
-        Opacity = true
-    })
+    JSON.WriteData('UIData', { Opacity = true })
 end
-
 if not JSON.DataExist('DragData') then
-    JSON.WriteData('DragData', {
-        Enabled = true
-    })
+    JSON.WriteData('DragData', { Enabled = true })
 end
-
 if not JSON.DataExist('Config') then
-    JSON.WriteData('Config', {
-        "possible configs"
-    })
+    JSON.WriteData('Config', { "possible configs" })
 end
 
--- Setup drag for the main frame
+-- Drag
 local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
 
--- Read the saved data
 local ProfileData = JSON.ReadData('ProfileData')
 local UIData = JSON.ReadData('UIData')
 local Dragging = JSON.ReadData('DragData')
 
--- Set the profile name and image
-UserProfileNam.Text = ProfileData.Name:sub(1, 15)  -- Display the player's name
-UserProfileImage.Image = ProfileData.Image  -- Display the profile picture using the stored image URL
+UserProfileNam.Text = ProfileData.Name:sub(1, 15)
+UserProfileImage.Image = ProfileData.Image
 
--- Set background transparency based on UI settings
 FrameMain.BackgroundTransparency = (UIData.Opacity and 0.1 or 0)
 FrameMain.BackgroundColor3 = (UIData.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
 
--- Enable drag based on the saved drag setting
 MainDrag.Enabled = Dragging.Enabled
-
--- Additional dragging for a separate element (Drag)
 local Drag = Library.Framework.AllowDragging(Drag, FrameMain, 0.1)
 Drag.Enabled = true
 
--- WinHandle setup
 local TabName = TabTitle
 local WinHandle = {
     TabCount = 0,
@@ -473,28 +449,24 @@ local WinHandle = {
     DragData = Dragging.Enabled
 }
 
--- Function to update profile data
 function WinHandle.UpdateProfile(data)
     JSON.WriteData('ProfileData', data)
-    UserProfileNam.Text = data.Name:sub(1, 15)  -- Update the name
-    UserProfileImage.Image = data.Image  -- Update the profile image
+    UserProfileNam.Text = data.Name:sub(1, 15)
+    UserProfileImage.Image = data.Image
 end
 
--- Function to update window data
 function WinHandle.UpdateWindowData(data)
     JSON.WriteData('UIData', data)
     FrameMain.BackgroundTransparency = (data.Opacity and 0.1 or 0)
     FrameMain.BackgroundColor3 = (data.Opacity and Color3.fromRGB(14, 13, 13) or Color3.fromRGB(14, 14, 14))
 end
 
--- Function to update drag data
 function WinHandle.UpdateTopData(data)
     JSON.WriteData('DragData', data)
     MainDrag.Enabled = data.Enabled
     WinHandle.DragData = data.Enabled
 end
 
--- Function to ask a question and handle the response
 function WinHandle.AskQuestion(question, callback)
     local Clone = Question:Clone()
     Clone.Parent = FrameMain
@@ -510,8 +482,72 @@ function WinHandle.AskQuestion(question, callback)
     Clone.Visible = true
 end
 
--- Get UserInputService to detect input if needed
-local UserInputService = game:GetService("UserInputService")
+-- Preview ESP GUI (linked to FrameMain)
+local playerGui = player:WaitForChild("PlayerGui")
+local previewGUI = Instance.new("ScreenGui")
+previewGUI.Name = "AvatarDisplayGUI"
+previewGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+previewGUI.Parent = playerGui
+previewGUI.Enabled = false
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "PreviewESP"
+mainFrame.Parent = previewGUI
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+mainFrame.BackgroundTransparency = 0.1
+mainFrame.Size = UDim2.new(0, 400, 0, 400)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = false
+mainFrame.Draggable = false
+
+local uiCorner = Instance.new("UICorner", mainFrame)
+uiCorner.CornerRadius = UDim.new(0, 8)
+
+local shadow = Instance.new("ImageLabel", mainFrame)
+shadow.BackgroundTransparency = 1
+shadow.Size = UDim2.new(1, 30, 1, 30)
+shadow.Position = UDim2.new(0, -15, 0, -15)
+shadow.Image = "rbxassetid://1316045217"
+shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+shadow.ImageTransparency = 0.85
+shadow.ZIndex = 0
+
+local title = Instance.new("TextLabel", mainFrame)
+title.Text = "Preview ESP"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0, 0, 0, 8)
+title.Size = UDim2.new(1, 0, 0, 30)
+
+local divider = Instance.new("Frame", mainFrame)
+divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+divider.Size = UDim2.new(0.8, 0, 0, 1)
+divider.Position = UDim2.new(0.1, 0, 0, 42)
+
+local imageLabel = Instance.new("ImageLabel", mainFrame)
+imageLabel.BackgroundTransparency = 1
+imageLabel.Position = UDim2.new(0, 20, 0, 90)
+imageLabel.Size = UDim2.new(1, -40, 0.65, 0)
+imageLabel.Image = "rbxassetid://97773127082089"
+imageLabel.ZIndex = 1
+imageLabel.ScaleType = Enum.ScaleType.Fit
+
+-- Update position with FrameMain
+game:GetService("RunService").RenderStepped:Connect(function()
+    if previewGUI.Enabled then
+        local absPos = FrameMain.AbsolutePosition
+        local absSize = FrameMain.AbsoluteSize
+        mainFrame.Position = UDim2.new(0, absPos.X + absSize.X + 10, 0, absPos.Y)
+    end
+end)
+
+-- Global toggle
+_G.TogglePreviewESP = function(state)
+    previewGUI.Enabled = state
+end
+
 
 
 
