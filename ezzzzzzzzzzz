@@ -543,10 +543,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
     end
 end)
 
--- Global toggle
-_G.TogglePreviewESP = function(state)
-    previewGUI.Enabled = state
-end
 
 
 
