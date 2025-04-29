@@ -421,7 +421,7 @@ if not JSON.DataExist('Config') then
     JSON.WriteData('Config', { "possible configs" })
 end
 
--- Drag
+-- Drag setup for FrameMain
 local MainDrag = Library.Framework.AllowDragging(FrameMain, FrameMain, 0.3)
 
 local ProfileData = JSON.ReadData('ProfileData')
@@ -484,15 +484,15 @@ end
 
 -- Preview ESP GUI (linked to FrameMain)
 local playerGui = player:WaitForChild("PlayerGui")
-local previewGUI = Instance.new("ScreenGui")
-previewGUI.Name = "AvatarDisplayGUI"
-previewGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-previewGUI.Parent = playerGui
-previewGUI.Enabled = false
+_G.previewGUI = Instance.new("ScreenGui")
+_G.previewGUI.Name = "AvatarDisplayGUI"
+_G.previewGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+_G.previewGUI.Parent = playerGui
+_G.previewGUI.Enabled = false
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "PreviewESP"
-mainFrame.Parent = previewGUI
+mainFrame.Parent = _G.previewGUI
 mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 mainFrame.BackgroundTransparency = 0.1
 mainFrame.Size = UDim2.new(0, 400, 0, 400)
@@ -536,7 +536,7 @@ imageLabel.ScaleType = Enum.ScaleType.Fit
 
 -- Update position with FrameMain
 game:GetService("RunService").RenderStepped:Connect(function()
-    if previewGUI.Enabled then
+    if _G.previewGUI and _G.previewGUI.Enabled then
         local absPos = FrameMain.AbsolutePosition
         local absSize = FrameMain.AbsoluteSize
         mainFrame.Position = UDim2.new(0, absPos.X + absSize.X + 10, 0, absPos.Y)
@@ -544,6 +544,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 
+-- Get UserInputService to detect input if needed
+local UserInputService = game:GetService("UserInputService")
 
 
 
