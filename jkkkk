@@ -536,26 +536,34 @@ imageLabel.ScaleType = Enum.ScaleType.Fit
 
 -- Update position with FrameMain and UI Snapping logic
 game:GetService("RunService").RenderStepped:Connect(function()
-    if _G.previewGUI and _G.previewGUI.Enabled then
-        local absPos = FrameMain.AbsolutePosition
-        local absSize = FrameMain.AbsoluteSize
+    local absPosMain = FrameMain.AbsolutePosition
+    local absSizeMain = FrameMain.AbsoluteSize
 
-        -- Snap to the screen and prevent going off-screen
-        if _G.uiSnappingEnabled then
-            local screenSize = workspace.CurrentCamera.ViewportSize
-            absPos = Vector2.new(
-                math.clamp(absPos.X, 0, screenSize.X - absSize.X),
-                math.clamp(absPos.Y, 0, screenSize.Y - absSize.Y)
-            )
-        end
+    local absPosPreview = mainFrame.AbsolutePosition
+    local absSizePreview = mainFrame.AbsoluteSize
 
-        -- Apply new position
-        mainFrame.Position = UDim2.new(0, absPos.X + absSize.X + 10, 0, absPos.Y)
+    -- Snap to the screen and prevent going off-screen for both UIs
+    if _G.uiSnappingEnabled then
+        local screenSize = workspace.CurrentCamera.ViewportSize
+        
+        -- Prevent Main UI from going off-screen
+        absPosMain = Vector2.new(
+            math.clamp(absPosMain.X, 0, screenSize.X - absSizeMain.X),
+            math.clamp(absPosMain.Y, 0, screenSize.Y - absSizeMain.Y)
+        )
+
+        -- Prevent Preview ESP UI from going off-screen
+        absPosPreview = Vector2.new(
+            math.clamp(absPosPreview.X, 0, screenSize.X - absSizePreview.X),
+            math.clamp(absPosPreview.Y, 0, screenSize.Y - absSizePreview.Y)
+        )
     end
+
+    -- Apply new positions
+    FrameMain.Position = UDim2.new(0, absPosMain.X, 0, absPosMain.Y)
+    mainFrame.Position = UDim2.new(0, absPosPreview.X + absSizeMain.X + 10, 0, absPosPreview.Y)
 end)
 
-
--- Get UserInputService to detect input if needed
 local UserInputService = game:GetService("UserInputService")
 
 
