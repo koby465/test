@@ -536,7 +536,7 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- ===== Create a connected ESP box around the image =====
+-- ===== Create a connected ESP box around the image and Skeleton ESP =====
 local boxLines = {}
 
 local function createBoxLine(position, size)
@@ -552,33 +552,42 @@ local function createBoxLine(position, size)
     return line
 end
 
+-- Skeleton ESP Lines
+local skeletonParts = {}
+local function createSkeletonPart(position, size, rotation)
+    local frame = Instance.new("Frame")
+    frame.Parent = imageLabel
+    frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    frame.Position = position
+    frame.Size = size
+    if rotation then
+        frame.Rotation = rotation
+    end
+    frame.Visible = false
+    table.insert(skeletonParts, frame)
+    return frame
+end
 
-createBoxLine(
-    UDim2.new(0.05, 0, 0, -24),   -- Move it up more
-    UDim2.new(0.9, 0, 0, 2)        -- Keep the width the same
-)
+createBoxLine(UDim2.new(0.05, 0, 0, -24), UDim2.new(0.9, 0, 0, 2))  -- Top line
+createBoxLine(UDim2.new(0.05, 0, 1, 22), UDim2.new(0.9, 0, 0, 2))   -- Bottom line
+createBoxLine(UDim2.new(0.05, 0, 0, -24), UDim2.new(0, 2, 1, 48))   -- Left line
+createBoxLine(UDim2.new(0.95, -2, 0, -24), UDim2.new(0, 2, 1, 48))  -- Right line
 
--- Bottom line (extended even further downward)
-createBoxLine(
-    UDim2.new(0.05, 0, 1, 22),    -- Move it down more
-    UDim2.new(0.9, 0, 0, 2)       -- Keep the width the same
-)
+-- Skeleton ESP
+createSkeletonPart(UDim2.new(0.29, 0, 0.35, 0), UDim2.new(0, 0, 0, 43)) -- Frame 6
+createSkeletonPart(UDim2.new(0.50, 0, 0.36, 0), UDim2.new(0, 0, 0, 43)) -- Frame 7
+createSkeletonPart(UDim2.new(0.43, 0, 0.60, 0), UDim2.new(0, 0, 0, 43)) -- Frame 8
+createSkeletonPart(UDim2.new(0.57, 0, 0.60, 0), UDim2.new(0, 0, 0, 42)) -- Frame 9
+createSkeletonPart(UDim2.new(0.47, 0, 0.53, 0), UDim2.new(0, 0, 0, 21), 45) -- Frame 10
+createSkeletonPart(UDim2.new(0.54, 0, 0.53, 0), UDim2.new(0, 0, 0, 21), -45) -- Frame 11
+createSkeletonPart(UDim2.new(0.40, 0, 0.25, 0), UDim2.new(0, 0, 0, 52), 90) -- Frame 12
+createSkeletonPart(UDim2.new(0.61, 0, 0.25, 0), UDim2.new(0, 0, 0, 54), 90) -- Frame 13
+createSkeletonPart(UDim2.new(0.50, 0, 0.24, 0), UDim2.new(0, 0, 0, 43)) -- Frame 14
+createSkeletonPart(UDim2.new(0.73, 0, 0.35, 0), UDim2.new(0, 0, 0, 43)) -- Frame 15
 
--- Left line (no change, revert to original position)
-createBoxLine(
-    UDim2.new(0.05, 0, 0, -24),   -- Start at the same vertical position as top line
-    UDim2.new(0, 2, 1, 48)        -- Increase the height to cover the new vertical range
-)
-
--- Right line (no change, revert to original position)
-createBoxLine(
-    UDim2.new(0.95, -2, 0, -24),  -- Start at the same vertical position as top line
-    UDim2.new(0, 2, 1, 48)        -- Increase the height to cover the new vertical range
-)
-
-
--- Expose for the toggle
+-- Expose for toggling visibility
 _G.espBoxLines = boxLines
+_G.skeletonESPParts = skeletonParts
 
 -- Update position with FrameMain
 game:GetService("RunService").RenderStepped:Connect(function()
