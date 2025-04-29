@@ -534,7 +534,6 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
--- ===== Connected ESP box around imageLabel (Refined) =====
 local boxLines = {}
 
 local function createBoxLine(position, size)
@@ -547,34 +546,31 @@ local function createBoxLine(position, size)
     line.Size = size
     line.Visible = false
     table.insert(boxLines, line)
-    return line
 end
 
--- Top line: slightly above image, extended wider
+-- Top Line: slightly higher
 createBoxLine(
-    UDim2.new(-0.03, 0, 0, -6),  -- Move left slightly and shift up
-    UDim2.new(1.06, 0, 0, 2)     -- Extend width slightly
+    UDim2.new(0, 0, -0.1, 0),
+    UDim2.new(1, 0, 0, 2)
 )
 
--- Bottom line: slightly below image, extended wider
+-- Bottom Line: slightly lower
 createBoxLine(
-    UDim2.new(-0.03, 0, 1, 4),
-    UDim2.new(1.06, 0, 0, 2)
+    UDim2.new(0, 0, 1.05, 0),
+    UDim2.new(1, 0, 0, 2)
 )
 
--- Left line: pulled slightly inward
+-- Left Line: come in slightly
 createBoxLine(
-    UDim2.new(0.11, 0, 0, -6),
-    UDim2.new(0, 2, 1, 12)
+    UDim2.new(0.08, 0, 0, 0),
+    UDim2.new(0, 2, 1, 0)
 )
 
--- Right line: pulled slightly inward
+-- Right Line: come in slightly
 createBoxLine(
-    UDim2.new(0.89, -2, 0, -6),
-    UDim2.new(0, 2, 1, 12)
+    UDim2.new(0.92, -2, 0, 0),
+    UDim2.new(0, 2, 1, 0)
 )
-
-
 
 -- Expose for the toggle
 _G.espBoxLines = boxLines
