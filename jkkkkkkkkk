@@ -589,15 +589,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
     end
 end)
 
--- ===== Toggle for the ESP Box =====
-VisualsSection.Toggle('ESP Box', false, function(enabled)
-    if _G.espBoxLines then
-        for _, line in ipairs(_G.espBoxLines) do
-            line.Visible = enabled
-        end
-    end
-end)
-
 
 
 local UserInputService = game:GetService("UserInputService")
