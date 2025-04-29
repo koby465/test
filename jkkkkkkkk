@@ -534,6 +534,52 @@ imageLabel.Image = "rbxassetid://97773127082089"
 imageLabel.ZIndex = 1
 imageLabel.ScaleType = Enum.ScaleType.Fit
 
+-- ===== Build the white box around the ESP image =====
+local boxLines = {}
+
+local function createBoxLine(position, size, rotation)
+    local line = Instance.new("Frame")
+    line.Name = "ESPBoxLine"
+    line.Parent = imageLabel
+    line.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    line.BorderSizePixel = 0
+    line.Position = position
+    line.Size = size
+    if rotation then
+        line.Rotation = rotation
+    end
+    line.Visible = false
+    table.insert(boxLines, line)
+    return line
+end
+
+-- Top edge
+createBoxLine(
+    UDim2.new(0, 0, 0, 0),
+    UDim2.new(1,  0, 0, 1)
+)
+
+-- Bottom edge
+createBoxLine(
+    UDim2.new(0, 0, 1, -1),
+    UDim2.new(1, 0, 0, 1)
+)
+
+-- Left edge
+createBoxLine(
+    UDim2.new(0, 0, 0, 0),
+    UDim2.new(0, 1, 1, 0)
+)
+
+-- Right edge
+createBoxLine(
+    UDim2.new(1, -1, 0, 0),
+    UDim2.new(0, 1, 1, 0)
+)
+
+-- Expose for the toggle
+_G.espBoxLines = boxLines
+
 -- Update position with FrameMain
 game:GetService("RunService").RenderStepped:Connect(function()
     if _G.previewGUI and _G.previewGUI.Enabled then
@@ -542,6 +588,16 @@ game:GetService("RunService").RenderStepped:Connect(function()
         mainFrame.Position = UDim2.new(0, absPos.X + absSize.X + 10, 0, absPos.Y)
     end
 end)
+
+-- ===== Toggle for the ESP Box =====
+VisualsSection.Toggle('ESP Box', false, function(enabled)
+    if _G.espBoxLines then
+        for _, line in ipairs(_G.espBoxLines) do
+            line.Visible = enabled
+        end
+    end
+end)
+
 
 
 local UserInputService = game:GetService("UserInputService")
