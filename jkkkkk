@@ -497,8 +497,8 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 mainFrame.BackgroundTransparency = 0.1
 mainFrame.Size = UDim2.new(0, 400, 0, 400)
 mainFrame.BorderSizePixel = 0
-mainFrame.Active = false
-mainFrame.Draggable = false
+mainFrame.Active = true
+mainFrame.Draggable = true
 
 local uiCorner = Instance.new("UICorner", mainFrame)
 uiCorner.CornerRadius = UDim.new(0, 8)
