@@ -135,6 +135,19 @@ Framework = {
         local startSize = Frame.Size -- Initial size of the GUI
         local startPos = Frame.Position -- Initial position of the GUI
 
+        -- Function to update child elements' sizes relative to the main frame
+        local function updateChildElements()
+            for _, child in ipairs(Frame:GetChildren()) do
+                if child:IsA("GuiObject") then
+                    -- Adjust position and size of child elements
+                    child.Position = UDim2.new(child.Position.X.Scale, child.Position.X.Offset * (Frame.Size.X.Offset / startSize.X.Offset),
+                                               child.Position.Y.Scale, child.Position.Y.Offset * (Frame.Size.Y.Offset / startSize.Y.Offset))
+                    child.Size = UDim2.new(child.Size.X.Scale, child.Size.X.Offset * (Frame.Size.X.Offset / startSize.X.Offset),
+                                           child.Size.Y.Scale, child.Size.Y.Offset * (Frame.Size.Y.Offset / startSize.Y.Offset))
+                end
+            end
+        end
+
         local function updateInput(input)
             if not Util.Enabled then return end
             local Delta = input.Position - dragStart
@@ -143,10 +156,13 @@ Framework = {
             local newSizeX = math.clamp(startSize.X.Offset + Delta.X, 100, 1000)  -- Example size scaling (clamped)
             local newSizeY = math.clamp(startSize.Y.Offset + Delta.Y, 100, 1000)  -- Example size scaling (clamped)
 
-            -- Apply new size and the original position (no movement)
+            -- Apply new size to the frame
             game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
                 Size = UDim2.new(0, newSizeX, 0, newSizeY)
             }):Play()
+
+            -- Adjust the child elements' sizes and positions
+            updateChildElements()
         end
 
         Object.InputBegan:Connect(function(input)
@@ -177,6 +193,7 @@ Framework = {
         return Util
     end
 }
+
 		
 }
 function Library.Init()
