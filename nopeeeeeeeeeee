@@ -122,24 +122,29 @@ local Library = {
 Framework = {
     AllowDragging = function(Object, Frame, Speed)
         local dragToggle = nil
-        local dragSpeed = 0
         local dragInput = nil
         local dragStart = nil
-        local dragPos = nil
+        local startSize = Frame.Size -- Initial size of the GUI
+        local startPos = Frame.Position -- Initial position of the GUI
+
         local Util = {
             Enabled = true
         }
-        
-        local UIS = game:GetService("UserInputService")  -- Define UserInputService
 
-        local startSize = Frame.Size -- Initial size of the GUI
-        local startPos = Frame.Position -- Initial position of the GUI
+        local UIS = game:GetService("UserInputService")  -- Define UserInputService
 
         -- Function to update child elements' sizes relative to the main frame
         local function updateChildElements()
             for _, child in ipairs(Frame:GetChildren()) do
                 if child:IsA("GuiObject") then
-                    -- Adjust position and size of child elements
+                    -- If the child uses a UIAspectRatioConstraint or similar, no need to resize manually
+                    if child:FindFirstChildOfClass("UIAspectRatioConstraint") or child:FindFirstChildOfClass("UISizeConstraint") then
+                        -- These elements automatically scale based on the parent frame size
+                        continue
+                    end
+                    
+                    -- Adjust position and size of child elements manually
+                    -- We use Scale (X.Scale, Y.Scale) to keep relative positioning, and Offset for custom resizing
                     child.Position = UDim2.new(child.Position.X.Scale, child.Position.X.Offset * (Frame.Size.X.Offset / startSize.X.Offset),
                                                child.Position.Y.Scale, child.Position.Y.Offset * (Frame.Size.Y.Offset / startSize.Y.Offset))
                     child.Size = UDim2.new(child.Size.X.Scale, child.Size.X.Offset * (Frame.Size.X.Offset / startSize.X.Offset),
@@ -148,6 +153,7 @@ Framework = {
             end
         end
 
+        -- Function to update the main frame size based on dragging
         local function updateInput(input)
             if not Util.Enabled then return end
             local Delta = input.Position - dragStart
@@ -193,6 +199,7 @@ Framework = {
         return Util
     end
 }
+
 
 		
 }
