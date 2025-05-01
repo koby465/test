@@ -158,9 +158,13 @@ Framework = {
                 "UserProfileImage", "Frame", "Sidebar", "FutureClientBadgeIcon",
                 "UICorner5", "UICorner2", "FSeparation2", "SidebarBG", "UIStroke2",
                 "UITextLabel1", "UserProfileNam2", "UIGradient3", "ImageLabel", "UIGradient2",
-                "UIListLayout4", "GProfileSection", "UIListLayout5", "UIStroke4", "FSeparation3"
+                "UIListLayout4", "GProfileSection", "UIListLayout5", "UIStroke4", "FSeparation3",
+                -- Added objects
+                "DSeparation", "TabFrame", "UpperSection", "TabSeparation", "Drag",
+                "TabTitle", "BSeparation2", "ConfigurationalValues", "Question", 
+                "YesQ", "BTNC", "NoQ", "BTNC2", "TextQ"
             }
-            
+
             for _, objName in ipairs(objectsToScale) do
                 if Frame.Parent:FindFirstChild(objName) then
                     local obj = Frame.Parent:FindFirstChild(objName)
@@ -209,6 +213,7 @@ Framework = {
         return Util
     end
 }
+
 
 		
 }
