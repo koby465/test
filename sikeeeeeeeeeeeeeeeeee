@@ -762,6 +762,62 @@ end
 
 
 
+if not _G.Watermark then
+    local screenGui, watermarkFrame, watermarkLabel
+    local isWatermarkVisible = true
+
+    function _G:CreateWatermark()
+        task.spawn(function()
+            pcall(function()
+                screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+                screenGui.Name = "WatermarkGui"
+                screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+                screenGui.IgnoreGuiInset = true
+
+                watermarkFrame = Instance.new("Frame")
+                watermarkFrame.Parent = screenGui
+                watermarkFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+                watermarkFrame.BackgroundTransparency = 0.4
+                watermarkFrame.Size = UDim2.new(0, 300, 0, 50)
+                watermarkFrame.Position = UDim2.new(0.5, -150, 0, 30)
+                watermarkFrame.BorderSizePixel = 0
+
+                local UICorner = Instance.new("UICorner")
+                UICorner.CornerRadius = UDim.new(0, 8)
+                UICorner.Parent = watermarkFrame
+
+                watermarkLabel = Instance.new("TextLabel")
+                watermarkLabel.Parent = watermarkFrame
+                watermarkLabel.Font = Enum.Font.GothamBold
+                watermarkLabel.Text = "Lumen.cc - Reign Fall - FPS: 0"
+                watermarkLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                watermarkLabel.TextSize = 18
+                watermarkLabel.TextTransparency = 0.1
+                watermarkLabel.BackgroundTransparency = 1
+                watermarkLabel.Size = UDim2.new(1, 0, 1, 0)
+
+                task.spawn(function()
+                    while true do
+                        local fps = math.floor(1 / game:GetService("RunService").Heartbeat:Wait())
+                        watermarkLabel.Text = "Lumen.cc - Reign Fall - FPS: " .. fps
+                        wait(1)
+                    end
+                end)
+            end)
+        end)
+    end
+
+    function _G:ToggleWatermark(visible)
+        if screenGui then
+            screenGui.Enabled = visible
+        end
+    end
+
+    _G:CreateWatermark()
+end
+
+
+
 local UserInputService = game:GetService("UserInputService")
 
 
