@@ -119,62 +119,62 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-Framework.Framework.AllowDragging = function(Object, Frame, Speed)
-    local dragToggle = nil
-    local dragSpeed = 0
-    local dragInput = nil
-    local dragStart = nil
-    local dragPos = nil
-    local Util = {
-        Enabled = true
-    }
-    
-    local startSize = Frame.Size -- Initial size of the GUI
+Framework = {
+    AllowDragging = function(Object, Frame, Speed)
+        local dragToggle = nil
+        local dragSpeed = 0
+        local dragInput = nil
+        local dragStart = nil
+        local dragPos = nil
+        local Util = {
+            Enabled = true
+        }
 
-    local function updateInput(input)
-        if not Util.Enabled then return end
-        local Delta = input.Position - dragStart
-        local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-        
-        -- Scale the GUI as it's being dragged
-        local newSizeX = math.clamp(startSize.X.Offset + Delta.X, 100, 500)  -- Example size scaling with min and max
-        local newSizeY = math.clamp(startSize.Y.Offset + Delta.Y, 100, 500)  -- Example size scaling with min and max
+        local startSize = Frame.Size -- Initial size of the GUI
+        local startPos = Frame.Position -- Initial position of the GUI
 
-        -- Apply position and size scaling to the frame
-        game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-            Position = Position,
-            Size = UDim2.new(0, newSizeX, 0, newSizeY)
-        }):Play()
+        local function updateInput(input)
+            if not Util.Enabled then return end
+            local Delta = input.Position - dragStart
+
+            -- Dynamically change the size of the GUI based on drag position
+            local newSizeX = math.clamp(startSize.X.Offset + Delta.X, 100, 1000)  -- Example size scaling (clamped)
+            local newSizeY = math.clamp(startSize.Y.Offset + Delta.Y, 100, 1000)  -- Example size scaling (clamped)
+
+            -- Apply new size and the original position (no movement)
+            game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
+                Size = UDim2.new(0, newSizeX, 0, newSizeY)
+            }):Play()
+        end
+
+        Object.InputBegan:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+                dragToggle = true
+                dragStart = input.Position
+                startSize = Frame.Size  -- Store the initial size of the GUI
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragToggle = false
+                    end
+                end)
+            end
+        end)
+
+        Object.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if input == dragInput and dragToggle then
+                updateInput(input)
+            end
+        end)
+
+        return Util
     end
-
-    Object.InputBegan:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-            dragToggle = true
-            dragStart = input.Position
-            startPos = Frame.Position
-            startSize = Frame.Size  -- Store the initial size of the GUI
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragToggle = false
-                end
-            end)
-        end
-    end)
-
-    Object.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if input == dragInput and dragToggle then
-            updateInput(input)
-        end
-    end)
-
-    return Util
-end
+}
 
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
