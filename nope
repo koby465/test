@@ -484,6 +484,33 @@ function WinHandle.AskQuestion(question, callback)
     Clone.Visible = true
 end
 
+WinHandle.Exit = function()
+    -- Destroy Preview ESP GUI
+    if _G.previewGUI and _G.previewGUI.Parent then
+        _G.previewGUI:Destroy()
+        _G.previewGUI = nil
+    end
+
+    -- Destroy Moderation List GUI
+    if _G.ModerationListFrame and _G.ModerationListFrame.Parent then
+        _G.ModerationListFrame:Destroy()
+        _G.ModerationListFrame = nil
+    end
+    if _G.ModerationList then
+        _G.ModerationList = nil
+    end
+
+    -- Destroy Watermark GUI
+    if _G.WatermarkGUI and _G.WatermarkGUI.Parent then
+        _G.WatermarkGUI:Destroy()
+        _G.WatermarkGUI = nil
+    end
+
+    -- Finally destroy the library
+    Library.Core:Destroy()
+end
+
+
 -- Preview ESP GUI (linked to FrameMain)
 local playerGui = player:WaitForChild("PlayerGui")
 _G.previewGUI = Instance.new("ScreenGui")
