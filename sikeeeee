@@ -590,6 +590,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 
+
 if not _G.ModerationList then
     _G.startY = 0.4
     _G.SpectatingPlayer = nil
@@ -599,10 +600,17 @@ if not _G.ModerationList then
     local screenGui, modFrame
 
     function _G:CreateModerationList()
+        -- Prevent multiple creations of the moderation list frame
+        if _G.ModerationListFrame then
+            return
+        end
+
+        -- Create the main ScreenGui for the moderation list
         screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
         screenGui.Name = "ModerationListGui"
         screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
+        -- Create the frame that will hold all elements
         modFrame = Instance.new("Frame")
         modFrame.Name = "ModerationListFrame"
         modFrame.Parent = screenGui
@@ -614,9 +622,11 @@ if not _G.ModerationList then
         modFrame.Active = true
         modFrame.Visible = false
 
+        -- Round the corners of the frame
         local UICorner = Instance.new("UICorner", modFrame)
         UICorner.CornerRadius = UDim.new(0, 8)
 
+        -- Add the title label to the frame
         local titleLabel = Instance.new("TextLabel", modFrame)
         titleLabel.Font = Enum.Font.GothamBold
         titleLabel.Text = "Moderation List"
@@ -627,21 +637,25 @@ if not _G.ModerationList then
         titleLabel.Position = UDim2.new(0, 0, 0, 8)
         titleLabel.Size = UDim2.new(1, 0, 0, 30)
 
+        -- Add a divider line under the title
         local divider = Instance.new("Frame", modFrame)
         divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         divider.Size = UDim2.new(0.8, 0, 0, 1)
         divider.Position = UDim2.new(0.1, 0, 0, 42)
 
+        -- Frame to hold the list of moderators
         local listFrame = Instance.new("Frame", modFrame)
         listFrame.BackgroundTransparency = 1
         listFrame.Position = UDim2.new(0, 0, 0, 48)
         listFrame.Size = UDim2.new(1, 0, 1, -48)
         listFrame.ClipsDescendants = true
 
+        -- Layout for the list of moderators
         local layout = Instance.new("UIListLayout", listFrame)
         layout.Padding = UDim.new(0, 10)
         layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
+        -- Example moderator user IDs
         local modIDs = {
             33259407, -- Example ID, add real ones here
             123, 456
@@ -650,6 +664,7 @@ if not _G.ModerationList then
         local Players = game:GetService("Players")
         local Camera = workspace.CurrentCamera
 
+        -- Loop through the list of moderator IDs and create a button for each
         for _, modId in ipairs(modIDs) do
             local foundPlayer = Players:GetPlayerByUserId(modId)
             if foundPlayer then
@@ -657,10 +672,12 @@ if not _G.ModerationList then
                     return Players:GetUserThumbnailAsync(modId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
                 end)
 
+                -- Create a row for each moderator
                 local modRow = Instance.new("Frame", listFrame)
                 modRow.BackgroundTransparency = 1
                 modRow.Size = UDim2.new(1, -20, 0, 50)
 
+                -- Display avatar if available
                 if success and thumbUrl then
                     local avatar = Instance.new("ImageLabel", modRow)
                     avatar.Image = thumbUrl
@@ -670,6 +687,7 @@ if not _G.ModerationList then
                     avatar.ScaleType = Enum.ScaleType.Fit
                 end
 
+                -- Create the name button for the moderator
                 local nameButton = Instance.new("TextButton", modRow)
                 nameButton.Font = Enum.Font.GothamMedium
                 nameButton.Text = "•  " .. foundPlayer.Name .. " (" .. foundPlayer.DisplayName .. ")"
@@ -680,6 +698,7 @@ if not _G.ModerationList then
                 nameButton.Position = UDim2.new(0, 60, 0, 10)
                 nameButton.Size = UDim2.new(1, -70, 0, 30)
 
+                -- Set up the click behavior for the name button
                 nameButton.MouseButton1Click:Connect(function()
                     if _G.SpectatingPlayer == foundPlayer then
                         Camera.CameraSubject = Players.LocalPlayer.Character.Humanoid
@@ -699,6 +718,7 @@ if not _G.ModerationList then
                     end
                 end)
 
+                -- Mouse hover effects
                 nameButton.MouseEnter:Connect(function()
                     nameButton.TextSize = 22
                     nameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -710,10 +730,10 @@ if not _G.ModerationList then
             end
         end
 
-        _G.ModerationListFrame = modFrame -- Store for toggling
+        -- Store the frame for toggling visibility later
+        _G.ModerationListFrame = modFrame
     end
 end
-
 
 
 local UserInputService = game:GetService("UserInputService")
