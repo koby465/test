@@ -122,38 +122,19 @@ local Library = {
 Framework = {
     AllowDragging = function(Object, Frame, Speed)
         local dragToggle = nil
+        local dragSpeed = 0
         local dragInput = nil
         local dragStart = nil
-        local startSize = Frame.Size -- Initial size of the GUI
-        local startPos = Frame.Position -- Initial position of the GUI
-
+        local dragPos = nil
         local Util = {
             Enabled = true
         }
-
+        
         local UIS = game:GetService("UserInputService")  -- Define UserInputService
 
-        -- Function to update child elements' sizes relative to the main frame
-        local function updateChildElements()
-            for _, child in ipairs(Frame:GetChildren()) do
-                if child:IsA("GuiObject") then
-                    -- If the child uses a UIAspectRatioConstraint or similar, no need to resize manually
-                    if child:FindFirstChildOfClass("UIAspectRatioConstraint") or child:FindFirstChildOfClass("UISizeConstraint") then
-                        -- These elements automatically scale based on the parent frame size
-                        continue
-                    end
-                    
-                    -- Adjust position and size of child elements manually
-                    -- We use Scale (X.Scale, Y.Scale) to keep relative positioning, and Offset for custom resizing
-                    child.Position = UDim2.new(child.Position.X.Scale, child.Position.X.Offset * (Frame.Size.X.Offset / startSize.X.Offset),
-                                               child.Position.Y.Scale, child.Position.Y.Offset * (Frame.Size.Y.Offset / startSize.Y.Offset))
-                    child.Size = UDim2.new(child.Size.X.Scale, child.Size.X.Offset * (Frame.Size.X.Offset / startSize.X.Offset),
-                                           child.Size.Y.Scale, child.Size.Y.Offset * (Frame.Size.Y.Offset / startSize.Y.Offset))
-                end
-            end
-        end
+        local startSize = Frame.Size -- Initial size of the GUI
+        local startPos = Frame.Position -- Initial position of the GUI
 
-        -- Function to update the main frame size based on dragging
         local function updateInput(input)
             if not Util.Enabled then return end
             local Delta = input.Position - dragStart
@@ -162,13 +143,10 @@ Framework = {
             local newSizeX = math.clamp(startSize.X.Offset + Delta.X, 100, 1000)  -- Example size scaling (clamped)
             local newSizeY = math.clamp(startSize.Y.Offset + Delta.Y, 100, 1000)  -- Example size scaling (clamped)
 
-            -- Apply new size to the frame
+            -- Apply new size and the original position (no movement)
             game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
                 Size = UDim2.new(0, newSizeX, 0, newSizeY)
             }):Play()
-
-            -- Adjust the child elements' sizes and positions
-            updateChildElements()
         end
 
         Object.InputBegan:Connect(function(input)
@@ -199,6 +177,54 @@ Framework = {
         return Util
     end
 }
+
+-- Now scaling the components within `FrameMain`
+local function scaleUIElements()
+    local DSeparation = CreateObject("Frame", {
+        Name = "DSeparation",
+        Parent = Sidebar,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.93,
+        BorderColor3 = Color3.fromRGB(27, 42, 53),
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 1),  -- Scales with the parent (Sidebar)
+        Transparency = 0.93,
+    })
+
+    local TabFrame = CreateObject("Frame", {
+        Name = "TabFrame",
+        Parent = FrameMain,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.316, 0, 0, 0),
+        Size = UDim2.new(0, 386, 0, 419),
+        Transparency = 1,
+    })
+
+    local UpperSection = CreateObject("Frame", {
+        Name = "UpperSection",
+        Parent = TabFrame,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.002, 0, 0, 0),
+        Size = UDim2.new(0, 450, 0, 45),
+        Transparency = 1,
+    })
+
+    -- Scale the other UI elements similarly by adjusting their sizes and positions
+    -- relative to the parent container (FrameMain)
+
+    -- Scaling the size of all UI elements with respect to the FrameMain's size
+    DSeparation.Size = UDim2.new(1, 0, 0, FrameMain.Size.Y.Offset * 0.02)  -- Example scaling
+    TabFrame.Size = UDim2.new(0.54, 0, 1, 0)  -- Example scaling relative to FrameMain's size
+    UpperSection.Size = UDim2.new(0.63, 0, 0, 45)  -- Keep the height fixed, scale width
+
+    -- Continue scaling other objects similarly...
+end
+
+-- Call this function to initialize the scaling
+scaleUIElements()
+
 
 
 		
