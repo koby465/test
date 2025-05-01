@@ -596,7 +596,7 @@ if not _G.ModerationList then
     _G.SpectatedButton = nil
     _G.ModerationList = true
 
-    local screenGui, modFrame
+    local screenGui, modFrame, dragStart, dragging
 
     function _G:CreateModerationList()
         -- Prevent multiple creations of the moderation list frame
@@ -731,8 +731,64 @@ if not _G.ModerationList then
 
         -- Store the frame for toggling visibility later
         _G.ModerationListFrame = modFrame
+
+        -- Enable drag functionality
+        local function startDrag(input)
+            dragging = true
+            dragStart = input.Position
+            local framePos = modFrame.Position
+
+            -- Update the frame's position when dragging
+            input.Changed:Connect(function()
+                if dragging then
+                    local delta = input.Position - dragStart
+                    modFrame.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+                end
+            end)
+        end
+
+        local function stopDrag()
+            dragging = false
+        end
+
+        -- Connect drag to the header
+        titleLabel.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                startDrag(input)
+            end
+        end)
+
+        titleLabel.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                stopDrag()
+            end
+        end)
     end
 end
+
+-- Toggle for showing/hiding the moderation list
+SettingsSection.Toggle('Moderation List', false, function(a)
+    -- Ensure the Moderation List is created before accessing it
+    if not _G.ModerationListFrame then
+        _G:CreateModerationList()  -- Create it if it doesn't exist
+    end
+
+    local frame = _G.ModerationListFrame
+    if frame then
+        frame.Visible = a
+        if not a and _G.SpectatingPlayer then
+            workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+            if _G.SpectatedButton then
+                _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                _G.SpectatedButton = nil
+            end
+            _G.SpectatingPlayer = nil
+        end
+    else
+        warn("Moderation List Frame is not created yet.")
+    end
+end)
+
 
 
 local UserInputService = game:GetService("UserInputService")
