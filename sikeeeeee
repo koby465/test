@@ -590,7 +590,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 
-
 if not _G.ModerationList then
     _G.startY = 0.4
     _G.SpectatingPlayer = nil
