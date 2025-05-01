@@ -808,6 +808,9 @@ if not _G.Watermark then
                 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
                 screenGui.IgnoreGuiInset = true
 
+                -- Assign the screenGui to _G.WatermarkGUI so it can be referenced later
+                _G.WatermarkGUI = screenGui
+
                 watermarkFrame = Instance.new("Frame")
                 watermarkFrame.Parent = screenGui
                 watermarkFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
@@ -849,6 +852,7 @@ if not _G.Watermark then
 
     _G:CreateWatermark()
 end
+
 
 
 
