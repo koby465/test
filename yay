@@ -119,106 +119,50 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-Framework = {
-    AllowDragging = function(Object, Frame, Speed)
-        local dragToggle = nil
-        local dragSpeed = 0
-        local dragInput = nil
-        local dragStart = nil
-        local dragPos = nil
-        local Util = {
-            Enabled = true
-        }
-        
-        local UIS = game:GetService("UserInputService")  -- Define UserInputService
-
-        local startSize = Frame.Size -- Initial size of the GUI
-        local startPos = Frame.Position -- Initial position of the GUI
-
-        local function updateInput(input)
-            if not Util.Enabled then return end
-            local Delta = input.Position - dragStart
-
-            -- Dynamically change the size of the GUI based on drag position
-            local newSizeX = math.clamp(startSize.X.Offset + Delta.X, 100, 1000)  -- Example size scaling (clamped)
-            local newSizeY = math.clamp(startSize.Y.Offset + Delta.Y, 100, 1000)  -- Example size scaling (clamped)
-
-            -- Apply new size and the original position (no movement)
-            game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
-                Size = UDim2.new(0, newSizeX, 0, newSizeY)
-            }):Play()
-
-            -- Loop through the objects and apply scaling
-            local objectsToScale = {
-                "Sidebar", "ETabs", "FSeparation", "GProfile", "UserProfileImage",
-                "UserProfileNam", "FutureClientBadgeIcon", "UIGradient41341",
-                "FrameMain", "UICorner", "UIStroke5", "UserProfileImage", "UICorner6",
-                "UIListLayout3", "UIPadding4", "UIStroke", "UIGradient",
-                "UIStroke3", "FSeparation", "UserProfileNam", "ETabs", "GProfile",
-                "UserProfileImage", "Frame", "Sidebar", "FutureClientBadgeIcon",
-                "UICorner5", "UICorner2", "FSeparation2", "SidebarBG", "UIStroke2",
-                "UITextLabel1", "UserProfileNam2", "UIGradient3", "ImageLabel", "UIGradient2",
-                "UIListLayout4", "GProfileSection", "UIListLayout5", "UIStroke4", "FSeparation3",
-                -- Added objects
-                "DSeparation", "TabFrame", "UpperSection", "TabSeparation", "Drag",
-                "TabTitle", "BSeparation2", "ConfigurationalValues", "Question", 
-                "YesQ", "BTNC", "NoQ", "BTNC2", "TextQ",
-                "Toggle"  -- Added Toggle here
-            }
-
-            for _, objName in ipairs(objectsToScale) do
-                if Frame.Parent:FindFirstChild(objName) then
-                    local obj = Frame.Parent:FindFirstChild(objName)
-                    local newObjSizeX = math.clamp(obj.Size.X.Offset + Delta.X, 100, 1000)
-                    local newObjSizeY = math.clamp(obj.Size.Y.Offset + Delta.Y, 100, 1000)
-
-                    -- Apply size changes to each element
-                    game:GetService("TweenService"):Create(obj, TweenInfo.new(Speed), {
-                        Size = UDim2.new(0, newObjSizeX, 0, newObjSizeY)
-                    }):Play()
-
-                    -- If the object has a UICorner, adjust its corner radius
-                    if obj:FindFirstChild("UICorner") then
-                        local UICorner = obj:FindFirstChild("UICorner")
-                        UICorner.CornerRadius = UDim.new(0, math.clamp(newObjSizeX / 20, 10, 50))  -- Example scaling for corner radius
-                    end
-                end
-            end
-        end
-
-        Object.InputBegan:Connect(function(input)
-            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-                dragToggle = true
-                dragStart = input.Position
-                startSize = Frame.Size  -- Store the initial size of the GUI
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragToggle = false
-                    end
-                end)
-            end
-        end)
-
-        Object.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                dragInput = input
-            end
-        end)
-
-        game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if input == dragInput and dragToggle then
-                updateInput(input)
-            end
-        end)
-
-        return Util
-    end
-}
-
-
-
-
-		
+	Framework = {
+		AllowDragging = function(Object, Frame, Speed)
+			local dragToggle = nil
+			local dragSpeed = 0
+			local dragInput = nil
+			local dragStart = nil
+			local dragPos = nil
+			local Util = {
+				Enabled = true
+			}
+			local function updateInput(input)
+				if not Util.Enabled then return end
+				local Delta = input.Position - dragStart
+				local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+				game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
+					Position = Position
+				}):Play()
+			end
+			Object.InputBegan:Connect(function(input)
+				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+					dragToggle = true
+					dragStart = input.Position
+					startPos = Frame.Position
+					input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							dragToggle = false
+						end
+					end)
+				end
+			end)
+			Object.InputChanged:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+					dragInput = input
+				end
+			end)
+			game:GetService("UserInputService").InputChanged:Connect(function(input)
+				if input == dragInput and dragToggle then
+					updateInput(input)
+				end
+			end)
+			
+			return Util
+		end
+	}
 }
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
