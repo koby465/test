@@ -119,17 +119,20 @@ local Library = {
 			return isfile('Future Client\\Data\\'..name..'.json')
 		end
 	},
-	Framework = {
-		AllowDragging = function(Object, Frame, Speed)
-			local dragToggle = nil
-			local dragSpeed = 0
-			local dragInput = nil
-			local dragStart = nil
-			local dragPos = nil
-			local Util = {
-				Enabled = true
-			}
-			        local startSize = Frame.Size -- Initial size of the GUI
+Framework = {
+    AllowDragging = function(Object, Frame, Speed)
+        local dragToggle = nil
+        local dragSpeed = 0
+        local dragInput = nil
+        local dragStart = nil
+        local dragPos = nil
+        local Util = {
+            Enabled = true
+        }
+        
+        local UIS = game:GetService("UserInputService")  -- Define UserInputService
+
+        local startSize = Frame.Size -- Initial size of the GUI
         local startPos = Frame.Position -- Initial position of the GUI
 
         local function updateInput(input)
@@ -173,7 +176,8 @@ local Library = {
 
         return Util
     end
-	}			
+}
+		
 }
 function Library.Init()
     local AllChildren = Library.Core:GetDescendants()
