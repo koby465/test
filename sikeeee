@@ -590,6 +590,131 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 
+if not _G.ModerationList then
+    _G.startY = 0.4
+    _G.SpectatingPlayer = nil
+    _G.SpectatedButton = nil
+    _G.ModerationList = true
+
+    local screenGui, modFrame
+
+    function _G:CreateModerationList()
+        screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+        screenGui.Name = "ModerationListGui"
+        screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+        modFrame = Instance.new("Frame")
+        modFrame.Name = "ModerationListFrame"
+        modFrame.Parent = screenGui
+        modFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        modFrame.BackgroundTransparency = 0.4
+        modFrame.Size = UDim2.new(0, 300, 0, 300)
+        modFrame.Position = UDim2.new(0, 20, 0.5, -150)
+        modFrame.BorderSizePixel = 0
+        modFrame.Active = true
+        modFrame.Visible = false
+
+        local UICorner = Instance.new("UICorner", modFrame)
+        UICorner.CornerRadius = UDim.new(0, 8)
+
+        local titleLabel = Instance.new("TextLabel", modFrame)
+        titleLabel.Font = Enum.Font.GothamBold
+        titleLabel.Text = "Moderation List"
+        titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        titleLabel.TextSize = 26
+        titleLabel.TextXAlignment = Enum.TextXAlignment.Center
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Position = UDim2.new(0, 0, 0, 8)
+        titleLabel.Size = UDim2.new(1, 0, 0, 30)
+
+        local divider = Instance.new("Frame", modFrame)
+        divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        divider.Size = UDim2.new(0.8, 0, 0, 1)
+        divider.Position = UDim2.new(0.1, 0, 0, 42)
+
+        local listFrame = Instance.new("Frame", modFrame)
+        listFrame.BackgroundTransparency = 1
+        listFrame.Position = UDim2.new(0, 0, 0, 48)
+        listFrame.Size = UDim2.new(1, 0, 1, -48)
+        listFrame.ClipsDescendants = true
+
+        local layout = Instance.new("UIListLayout", listFrame)
+        layout.Padding = UDim.new(0, 10)
+        layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+
+        local modIDs = {
+            33259407, -- Example ID, add real ones here
+            123, 456
+        }
+
+        local Players = game:GetService("Players")
+        local Camera = workspace.CurrentCamera
+
+        for _, modId in ipairs(modIDs) do
+            local foundPlayer = Players:GetPlayerByUserId(modId)
+            if foundPlayer then
+                local success, thumbUrl = pcall(function()
+                    return Players:GetUserThumbnailAsync(modId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+                end)
+
+                local modRow = Instance.new("Frame", listFrame)
+                modRow.BackgroundTransparency = 1
+                modRow.Size = UDim2.new(1, -20, 0, 50)
+
+                if success and thumbUrl then
+                    local avatar = Instance.new("ImageLabel", modRow)
+                    avatar.Image = thumbUrl
+                    avatar.Size = UDim2.new(0, 40, 0, 40)
+                    avatar.Position = UDim2.new(0, 10, 0, 5)
+                    avatar.BackgroundTransparency = 1
+                    avatar.ScaleType = Enum.ScaleType.Fit
+                end
+
+                local nameButton = Instance.new("TextButton", modRow)
+                nameButton.Font = Enum.Font.GothamMedium
+                nameButton.Text = "•  " .. foundPlayer.Name .. " (" .. foundPlayer.DisplayName .. ")"
+                nameButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                nameButton.TextSize = 20
+                nameButton.TextXAlignment = Enum.TextXAlignment.Left
+                nameButton.BackgroundTransparency = 1
+                nameButton.Position = UDim2.new(0, 60, 0, 10)
+                nameButton.Size = UDim2.new(1, -70, 0, 30)
+
+                nameButton.MouseButton1Click:Connect(function()
+                    if _G.SpectatingPlayer == foundPlayer then
+                        Camera.CameraSubject = Players.LocalPlayer.Character.Humanoid
+                        _G.SpectatingPlayer = nil
+                        if _G.SpectatedButton then
+                            _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                            _G.SpectatedButton = nil
+                        end
+                    else
+                        if _G.SpectatingPlayer and _G.SpectatedButton then
+                            _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                        end
+                        Camera.CameraSubject = foundPlayer.Character.Humanoid
+                        _G.SpectatingPlayer = foundPlayer
+                        _G.SpectatedButton = nameButton
+                        nameButton.TextColor3 = Color3.fromRGB(150, 255, 150)
+                    end
+                end)
+
+                nameButton.MouseEnter:Connect(function()
+                    nameButton.TextSize = 22
+                    nameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                end)
+                nameButton.MouseLeave:Connect(function()
+                    nameButton.TextSize = 20
+                    nameButton.TextColor3 = (_G.SpectatingPlayer == foundPlayer) and Color3.fromRGB(150, 255, 150) or Color3.fromRGB(230, 230, 255)
+                end)
+            end
+        end
+
+        _G.ModerationListFrame = modFrame -- Store for toggling
+    end
+end
+
+
 
 local UserInputService = game:GetService("UserInputService")
 
