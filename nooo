@@ -716,6 +716,78 @@ if not _G.ModerationList then
     end
 end
 
+-- Watermark logic (without the toggle section)
+if not _G.Watermark then
+    local screenGui
+    local watermarkFrame
+    local watermarkLabel
+    local isWatermarkVisible = true  -- Initial state for the watermark (visible)
+
+    function _G:CreateWatermark()
+        task.spawn(function()
+            pcall(function()
+                -- ScreenGui
+                screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+                screenGui.Name = "WatermarkGui"
+                screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+                -- Watermark Frame (background)
+                watermarkFrame = Instance.new("Frame")
+                watermarkFrame.Parent = screenGui
+                watermarkFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)  -- Dark background
+                watermarkFrame.BackgroundTransparency = 0.4  -- Almost invisible, but still visible
+                watermarkFrame.Size = UDim2.new(0, 300, 0, 50)  -- Adjust the size of the watermark frame
+                watermarkFrame.Position = UDim2.new(0.5, -150, 0, 30)  -- Adjusted to be a little lower
+                watermarkFrame.BorderSizePixel = 0  -- No border
+
+                -- Rounded corners
+                local UICorner = Instance.new("UICorner")
+                UICorner.CornerRadius = UDim.new(0, 8)
+                UICorner.Parent = watermarkFrame
+
+                -- Watermark Label (text)
+                watermarkLabel = Instance.new("TextLabel")
+                watermarkLabel.Parent = watermarkFrame
+                watermarkLabel.Font = Enum.Font.GothamBold
+                watermarkLabel.Text = "lumen.cc - Game Name - FPS: 0"  -- Customize game name and version here
+                watermarkLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+                watermarkLabel.TextSize = 18
+                watermarkLabel.TextTransparency = 0.1  -- Low transparency for clean look
+                watermarkLabel.BackgroundTransparency = 1
+                watermarkLabel.Size = UDim2.new(1, 0, 1, 0)  -- Fill the entire frame
+
+                -- Update the FPS every second
+                local function updateFPS()
+                    while true do
+                        local fps = math.floor(1 / game:GetService("RunService").Heartbeat:Wait())  -- Get FPS
+                        watermarkLabel.Text = "Lumen.cc - Reign Fall - FPS: " .. fps  -- Set FPS
+                        wait(1)  -- Update every second
+                    end
+                end
+
+                task.spawn(updateFPS)
+
+                -- Keep the watermark at the top-center of the screen
+                screenGui.IgnoreGuiInset = true
+            end)
+        end)
+    end
+
+    -- Function to toggle watermark visibility
+    function _G:ToggleWatermark(visible)
+        if visible then
+            screenGui.Enabled = true
+        else
+            screenGui.Enabled = false
+        end
+    end
+
+    _G:CreateWatermark()
+end
+
+
+
+
 local UserInputService = game:GetService("UserInputService")
 
 
