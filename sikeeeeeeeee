@@ -590,6 +590,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 
+
+
 if not _G.ModerationList then
     _G.startY = 0.4
     _G.SpectatingPlayer = nil
@@ -733,25 +735,31 @@ if not _G.ModerationList then
         _G.ModerationListFrame = modFrame
 
         -- Enable drag functionality
+        local dragInput, dragStartPos
         local function startDrag(input)
+            dragStartPos = input.Position
             dragging = true
-            dragStart = input.Position
-            local framePos = modFrame.Position
-
-            -- Update the frame's position when dragging
-            input.Changed:Connect(function()
-                if dragging then
-                    local delta = input.Position - dragStart
-                    modFrame.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
-                end
-            end)
+            dragInput = input
         end
 
         local function stopDrag()
             dragging = false
+            dragInput = nil
         end
 
-        -- Connect drag to the header
+        -- Update the position while dragging
+        local function updateDrag(input)
+            if dragging then
+                local delta = input.Position - dragStartPos
+                local newPos = modFrame.Position + UDim2.new(0, delta.X, 0, delta.Y)
+                -- Ensure it stays within the screen bounds
+                local screenSize = workspace.CurrentCamera.ViewportSize
+                newPos = UDim2.new(math.clamp(newPos.X.Scale, 0, 1), math.clamp(newPos.X.Offset, 0, screenSize.X - modFrame.Size.X.Offset), newPos.Y.Scale, math.clamp(newPos.Y.Offset, 0, screenSize.Y - modFrame.Size.Y.Offset))
+                modFrame.Position = newPos
+            end
+        end
+
+        -- Dragging behavior
         titleLabel.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 startDrag(input)
@@ -763,11 +771,15 @@ if not _G.ModerationList then
                 stopDrag()
             end
         end)
+
+        -- Update the position when dragging
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if dragInput and input == dragInput then
+                updateDrag(input)
+            end
+        end)
     end
 end
-
-
-
 
 
 local UserInputService = game:GetService("UserInputService")
