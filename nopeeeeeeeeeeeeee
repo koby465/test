@@ -147,6 +147,24 @@ Framework = {
             game:GetService("TweenService"):Create(Frame, TweenInfo.new(Speed), {
                 Size = UDim2.new(0, newSizeX, 0, newSizeY)
             }):Play()
+
+            -- Apply the same scaling for Sidebar and other elements if they exist
+            if Frame.Parent:FindFirstChild("Sidebar") then
+                local Sidebar = Frame.Parent:FindFirstChild("Sidebar")
+                local newSidebarSizeX = math.clamp(Sidebar.Size.X.Offset + Delta.X, 100, 1000)
+                local newSidebarSizeY = math.clamp(Sidebar.Size.Y.Offset + Delta.Y, 100, 1000)
+
+                -- Adjust Sidebar size
+                game:GetService("TweenService"):Create(Sidebar, TweenInfo.new(Speed), {
+                    Size = UDim2.new(0, newSidebarSizeX, 0, newSidebarSizeY)
+                }):Play()
+            end
+
+            -- Apply scaling for UICorner if it exists
+            if Frame:FindFirstChild("UICorner") then
+                local UICorner = Frame:FindFirstChild("UICorner")
+                UICorner.CornerRadius = UDim.new(0, math.clamp(newSizeX / 20, 10, 50))  -- Example scaling for corner radius
+            end
         end
 
         Object.InputBegan:Connect(function(input)
@@ -177,6 +195,7 @@ Framework = {
         return Util
     end
 }
+
 
 		
 }
