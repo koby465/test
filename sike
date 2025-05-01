@@ -715,15 +715,16 @@ if not _G.ModerationList then
         end)
     end
 end
--- Watermark logic (without the toggle section)
+
+
 if not _G.Watermark then
     local screenGui
     local watermarkFrame
     local watermarkLabel
     local isWatermarkVisible = true  -- Initial state for the watermark (visible)
 
+    -- Function to create watermark if not already created
     function _G:CreateWatermark()
-        -- Ensure the watermark is only created once
         if not screenGui then
             task.spawn(function()
                 pcall(function()
@@ -780,7 +781,7 @@ if not _G.Watermark then
     function _G:ToggleWatermark(visible)
         if visible then
             if not screenGui then
-                _G:CreateWatermark()  -- Create the watermark if it hasn't been created yet
+                _G:CreateWatermark()  -- Create watermark if not already created
             end
             screenGui.Enabled = true
         else
@@ -790,9 +791,10 @@ if not _G.Watermark then
         end
     end
 
+    -- Create watermark on script start
     _G:CreateWatermark()
-end
 
+end
 
 
 
