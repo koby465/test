@@ -162,7 +162,8 @@ Framework = {
                 -- Added objects
                 "DSeparation", "TabFrame", "UpperSection", "TabSeparation", "Drag",
                 "TabTitle", "BSeparation2", "ConfigurationalValues", "Question", 
-                "YesQ", "BTNC", "NoQ", "BTNC2", "TextQ"
+                "YesQ", "BTNC", "NoQ", "BTNC2", "TextQ",
+                "Toggle"  -- Added Toggle here
             }
 
             for _, objName in ipairs(objectsToScale) do
@@ -210,31 +211,10 @@ Framework = {
             end
         end)
 
-        -- Adding draggable behavior to a TabButton or TextButton
-        if Object:IsA("TextButton") or Object:IsA("TabButton") then
-            Object.MouseButton1Down:Connect(function()
-                dragToggle = true
-                dragStart = UIS:GetMouseLocation()
-                startPos = Frame.Position
-            end)
-
-            UIS.InputChanged:Connect(function(input)
-                if dragToggle and input.UserInputType == Enum.UserInputType.MouseMovement then
-                    local delta = input.Position - dragStart
-                    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-                end
-            end)
-
-            UIS.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    dragToggle = false
-                end
-            end)
-        end
-
         return Util
     end
 }
+
 
 
 
