@@ -590,227 +590,174 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 
+
 if not _G.ModerationList then
     _G.startY = 0.4
-    _G.SpectatingPlayer = nil -- Keep track of the currently spectated player
-    _G.SpectatedButton = nil -- Keep track of the button of the currently spectated player
+    _G.SpectatingPlayer = nil
+    _G.SpectatedButton = nil
+    _G.ModerationList = true
 
-    local screenGui
-    local mainFrame
-    local scrollingFrame
-
-    -- Function for handling dragging
-    local function handleDrag(mainFrame)
-        local UIS = game:GetService("UserInputService")
-        local camera = workspace.CurrentCamera
-        local dragging, dragInput, dragStart, startPos
-
-        -- Dragging functionality
-        mainFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                dragging = true
-                dragStart = input.Position
-                startPos = mainFrame.AbsolutePosition
-
-                -- Stop dragging when mouse button is released
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragging = false
-                    end
-                end)
-            end
-        end)
-
-        -- Move frame when dragging
-        mainFrame.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                dragInput = input
-            end
-        end)
-
-        -- Update position of frame
-        UIS.InputChanged:Connect(function(input)
-            if input == dragInput and dragging then
-                local delta = input.Position - dragStart
-                local newX = math.clamp(startPos.X + delta.X, 0, camera.ViewportSize.X - mainFrame.AbsoluteSize.X)
-                local newY = math.clamp(startPos.Y + delta.Y, 0, camera.ViewportSize.Y - mainFrame.AbsoluteSize.Y)
-                mainFrame.Position = UDim2.new(0, newX, 0, newY)
-            end
-        end)
-    end
+    local screenGui, modFrame
+    local dragging = false
+    local dragInput, startPos, startDragPos
 
     function _G:CreateModerationList()
-        task.spawn(function()
-            pcall(function()
-                -- ScreenGui
-                screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-                screenGui.Name = "ModerationListGui"
-                screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        -- Prevent multiple creations of the moderation list frame
+        if _G.ModerationListFrame then
+            return
+        end
 
-                -- Main Frame
-                mainFrame = Instance.new("Frame")
-                mainFrame.Parent = screenGui
-                mainFrame.Name = "MainFrame"
-                mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-                mainFrame.Size = UDim2.new(0, 300, 0, 300)
-                mainFrame.Position = UDim2.new(0, 20, 0.5, -150)
-                mainFrame.BorderSizePixel = 0
-                mainFrame.Active = true
-                mainFrame.Visible = false -- Hide immediately to avoid flash
+        -- Create the main ScreenGui for the moderation list
+        screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+        screenGui.Name = "ModerationListGui"
+        screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-                local UICorner = Instance.new("UICorner")
-                UICorner.CornerRadius = UDim.new(0, 8)
-                UICorner.Parent = mainFrame
+        -- Create the frame that will hold all elements
+        modFrame = Instance.new("Frame")
+        modFrame.Name = "ModerationListFrame"
+        modFrame.Parent = screenGui
+        modFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        modFrame.BackgroundTransparency = 0.4
+        modFrame.Size = UDim2.new(0, 300, 0, 300)
+        modFrame.Position = UDim2.new(0, 20, 0.5, -150)
+        modFrame.BorderSizePixel = 0
+        modFrame.Active = true
+        modFrame.Visible = false
 
-                -- Shadow
-                local shadow = Instance.new("ImageLabel")
-                shadow.Parent = mainFrame
-                shadow.BackgroundTransparency = 1
-                shadow.Size = UDim2.new(1, 30, 1, 30)
-                shadow.Position = UDim2.new(0, -15, 0, -15)
-                shadow.Image = "rbxassetid://1316045217"
-                shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-                shadow.ImageTransparency = 0.85
-                shadow.ZIndex = 0
+        -- Round the corners of the frame
+        local UICorner = Instance.new("UICorner", modFrame)
+        UICorner.CornerRadius = UDim.new(0, 8)
 
-                -- Title Label
-                local titleLabel = Instance.new("TextLabel")
-                titleLabel.Parent = mainFrame
-                titleLabel.Font = Enum.Font.GothamBold
-                titleLabel.Text = "Moderation List"
-                titleLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
-                titleLabel.TextSize = 26
-                titleLabel.TextXAlignment = Enum.TextXAlignment.Center
-                titleLabel.BackgroundTransparency = 1
-                titleLabel.Position = UDim2.new(0, 0, 0, 8)
-                titleLabel.Size = UDim2.new(1, 0, 0, 30)
+        -- Add the title label to the frame
+        local titleLabel = Instance.new("TextLabel", modFrame)
+        titleLabel.Font = Enum.Font.GothamBold
+        titleLabel.Text = "Moderation List"
+        titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        titleLabel.TextSize = 26
+        titleLabel.TextXAlignment = Enum.TextXAlignment.Center
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Position = UDim2.new(0, 0, 0, 8)
+        titleLabel.Size = UDim2.new(1, 0, 0, 30)
 
-                -- Divider
-                local divider = Instance.new("Frame")
-                divider.Parent = mainFrame
-                divider.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-                divider.Size = UDim2.new(0.8, 0, 0, 1)
-                divider.Position = UDim2.new(0.1, 0, 0, 42)
+        -- Add a divider line under the title
+        local divider = Instance.new("Frame", modFrame)
+        divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        divider.Size = UDim2.new(0.8, 0, 0, 1)
+        divider.Position = UDim2.new(0.1, 0, 0, 42)
 
-                -- Holder Frame
-                scrollingFrame = Instance.new("Frame")
-                scrollingFrame.Parent = mainFrame
-                scrollingFrame.BackgroundTransparency = 1
-                scrollingFrame.Position = UDim2.new(0, 0, 0, 48)
-                scrollingFrame.Size = UDim2.new(1, 0, 1, -48)
-                scrollingFrame.ClipsDescendants = true
+        -- Frame to hold the list of moderators
+        local listFrame = Instance.new("Frame", modFrame)
+        listFrame.BackgroundTransparency = 1
+        listFrame.Position = UDim2.new(0, 0, 0, 48)
+        listFrame.Size = UDim2.new(1, 0, 1, -48)
+        listFrame.ClipsDescendants = true
 
-                local UIListLayout = Instance.new("UIListLayout", scrollingFrame)
-                UIListLayout.Padding = UDim.new(0, 10)
-                UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+        -- Layout for the list of moderators
+        local layout = Instance.new("UIListLayout", listFrame)
+        layout.Padding = UDim.new(0, 10)
+        layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
-                -- Mod list (userId list)
-                local modIDs = {
-                    123, -- you
-                    123,
-                    123,
-                    123,
-                }
+        -- Example moderator user IDs
+        local modIDs = {
+            33259407, -- Example ID, add real ones here
+            123, 456
+        }
 
-                local Players = game:GetService("Players")
-                local Camera = workspace.CurrentCamera
+        local Players = game:GetService("Players")
+        local Camera = workspace.CurrentCamera
 
-                for _, modId in ipairs(modIDs) do
-                    local foundPlayer = Players:GetPlayerByUserId(modId)
+        -- Loop through the list of moderator IDs and create a button for each
+        for _, modId in ipairs(modIDs) do
+            local foundPlayer = Players:GetPlayerByUserId(modId)
+            if foundPlayer then
+                local success, thumbUrl = pcall(function()
+                    return Players:GetUserThumbnailAsync(modId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+                end)
 
-                    if foundPlayer then
-                        -- Get avatar
-                        local thumbUrl
-                        local thumbSuccess
-                        thumbSuccess, thumbUrl = pcall(function()
-                            return Players:GetUserThumbnailAsync(modId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
-                        end)
+                -- Create a row for each moderator
+                local modRow = Instance.new("Frame", listFrame)
+                modRow.BackgroundTransparency = 1
+                modRow.Size = UDim2.new(1, -20, 0, 50)
 
-                        -- Main Holder for mod
-                        local modFrame = Instance.new("Frame")
-                        modFrame.Parent = scrollingFrame
-                        modFrame.BackgroundTransparency = 1
-                        modFrame.Size = UDim2.new(1, -20, 0, 50)
-
-                        -- Avatar
-                        if thumbSuccess and thumbUrl then
-                            local avatar = Instance.new("ImageLabel")
-                            avatar.Parent = modFrame
-                            avatar.Image = thumbUrl
-                            avatar.Size = UDim2.new(0, 40, 0, 40)
-                            avatar.Position = UDim2.new(0, 10, 0, 5)
-                            avatar.BackgroundTransparency = 1
-                            avatar.ScaleType = Enum.ScaleType.Fit
-                        end
-
-                        -- Text Button for Spectating
-                        local nameButton = Instance.new("TextButton")
-                        nameButton.Parent = modFrame
-                        nameButton.Font = Enum.Font.GothamMedium
-                        nameButton.Text = "•  " .. foundPlayer.Name .. " (" .. foundPlayer.DisplayName .. ")"
-                        nameButton.TextColor3 = Color3.fromRGB(230, 230, 255)
-                        nameButton.TextSize = 20
-                        nameButton.TextXAlignment = Enum.TextXAlignment.Left
-                        nameButton.BackgroundTransparency = 1
-                        nameButton.Position = UDim2.new(0, 60, 0, 10)
-                        nameButton.Size = UDim2.new(1, -70, 0, 30)
-                        nameButton.TextTransparency = 0 -- Make text visible
-                        nameButton.BorderSizePixel = 0
-                        nameButton.MouseButton1Click:Connect(function()
-                            if _G.SpectatingPlayer == foundPlayer then
-                                Camera.CameraSubject = Players.LocalPlayer.Character.Humanoid
-                                _G.SpectatingPlayer = nil
-                                if _G.SpectatedButton then
-                                    _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255)
-                                    _G.SpectatedButton = nil
-                                end
-                                nameButton.TextColor3 = Color3.fromRGB(230, 230, 255) -- Reset current button
-                            else
-                                if _G.SpectatingPlayer and _G.SpectatedButton then
-                                    _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255) -- Reset previous button
-                                end
-                                Camera.CameraSubject = foundPlayer.Character.Humanoid
-                                _G.SpectatingPlayer = foundPlayer
-                                _G.SpectatedButton = nameButton
-                                nameButton.TextColor3 = Color3.fromRGB(150, 255, 150) -- Indicate spectating
-                            end
-                        end)
-
-                        -- Hover effect
-                        nameButton.MouseEnter:Connect(function()
-                            nameButton.TextSize = 22
-                            nameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-                        end)
-
-                        nameButton.MouseLeave:Connect(function()
-                            if _G.SpectatingPlayer ~= foundPlayer then
-                                nameButton.TextColor3 = Color3.fromRGB(230, 230, 255)
-                            else
-                                nameButton.TextColor3 = Color3.fromRGB(150, 255, 150) -- Keep spectating color
-                            end
-                            nameButton.TextSize = 20
-                        end)
-                    end
+                -- Display avatar if available
+                if success and thumbUrl then
+                    local avatar = Instance.new("ImageLabel", modRow)
+                    avatar.Image = thumbUrl
+                    avatar.Size = UDim2.new(0, 40, 0, 40)
+                    avatar.Position = UDim2.new(0, 10, 0, 5)
+                    avatar.BackgroundTransparency = 1
+                    avatar.ScaleType = Enum.ScaleType.Fit
                 end
 
-                -- Manual Scroll
-                local scrollPos = 0
+                -- Create the name button for the moderator
+                local nameButton = Instance.new("TextButton", modRow)
+                nameButton.Font = Enum.Font.GothamMedium
+                nameButton.Text = "•  " .. foundPlayer.Name .. " (" .. foundPlayer.DisplayName .. ")"
+                nameButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                nameButton.TextSize = 20
+                nameButton.TextXAlignment = Enum.TextXAlignment.Left
+                nameButton.BackgroundTransparency = 1
+                nameButton.Position = UDim2.new(0, 60, 0, 10)
+                nameButton.Size = UDim2.new(1, -70, 0, 30)
 
-                UIS.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseWheel and mainFrame.Visible then
-                        scrollPos = math.clamp(scrollPos + input.Position.Z * -10, -scrollingFrame.AbsoluteCanvasSize.Y + 240, 0)
-                        scrollingFrame.Position = UDim2.new(0, 0, 0, 48 + scrollPos)
+                -- Set up the click behavior for the name button
+                nameButton.MouseButton1Click:Connect(function()
+                    if _G.SpectatingPlayer == foundPlayer then
+                        Camera.CameraSubject = Players.LocalPlayer.Character.Humanoid
+                        _G.SpectatingPlayer = nil
+                        if _G.SpectatedButton then
+                            _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                            _G.SpectatedButton = nil
+                        end
+                    else
+                        if _G.SpectatingPlayer and _G.SpectatedButton then
+                            _G.SpectatedButton.TextColor3 = Color3.fromRGB(230, 230, 255)
+                        end
+                        Camera.CameraSubject = foundPlayer.Character.Humanoid
+                        _G.SpectatingPlayer = foundPlayer
+                        _G.SpectatedButton = nameButton
+                        nameButton.TextColor3 = Color3.fromRGB(150, 255, 150)
                     end
                 end)
 
-                -- Correct Dragging (bounded)
-                handleDrag(mainFrame) -- Enable dragging
+                -- Mouse hover effects
+                nameButton.MouseEnter:Connect(function()
+                    nameButton.TextSize = 22
+                    nameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                end)
+                nameButton.MouseLeave:Connect(function()
+                    nameButton.TextSize = 20
+                    nameButton.TextColor3 = (_G.SpectatingPlayer == foundPlayer) and Color3.fromRGB(150, 255, 150) or Color3.fromRGB(230, 230, 255)
+                end)
+            end
+        end
 
-            end)
+        -- Enable dragging
+        modFrame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                startPos = modFrame.Position
+                startDragPos = input.Position
+            end
         end)
+
+        modFrame.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local delta = input.Position - startDragPos
+                modFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+        end)
+
+        modFrame.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = false
+            end
+        end)
+
+        -- Store the frame for toggling visibility later
+        _G.ModerationListFrame = modFrame
     end
 end
-
 
 
 local UserInputService = game:GetService("UserInputService")
