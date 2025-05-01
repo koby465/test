@@ -21,11 +21,49 @@ function CreateObject(className, properties)
 	instance.Parent = parent
 	return instance
 end
-for i,v in pairs(game.CoreGui:GetChildren()) do
-	if v.Name == 'Core' or v.Name == 'WM' then
-		v:Destroy()
-	end
+WinHandle.Exit = function()
+    -- Destroy any existing 'Core' or 'WM' GUI elements from CoreGui
+    for i, v in pairs(game.CoreGui:GetChildren()) do
+        if v.Name == 'Core' or v.Name == 'WM' then
+            v:Destroy()
+        end
+    end
+
+    -- Destroy Preview ESP GUI
+    if _G.previewGUI and _G.previewGUI.Parent then
+        _G.previewGUI:Destroy()
+        _G.previewGUI = nil
+    end
+
+    -- Destroy Moderation List GUI
+    if _G.ModerationListFrame and _G.ModerationListFrame.Parent then
+        _G.ModerationListFrame:Destroy()
+        _G.ModerationListFrame = nil
+    end
+    if _G.ModerationList then
+        _G.ModerationList = nil
+    end
+
+    -- Destroy Watermark GUI
+    if _G.WatermarkGUI and _G.WatermarkGUI.Parent then
+        _G.WatermarkGUI:Destroy()
+        _G.WatermarkGUI = nil
+    end
+
+    -- Destroy Notification GUI
+    if _G.activeNotifications then
+        for _, notifData in ipairs(_G.activeNotifications) do
+            if notifData.gui and notifData.gui.Parent then
+                notifData.gui:Destroy()
+            end
+        end
+        _G.activeNotifications = {}  -- Clear active notifications list
+    end
+
+    -- Finally destroy the library
+    Library.Core:Destroy()
 end
+
 if not isfolder('Future Client') then
     makefolder('Future Client')
 	makefolder('Future Client\\Data')
