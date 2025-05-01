@@ -501,22 +501,24 @@ WinHandle.Exit = function()
     end
 
     -- Destroy Watermark GUI
-    if _G.WatermarkGUI then
-        if _G.WatermarkGUI.Parent then
-            print("Destroying Watermark GUI...")
-            _G.WatermarkGUI:Destroy()
-            _G.WatermarkGUI = nil
-        else
-            print("Watermark GUI has no Parent or is nil.")
+    if _G.WatermarkGUI and _G.WatermarkGUI.Parent then
+        _G.WatermarkGUI:Destroy()
+        _G.WatermarkGUI = nil
+    end
+
+    -- Destroy Notification GUI
+    if _G.activeNotifications then
+        for _, notifData in ipairs(_G.activeNotifications) do
+            if notifData.gui and notifData.gui.Parent then
+                notifData.gui:Destroy()
+            end
         end
-    else
-        print("No Watermark GUI found.")
+        _G.activeNotifications = {}  -- Clear active notifications list
     end
 
     -- Finally destroy the library
     Library.Core:Destroy()
 end
-
 
 -- Preview ESP GUI (linked to FrameMain)
 local playerGui = player:WaitForChild("PlayerGui")
