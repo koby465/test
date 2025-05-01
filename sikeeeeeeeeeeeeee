@@ -744,7 +744,7 @@ if not _G.ModerationList then
         modFrame.InputChanged:Connect(function(input)
             if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                 local delta = input.Position - startDragPos
-                -- Update position, converting from pixel to UDim2 scale
+                -- Update position, adjusting for the mouse offset
                 modFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
             end
         end)
@@ -759,7 +759,6 @@ if not _G.ModerationList then
         _G.ModerationListFrame = modFrame
     end
 end
-
 
 
 local UserInputService = game:GetService("UserInputService")
